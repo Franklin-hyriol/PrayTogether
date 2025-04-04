@@ -1,0 +1,83 @@
+.btn {
+    display: inline-flex;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    font-size: toRem(16px);
+    font-weight: 500;
+    text-transform: uppercase;
+    text-decoration: none !important;
+    padding: toRem(9px) toRem(41px) toRem(9px) toRem(41px);
+    border-radius: 8px;
+    border: 1px solid;
+    -webkit-transition: all 0.25s linear;
+    transition: all 0.25s linear;
+    cursor: pointer;
+    text-align: center;
+    font-family: "Poppins", sans-serif;
+    width: fit-content;
+
+    &.btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        color: var(--text-color);
+
+        &:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            color: var(--text-color);
+        }
+    }
+
+    &[disabled] {
+        cursor: not-allowed;
+        opacity: 0.5;
+        background-color: #ccc;
+        border-color: #ccc;
+
+        &:hover {
+            background-color: #ccc;
+            border-color: #ccc;
+            color: var(--text-color);
+        }
+    }
+
+    &.btn-secondary {
+        background-color: var(--secondary-color);
+        border-color: var(--secondary-color);
+        color: var(--text-color);
+
+        &:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: var(--text-color);
+        }
+    }
+
+    &.btn-outline {
+        background-color: transparent;
+        border-color: var(--color-primary);
+        color: var(--color-primary);
+
+        &:hover {
+            border-color: var(--color-primary);
+            background-color: var(--color-primary);
+            color: var(--white);
+        }
+    }
+
+    @include max($mobile) {
+        padding: torem(14px) toRem(30px) toRem(14px);
+        font-size: toRem(14px);
+        line-height: toRem(16px);
+    }
+
+    // @include max(767px) {
+    //     padding: 12px 5px 12px !important;
+    // }
+
+    // @include max(767px) {
+    //     padding: 14px 10px 14px !important;
+    // }
+}

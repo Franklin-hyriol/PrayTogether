@@ -1,0 +1,158 @@
+@font-face {
+    font-family: 'bondy';
+    src:
+        url('/fonts/font-icon/bondy.ttf') format('truetype'),
+        url('/fonts/font-icon/bondy.woff') format('woff'),
+        url('/fonts/font-icon/bondy.svg') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    font-display: block;
+}
+
+[class^="icon-"],
+[class*=" icon-"] {
+    /* use !important to prevent issues with browser extensions that change fonts */
+    font-family: 'bondy' !important;
+    speak: never;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-square-off:before {
+    content: "\e900";
+}
+
+.icon-multi_tree:before {
+    content: "\e901";
+}
+
+.icon-madagascar:before {
+    content: "\e902";
+}
+
+.icon-leaf:before {
+    content: "\e903";
+}
+
+.icon-chart:before {
+    content: "\e904";
+}
+
+.icon-arrow_right_link:before {
+    content: "\e905";
+}
+
+.icon-home:before {
+    content: "\e940";
+}
+
+.icon-Icon_menu_burger1:before {
+    content: "\e941";
+}
+
+.icon-download1:before {
+    content: "\e93f";
+}
+
+.icon-sapin:before {
+    content: "\e924";
+}
+
+.icon-dotsvg:before {
+    content: "\e927";
+}
+
+.icon-map:before {
+    content: "\e928";
+}
+
+.icon-triangle:before {
+    content: "\e929";
+}
+
+.icon-tree_9:before {
+    content: "\e92a";
+}
+
+.icon-tree_8:before {
+    content: "\e92b";
+}
+
+.icon-tree_7:before {
+    content: "\e92c";
+}
+
+.icon-tree_6:before {
+    content: "\e933";
+}
+
+.icon-tree_5:before {
+    content: "\e934";
+}
+
+.icon-tree_4:before {
+    content: "\e935";
+}
+
+.icon-tree_3:before {
+    content: "\e936";
+}
+
+.icon-tree_2:before {
+    content: "\e937";
+}
+
+.icon-tree_1:before {
+    content: "\e938";
+}
+
+.icon-zoom:before {
+    content: "\e93b";
+}
+
+.icon-Vector-12:before {
+    content: "\e932";
+}
+
+.icon-close1:before {
+    content: "\e931";
+}
+
+.icon-d1:before {
+    content: "\e930";
+}
+
+.icon-d:before {
+    content: "\e92f";
+}
+
+.icon-tree:before {
+    content: "\e92e";
+}
+
+.icon-Heart:before {
+    content: "\e92d";
+}
+
+.icon-graph:before {
+    content: "\e939";
+}
+
+.icon-calendar1:before {
+    content: "\e93a";
+}
+
+.icon-earth:before {
+    content: "\e93c";
+}
+
+.icon-arrow_down1:before {
+    content: "\e93d";
+}

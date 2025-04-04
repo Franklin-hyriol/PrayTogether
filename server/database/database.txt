@@ -1,0 +1,50 @@
+const mongoose = require("mongoose");
+
+const userSchema = new mongoose.Schema({
+  username: { type: String, required: false }, // Null si anonyme
+  isAnonymous: { type: Boolean, default: true }, // Connexion anonyme ou non
+  tempId: { type: String, unique: true, sparse: true }, // ID temporaire des anonymes
+  badges: { type: [String], default: [] }, // Liste des badges gagnés
+  showBadges: { type: Boolean, default: false }, // L'utilisateur choisit d'afficher ou non ses badges
+  totalPrayersReceived: { type: Number, default: 0 }, // Nombre total de prières reçues
+  totalUpvotesReceived: { type: Number, default: 0 }, // Nombre total d'upvotes reçus
+  totalPrayersMade: { type: Number, default: 0 }, // Nombre total de prières effectuées
+  isBenefactor: { type: Boolean, default: false }, // Indique si l'utilisateur a fait un don
+}, { timestamps: true });
+
+module.exports = mongoose.model("User", userSchema);
+
+
+
+
+const prayerRequestSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false }, // Null si anonyme
+  message: { type: String, required: true },
+  prayersReceived: { type: Number, default: 0 },
+  upvotes: { type: Number, default: 0 },
+  anonymousUpvotes: { type: Number, default: 0 }, // Upvotes anonymes stockés
+});
+
+module.exports = mongoose.model("PrayerRequest", prayerRequestSchema);
+
+
+
+
+const prayerSchema = new mongoose.Schema({
+  prayingUserId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false }, // Null si anonyme
+  targetUserId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false }, // Null si anonyme
+  prayerRequestId: { type: mongoose.Schema.Types.ObjectId, ref: "PrayerRequest", required: false },
+  createdAt: { type: Date, default: Date.now },
+});
+
+module.exports = mongoose.model("Prayer", prayerSchema);
+
+
+
+const donationSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // Qui a fait le don
+  amount: { type: Number, required: true }, // Montant du don
+  message: { type: String, default: "" }, // Message du donateur
+}, { timestamps: true });
+
+module.exports = mongoose.model("Donation", donationSchema);

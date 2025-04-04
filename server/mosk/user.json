@@ -1,0 +1,13 @@
+[
+    {
+        "username": "franklin",
+        "email": "franklin@example.com",
+        "password": "123456789",
+        "confirmPassword": "123456789",
+        "provider": "local"
+    },
+    {
+        "email": "franklin@example.com",
+        "password": "123456789"
+    }
+]

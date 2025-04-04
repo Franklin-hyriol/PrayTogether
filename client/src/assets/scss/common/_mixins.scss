@@ -1,0 +1,95 @@
+@mixin browserCss($prop, $value) {
+	-moz-#{$prop}: $value;
+	-ms-#{$prop}: $value;
+	-o-#{$prop}: $value;
+	-webkit-#{$prop}: $value;
+	#{$prop}: $value;
+}
+
+@mixin max($value) {
+	@media (max-width: $value) {
+		@content;
+	}
+}
+
+@mixin min($value) {
+	@media (min-width: $value) {
+		@content;
+	}
+}
+
+@mixin minMax($valueMin, $valueMax) {
+	@media (min-width: $valueMin) and (max-width: $valueMax) {
+		@content;
+	}
+}
+
+@mixin maxHW($valueh, $valuew) {
+	@media (max-height: $valueh) and (min-width: $valuew) {
+		@content;
+	}
+}
+
+@mixin maxHmaxW($valueh, $valuew) {
+	@media (max-height: $valueh) and (max-width: $valuew) {
+		@content;
+	}
+}
+
+@mixin maxHminmaxW($valueh, $valuew1, $valuew2) {
+	@media (max-height: $valueh) and (min-width: $valuew1) and (max-width: $valuew2) {
+		@content;
+	}
+}
+
+@mixin maxH($value) {
+	@media (max-height: $value) {
+		@content;
+	}
+}
+
+@mixin minH($value) {
+	@media (min-height: $value) {
+		@content;
+	}
+}
+
+@mixin minHminmaxW($value, $valuew1, $valuew2) {
+	@media (min-height: $value) and (min-width: $valuew1) and (max-width: $valuew2) {
+		@content;
+	}
+}
+
+@mixin centerMargin() {
+	margin-left: auto;
+	margin-right: auto;
+}
+
+@mixin v-center() {
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+@mixin h-center() {
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+@mixin flex-center($horizontal: center, $alignItems: center) {
+	display: flex;
+	justify-content: $horizontal;
+	align-items: $alignItems;
+}
+
+@mixin img-cover() {
+	object-fit: cover;
+	object-position: center;
+	height: 100%;
+	width: 100%;
+}
+
+@mixin animation-all() {
+	-webkit-transition: all ease .3s;
+	-ms-transition: all ease .3s;
+	transition: all ease .3s;
+}

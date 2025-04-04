@@ -1,0 +1,27 @@
+@import "../../assets/scss/common/utils";
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .header-image {
+        width: toRem(130px);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 23px;
+        font-weight: 500;
+        color: var(--text-color);
+
+        @include max($mobile) {
+            width: toRem(90px);
+        }
+    }
+
+
+    .user_container {
+        display: inline-flex;
+        gap: toRem(15px);
+    }
+}

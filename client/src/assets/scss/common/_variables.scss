@@ -1,0 +1,99 @@
+:root {
+	--primary-color: #00D5F2;
+	--secondary-color: #FFBF58;
+	--body-background-color: #ffffff;
+	--text-color: #17252A;
+	--white: #ffffff;
+	--border-color: #878787;
+	--input-border-color: #282828;
+	--input-placeholder-color: #ABABAB;
+
+	--error-color: #ff2c2c;
+
+	/*----------------------background---------------------*/
+	--header-bg-color: #def2f1;
+	--breadcrumb-bg-color: #fff3dbe6;
+
+
+	--transition: all 0.3s ease;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	/*----------------------global---------------------*/
+	//bouton primary
+	--btn-primary-bg-color: #311d64;
+	--btn-primary-border-color: #311d64;
+	--btn-primary-color: #ffffff;
+	//bouton primary hover
+	--btn-primary-bg-color-hover: #e53520;
+	--btn-primary-border-color-hover: #e53520;
+	--btn-primary-color-hover: #ffffff;
+
+	//bouton secondary
+	--btn-secondary-bg-color: #e53520;
+	--btn-secondary-border-color: #e53520;
+	--btn-secondary-color: #fff;
+	//bouton secondary hover
+	--btn-secondary-bg-color-hover: #311d64;
+	--btn-secondary-border-color-hover: #311d64;
+	--btn-secondary-color-hover: #fff;
+
+	//bouton outline
+	--btn-outline-bg-color: #fff;
+	--btn-outline-border-color: #311d64;
+	--btn-outline-color: #311d64;
+	//bouton outline hover
+	--btn-outline-bg-color-hover: #311d64;
+	--btn-outline-border-color-hover: #311d64;
+	--btn-outline-color-hover: #fff;
+
+
+	/*----------------------TABLE---------------------*/
+	--table-border-color: #1b1b1b;
+	--table-head-bg-color: #311d64;
+	--table-text-color: #fff;
+	--table-head-text-color: #fff;
+	--table-body-text-color: #333;
+	--table-cell-padding: 10px;
+	--table-secondary-row-bg-color: #f0f0f0;
+
+	//font 
+	--font-primary: "Poppins", sans-serif;
+
+	//card
+	--bg-card: #fff
+}
+
+body.dark-mode {
+	--primary-color: #ffffff;
+	--secondary-color: #000000;
+	--text-color: #ffffff;
+	--body-background-color: #000000;
+	--white: #1b1b1b;
+
+	--border-color: #f5f5f5;
+	--input-border-color: #f5f5f5;
+	--input-placeholder-color: #ABABAB;
+}
+
+
+//container
+$container: 1296px;

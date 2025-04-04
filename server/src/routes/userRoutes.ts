@@ -1,0 +1,86 @@
+import express from 'express';
+import { createUser, getAllUsers, getConnectedUser, loginUser, getUserById, getResetPasswordToken, deleteUser } from '../controllers/userController';
+import { checkSchema } from 'express-validator';
+import { CreateUserValidationSchema } from '../middlewares/Validation/userValidation/CreateUserValidationSchema';
+import { LoginUserValidationSchema } from '../middlewares/Validation/userValidation/LoginUserValidationSchema';
+import authenticateJWT from '../middlewares/authMiddlewares/authenticateJWT';
+import checkAdmin from '../middlewares/authorisationMiddleware/checkAdmin';
+// import { UpdateUserValidationSchema } from '../middlewares/Validation/userValidation/UpdateUserValidationSchema';
+// import checkUpdatePermissions from '../middlewares/authorisationMiddleware/checkUpdatePermissions';
+// import { updateUserPasswordValidationSchema } from '../middlewares/Validation/userValidation/updateUserPasswordValidationSchema';
+import { getResetPasswordTokenValidationSchema } from '../middlewares/Validation/userValidation/getResetPasswordTokenValidationSchema';
+import checkUsersByIdOrAdmin from '../middlewares/authorisationMiddleware/checkUsersByIdOrAdmin';
+// import { resetUserPasswordValidationSchema } from '../middlewares/Validation/userValidation/resetUserPasswordValidationSchema';
+// import checkUsersByIdOrAdmin from '../middlewares/authorisationMiddleware/checkUsersByIdOrAdmin';
+
+// Crée une instance du routeur Express
+const router = express.Router();
+
+// Route pour créer un utilisateur
+router.post('/register', checkSchema(CreateUserValidationSchema), createUser);
+
+// Route pour renvoyer l'email de vérification
+// router.post('/resend-verification', checkSchema(getResetPasswordTokenValidationSchema), verifyUserEmail);
+
+// Route pour se connecter avec des identifiants locaux
+router.post('/login', checkSchema(LoginUserValidationSchema), loginUser);
+
+// Route pour obtenir le profil de l'utilisateur connecté
+router.get('/me', authenticateJWT, getConnectedUser);
+
+// // Route pour obtenir tous les utilisateurs
+router.get('/getallusers', authenticateJWT, checkAdmin, getAllUsers);
+
+
+// Route pour obtenir un token de reset de mot de passe
+router.post('/reset-password-token', checkSchema(getResetPasswordTokenValidationSchema), getResetPasswordToken);
+
+// // Route pour renvoyer l'email de réinitialisation de mot de passe
+// // router.post('/auth/resend-reset-password', checkSchema(getResetPasswordTokenValidationSchema), verifyUserEmail);
+
+// // Route pour reinitialiser le mot de passe
+// router.post('/reset-password', checkSchema(resetUserPasswordValidationSchema), resetUserPassword);
+
+// // Route pour vérifier l'email d'un utilisateur
+// router.post('/verify-email/:token', verifyUserEmail);
+
+// Route pour obtenir un utilisateur avec son ID
+router.get('/:id', authenticateJWT, getUserById);
+
+// //Route pour mettre a jour un utilisateur
+// router.patch('/:id', authenticateJWT, checkSchema(UpdateUserValidationSchema), checkUpdatePermissions, updateUser);
+
+// Route pour supprimer un utilisateur
+router.delete('/:id', authenticateJWT, checkUsersByIdOrAdmin, deleteUser);
+
+// // Route pour modifier le mot de passe d'un utilisateur
+// router.patch('/:id/password', authenticateJWT, checkSchema(updateUserPasswordValidationSchema), checkUsersByIdOrAdmin, updateUserPassword);
+
+
+
+// Route pour se connecter avec Google
+// router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+// // Route de callback pour Google
+// router.get('/google/callback', passport.authenticate('google', { session: false }), (req, res) => {
+//     // Générer un JWT et le renvoyer au client
+//     const token = jwt.sign({ id: req.user.id }, 'your_jwt_secret'); // Remplace par ta clé secrète
+//     res.json({ token });
+// });
+
+// // Route pour se connecter avec Facebook (ajoute la stratégie Facebook de manière similaire à Google)
+// router.get('/facebook', passport.authenticate('facebook', { scope: ['email'] }));
+
+// // Route de callback pour Facebook
+// router.get('/facebook/callback', passport.authenticate('facebook', { session: false }), (req, res) => {
+//     const token = jwt.sign({ id: req.user.id }, 'your_jwt_secret'); // Remplace par ta clé secrète
+//     res.json({ token });
+// });
+
+// // Route protégée
+// router.get('/protected', passport.authenticate('jwt', { session: false }), (req, res) => {
+//     res.json({ message: 'Protected route accessed!', user: req.user });
+// });
+
+// Exporte le routeur configuré
+export default router;

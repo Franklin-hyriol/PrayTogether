@@ -1,0 +1,17 @@
+@import "../../assets/scss/common/utils";
+
+
+.footer-single {
+    padding: 0 30px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+
+    .paragraph {
+        margin: 0 auto;
+    }
+
+    @include max($mobile) {
+        padding: 0 16px;
+    }
+}
