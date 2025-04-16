@@ -9,7 +9,9 @@ import crypto from 'crypto';
 // import { sendEmail } from '../utils/sendEmail';
 import IUser from '../interfaces/UserInterface';
 import mongoose from 'mongoose';
-
+import dotenv from 'dotenv';
+import { JWT_SECRET, REFRESH_TOKEN_SECRET } from '../config/Env';
+dotenv.config();
 
 // Créer un nouvel utilisateur
 export const createUser = async (req: Request, res: Response): Promise<void> => {
@@ -61,9 +63,34 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
                 {
                     id: newUser.id,
                 },
-                process.env.JWT_SECRET as string,
-                { expiresIn: "10d" }
+                JWT_SECRET as string,
+                { expiresIn: "2m" }
             )
+
+
+        // generate refresh token
+        const refreshToken = jwt.sign(
+            { id: newUser.id },
+            REFRESH_TOKEN_SECRET as string,
+            { expiresIn: "7d" }
+        );
+
+        // save refresh token in cookie
+        // res.cookie("refresh_token", refreshToken, {
+        //     httpOnly: true,
+        //     secure: process.env.NODE_ENV === "production",
+        //     path: "/refresh-token",
+        //     sameSite: "strict",
+        //     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 jours
+        // });
+
+        res.cookie("refresh_token", refreshToken, {
+            httpOnly: false, // ❌ TEMPORAIREMENT désactiver HttpOnly pour voir/manipuler le cookie dans Postman
+            secure: false, // ✅ false en local (si tu n'utilises pas HTTPS)
+            path: "/", // ✅ mettre un chemin plus général pour qu'il soit envoyé sur toutes les routes
+            sameSite: "lax", // ✅ plus permissif pour les tests (strict bloque parfois même en local)
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 jours
+        });
 
         // Répondre avec l'utilisateur créé
         res.status(201).json({
@@ -166,9 +193,34 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
                 {
                     id: userExists.id,
                 },
-                process.env.JWT_SECRET as string,
-                { expiresIn: "10d" }
+                JWT_SECRET as string,
+                { expiresIn: "2m" }
             )
+
+
+        // generate refresh token
+        const refreshToken = jwt.sign(
+            { id: userExists.id },
+            REFRESH_TOKEN_SECRET as string,
+            { expiresIn: "7d" }
+        );
+
+        // save refresh token in cookie
+        // res.cookie("refresh_token", refreshToken, {
+        //     httpOnly: true,
+        //     secure: process.env.NODE_ENV === "production",
+        //     path: "/refresh-token",
+        //     sameSite: "strict",
+        //     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 jours
+        // });
+
+        res.cookie("refresh_token", refreshToken, {
+            httpOnly: false, // ❌ TEMPORAIREMENT désactiver HttpOnly pour voir/manipuler le cookie dans Postman
+            secure: false, // ✅ false en local (si tu n'utilises pas HTTPS)
+            path: "/", // ✅ mettre un chemin plus général pour qu'il soit envoyé sur toutes les routes
+            sameSite: "lax", // ✅ plus permissif pour les tests (strict bloque parfois même en local)
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 jours
+        });
 
 
         res.status(200).json({
@@ -212,6 +264,73 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
         }
     }
 };
+
+
+//refresh token
+export const refreshAccessToken = (req: Request, res: Response): void => {
+    const token = req.cookies.refresh_token;
+
+    if (!token) {
+        res.status(401).json({
+            status: 401,
+            message: "Refresh token not found",
+            error: [{
+                type: "cookie",
+                value: null,
+                msg: "Refresh token not found",
+                path: "refresh_token",
+                location: "cookies"
+            }]
+        });
+        return;
+    }
+
+    try {
+        const decoded = jwt.verify(
+            token,
+            REFRESH_TOKEN_SECRET as string
+        ) as { id: string };
+
+        const newAccessToken = jwt.sign(
+            { id: decoded.id },
+            JWT_SECRET as string,
+            { expiresIn: "2m" }
+        );
+
+        res.status(200).json({
+            status: 200,
+            message: "Access token refreshed successfully",
+            data: {
+                accessToken: "Bearer " + newAccessToken
+            }
+        });
+
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(403).json({
+                status: 403,
+                message: "Invalid or expired refresh token",
+                error: [{
+                    type: "cookie",
+                    value: token,
+                    msg: "Invalid or expired refresh token",
+                    path: "refresh_token",
+                    location: "cookies"
+                }]
+            });
+        } else {
+            res.status(500).json({
+                status: 500,
+                message: "Internal server error",
+                error: {
+                    message: "Unknown error occurred",
+                    stack: ""
+                }
+            });
+        }
+    }
+};
+
 
 
 // Méthode pour Obtenir le profil de l'utilisateur connecté

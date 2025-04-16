@@ -4,11 +4,13 @@ import { Strategy as LocalStrategy } from 'passport-local';
 import bcrypt from 'bcrypt';
 import User from '../models/User'; // Assure-toi que ce chemin est correct
 import dotenv from 'dotenv';
+import { JWT_SECRET } from './Env';
 dotenv.config();
 
 const jwtOptions = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: process.env.JWT_SECRET as string
+    secretOrKey: JWT_SECRET as string,
+    ignoreExpiration: false,
 };
 
 

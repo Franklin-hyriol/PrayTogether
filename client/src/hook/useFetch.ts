@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import Cookies from "js-cookie";
-import { ApiError } from "@/Interface/Error"; // ✅ import de ton type
+import { ApiError } from "@/Interface/Error";
 
 export interface UseFetchResult<T> {
     isLoading: boolean;
@@ -26,7 +26,7 @@ export default function useFetch<T>(url: string, authentication?: boolean): UseF
 
             if (authentication) {
                 const accessToken = Cookies.get('accessToken');
-                headers['Authorization'] = accessToken ? `Bearer ${accessToken}` : '';
+                headers['Authorization'] = accessToken ? `${accessToken}` : '';
             }
 
             const res = await fetch(url, {

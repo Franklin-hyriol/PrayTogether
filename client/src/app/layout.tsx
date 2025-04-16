@@ -1,7 +1,8 @@
+
+
 import type { Metadata, Viewport } from "next";
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
-import { UserProvider } from "@/context/UserContext";
 
 
 export const metadata: Metadata = {
@@ -33,14 +34,14 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+
   return (
     <html lang="fr">
       <body className="">
-        <UserProvider>
-          <Header />
-          {children}
-          <Footer />
-        </UserProvider>
+        <Header />
+        {children}
+        <Footer />
       </body>
     </html>
   );

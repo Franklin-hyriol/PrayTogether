@@ -24,7 +24,6 @@ import Cookies from 'js-cookie';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Link from "next/link";
-import { useUser } from "@/context/UserContext";
 
 
 function Page() {
@@ -32,8 +31,6 @@ function Page() {
     const [showPassword, setShowPassword] = useState(false);
     const { isLoading, error, postData } = usePost<LoginResponse>(process.env.NEXT_PUBLIC_ENDPOINT_BASE_URL + '/api/v1/users/login');
     const [rememberMe, setRememberMe] = useState(false);
-
-    const { setUser } = useUser();
 
 
     const router = useRouter();
@@ -80,7 +77,7 @@ function Page() {
                 path: '/'
             });
 
-            setUser(result.data.user);
+            console.log(result.data.user);
 
             toast.success("Connexion réussie !");
 

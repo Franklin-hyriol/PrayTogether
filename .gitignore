@@ -11,3 +11,4 @@ client/dist/*
 client/package-lock.json
 
 server/dist/*
+.vscode/*
