@@ -1,18 +1,26 @@
-@import "../common/utils";
+@use "./breackpoint" as *;
+@use "./mixins" as *;
+@use "./toRem" as *;
+@use "../common/1920px" as *;
 
 $container: toRem(1320px);
 
 html,
 body {
-	font-family: var(--font-primary);
 	background-color: var(--body-background-color);
 	min-height: 98vh;
 	font-weight: 400;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	font-family: var(--font-primary);
 }
 
 body main {
 	position: relative;
 	z-index: 0;
+	padding: $apx-32;
+	min-height: calc(99vh - $apx-78 - $apx-40);
 
 	section {
 		position: relative;
@@ -55,7 +63,7 @@ body.body-overlay {
 }
 
 ::selection {
-	color: var(--text-color);
+	color: var(--white);
 	background: var(--primary-color);
 }
 
@@ -78,23 +86,6 @@ body.body-overlay {
 ::-webkit-scrollbar-thumb:hover {
 	background: #555;
 	cursor: grab;
-}
-
-
-.header-container {
-	padding: 0 toRem(30px);
-	height: toRem(90px);
-
-	position: sticky;
-	top: 0;
-	box-shadow: 0px 3.76px 9.39px 0px #0000001A;
-	z-index: 100;
-	background-color: var(--body-background-color);
-
-	@include max($mobile) {
-		height: toRem(60px);
-		padding: 0 toRem(16px);
-	}
 }
 
 picture {
@@ -133,26 +124,11 @@ picture {
 	}
 }
 
-p,
 .paragraph {
-	font-size: toRem(16px);
-	line-height: toRem(24px);
+	font-size: $apx-18;
 	color: var(--text-color);
-
-
-	&:not(:last-child) {
-		margin-bottom: toRem(24px);
-	}
-
-	@include max($mobile-max) {
-		font-size: toRem(14px);
-		line-height: toRem(19.6px);
-	}
-
-	// @include max($tablet-portrait-min) {
-	// 	font-size: toRem(16px);
-	// 	line-height: toRem(22px);
-	// }
+	margin-bottom: $apx-32;
+	line-height: 1.6;
 }
 
 h1,
@@ -167,19 +143,16 @@ h6,
 .title-h4,
 .title-h5,
 .title-h1 {
-	font-weight: 500;
+	font-weight: 700;
 }
 
 
 h1,
 .title-h1 {
-	font-size: toRem(31px);
-	line-height: toRem(46.5px);
-
-	@include max($mobile) {
-		font-size: toRem(24px);
-		line-height: toRem(36px);
-	}
+	font-size: $apx-48;
+	color: var(--title-color);
+	margin-bottom: $apx-24;
+	line-height: 1.2;
 }
 
 // h2,

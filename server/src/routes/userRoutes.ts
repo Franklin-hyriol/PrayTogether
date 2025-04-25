@@ -1,5 +1,5 @@
 import express from 'express';
-import { createUser, getAllUsers, getConnectedUser, loginUser, getUserById, getResetPasswordToken, deleteUser } from '../controllers/userController';
+import { createUser, getAllUsers, getConnectedUser, loginUser, getUserById, getResetPasswordToken, deleteUser, refreshAccessToken, logoutUser } from '../controllers/userController';
 import { checkSchema } from 'express-validator';
 import { CreateUserValidationSchema } from '../middlewares/Validation/userValidation/CreateUserValidationSchema';
 import { LoginUserValidationSchema } from '../middlewares/Validation/userValidation/LoginUserValidationSchema';
@@ -24,6 +24,14 @@ router.post('/register', checkSchema(CreateUserValidationSchema), createUser);
 
 // Route pour se connecter avec des identifiants locaux
 router.post('/login', checkSchema(LoginUserValidationSchema), loginUser);
+
+
+// Route pour deconnexion
+router.post('/logout', authenticateJWT, logoutUser);
+
+
+//Route pour refresh le token
+router.get('/refresh-token', refreshAccessToken);
 
 // Route pour obtenir le profil de l'utilisateur connecté
 router.get('/me', authenticateJWT, getConnectedUser);

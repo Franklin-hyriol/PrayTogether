@@ -6,39 +6,54 @@ import passport from '../../config/passport';
 const authenticateJWT = (req: Request, res: Response, next: NextFunction) => {
     passport.authenticate('jwt', { session: false }, (err: Error | null, user: JwtPayload | false, info: any) => {
         if (err) {
-            return next(err);
-        }
-
-        if (!user) {
-            // Vérifier si l'erreur est liée à l'absence de token
-            if (info && info.message === 'No auth token') {
-                return res.status(401).json({
-                    error: [
-                        {
-                            type: "unauthorized",
-                            msg: "No authentication token provided.",
-                            location: "headers"
-                        }
-                    ]
-                });
-            }
-
-            // Si l'utilisateur n'est pas authentifié, renvoyer un message d'erreur personnalisé
-            return res.status(401).json({
-                error: [
-                    {
-                        type: "unauthorized",
-                        msg: "You need to provide valid credentials to access this resource",
-                        location: "headers"
-                    }
-                ]
+            return res.status(500).json({
+                status: 500,
+                message: 'Internal server error',
+                error: {
+                    message: err.message,
+                    stack: err.stack
+                }
             });
         }
 
-        req.user = user; // Assigner l'utilisateur à la requête pour les prochaines étapes
+        if (!user) {
+            if (info?.message === 'No auth token') {
+                return res.status(401).json({
+                    status: 401,
+                    message: 'No authentication token provided',
+                    error: {
+                        type: 'unauthorized',
+                        location: 'headers'
+                    }
+                });
+            }
+
+            if (info?.name === 'TokenExpiredError') {
+                return res.status(401).json({
+                    status: 401,
+                    message: 'Your access token has expired. Please refresh your token.',
+                    error: {
+                        type: 'unauthorized',
+                        location: 'headers'
+                    }
+                });
+            }
+
+            return res.status(401).json({
+                status: 401,
+                message: 'You need to provide valid credentials to access this resource',
+                error: {
+                    type: 'unauthorized',
+                    location: 'headers'
+                }
+            });
+        }
+
+        req.user = user;
         next();
     })(req, res, next);
 };
+
 
 
 export default authenticateJWT;

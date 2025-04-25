@@ -1,12 +1,13 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import { MONGO_URI } from './Env';
 
 dotenv.config();
 
 // Connexion à MongoDB
 const connectDB = async () => {
     try {
-        await mongoose.connect(process.env.MONGO_URI as string, {
+        await mongoose.connect(MONGO_URI as string, {
             serverSelectionTimeoutMS: 5000,
             socketTimeoutMS: 45000
         });

@@ -1,4 +1,4 @@
-import "../assets/scss/global.scss";
+import "./globals.scss";
 import "../assets/scss/pages/not-found.scss";
 import Link from 'next/link';
 
@@ -32,9 +32,9 @@ function notFound() {
                                 </svg>
 
                             </picture>
-                            <h1 className="title-404">Page non trouvée</h1>
-                            <p className="paragraph">Oups ! La page que vous recherchez n&#39;existe pas ou a été déplacée.</p>
-                            <Link href="/" className="btn btn-primary" aria-label="Retour à l&#39;accueil">Retour à l&#39;accueil</Link>
+                            <h1 className="title-404">Page not found</h1>
+                            <p className="paragraph">Oops ! The page you are looking for does not exist or has been moved.</p>
+                            <Link href="/" className="btn btn-primary" aria-label="Return to home page">Return to home page</Link>
                         </div>
                     </div>
                 </section>
