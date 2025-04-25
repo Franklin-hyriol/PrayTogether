@@ -1,4 +1,6 @@
-@import "../common/utils";
+@use "../common/breackpoint" as *;
+@use "../common/mixins" as *;
+@use "../common/toRem" as *;
 
 .not-found {
     height: calc(100vh - 130px);

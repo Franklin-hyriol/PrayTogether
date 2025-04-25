@@ -1,48 +1,26 @@
 
-
-import type { Metadata, Viewport } from "next";
-import Header from "@/components/Header/Header";
-import Footer from "@/components/Footer/Footer";
-
+import { AuthProvider } from "@/context/AuthContext";
+import "./globals.scss";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Pray Together",
-  description: "let's pray together",
-  generator: "Next.js",
-  manifest: "/manifest.json",
-  keywords: ["Pray Together", "praytogether", "pray", "together"],
-  authors: [
-    {
-      name: "Franklin Hyriol",
-      url: "https://mg.linkedin.com/in/franklin-hyriol-razafinandrasana-4b9a71217",
-    },
-  ],
-  icons: [
-    { rel: "apple-touch-icon", url: "icons/128x128.svg" },
-    { rel: "icon", url: "icons/128x128.svg" },
-  ],
+    title: "Page not found | Pray Together",
+    description: "Page not found",
 };
 
-export const viewport: Viewport = {
-  width: "device-width", // Définit la largeur du viewport
-  initialScale: 1,      // Échelle initiale
-  themeColor: "#000000", // Couleur du thème
-};
 
 export default function RootLayout({
-  children,
+    children,
 }: Readonly<{
-  children: React.ReactNode;
+    children: React.ReactNode;
 }>) {
-
-
-  return (
-    <html lang="fr">
-      <body className="">
-        <Header />
-        {children}
-        <Footer />
-      </body>
-    </html>
-  );
+    return (
+        <html lang="en">
+            <body>
+                <AuthProvider>
+                    {children}
+                </AuthProvider>
+            </body>
+        </html>
+    );
 }

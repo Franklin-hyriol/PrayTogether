@@ -12,5 +12,11 @@ export const LoginUserValidationSchema = {
         notEmpty: {
             errorMessage: 'Password cannot be empty.'
         },
+    },
+    rememberMe: {
+        optional: true,
+        isBoolean: {
+            errorMessage: 'Remember me must be a boolean value.'
+        }
     }
 }

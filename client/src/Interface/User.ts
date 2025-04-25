@@ -1,14 +1,10 @@
 export interface User {
-    _id: string;
-    email: string;
+    id: string;
     username: string;
-    role: string;
-    isAnonymous: boolean;
+    email: string;
     profilePhoto: string;
-    badges: string[];
-    showBadges: string[];
-    totalPrayersReceived: number;
-    totalUpvotesReceived: number;
-    totalPrayersMade: number;
+    role: string;
+    provider: string;
     isBenefactor: boolean;
+    badges: string[];
 }

@@ -10,7 +10,10 @@ import crypto from 'crypto';
 import IUser from '../interfaces/UserInterface';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import { JWT_SECRET, REFRESH_TOKEN_SECRET } from '../config/Env';
+import { ACCESS_TOKEN_EXPIRATION_TIME, JWT_SECRET, REFRESH_TOKEN_EXPIRATION_TIME, REFRESH_TOKEN_SECRET } from '../config/Env';
+import { toMs } from '../utils/toMs';
+import { StringValue } from 'ms';
+import { serializeUser } from '../helpers/serializeUser';
 dotenv.config();
 
 // Créer un nouvel utilisateur
@@ -52,28 +55,26 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
         const newUser = new User({
             email,
             username,
-            password: hashedPassword
+            password: hashedPassword,
+            role: email.toLowerCase() === 'franklinrazafy@gmail.com' ? 'admin' : 'user'
         });
 
-        // Enregistrer l'utilisateur dans la base de données
-        await newUser.save();
 
-        const accessToken = jwt
-            .sign(
-                {
-                    id: newUser.id,
-                },
-                JWT_SECRET as string,
-                { expiresIn: "2m" }
-            )
-
+        const accessToken = jwt.sign(
+            {
+                id: newUser.id,
+                expiresIn: ACCESS_TOKEN_EXPIRATION_TIME as string
+            },
+            JWT_SECRET as string
+        )
 
         // generate refresh token
         const refreshToken = jwt.sign(
-            { id: newUser.id },
-            REFRESH_TOKEN_SECRET as string,
-            { expiresIn: "7d" }
-        );
+            {
+                id: newUser.id
+            },
+            REFRESH_TOKEN_SECRET as string
+        )
 
         // save refresh token in cookie
         // res.cookie("refresh_token", refreshToken, {
@@ -86,27 +87,22 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
 
         res.cookie("refresh_token", refreshToken, {
             httpOnly: false, // ❌ TEMPORAIREMENT désactiver HttpOnly pour voir/manipuler le cookie dans Postman
-            secure: false, // ✅ false en local (si tu n'utilises pas HTTPS)
+            secure: true, // ✅ false en local (si tu n'utilises pas HTTPS)
             path: "/", // ✅ mettre un chemin plus général pour qu'il soit envoyé sur toutes les routes
-            sameSite: "lax", // ✅ plus permissif pour les tests (strict bloque parfois même en local)
-            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 jours
+            sameSite: "none", // ✅ plus permissif pour les tests (strict bloque parfois même en local)
         });
+
+
+        newUser.refreshToken = refreshToken
+        // Enregistrer l'utilisateur dans la base de données
+        await newUser.save();
 
         // Répondre avec l'utilisateur créé
         res.status(201).json({
             status: 201,
             message: 'User created successfully',
             data: {
-                user: {
-                    id: newUser._id,
-                    username: newUser.username,
-                    email: newUser.email,
-                    role: newUser.role,
-                    isAnonymous: newUser.isAnonymous,
-                    tempId: newUser.tempId,
-                    provider: newUser.provider,
-                    profilePhoto: newUser.profilePhoto
-                },
+                user: serializeUser(newUser),
                 accessToken: "Bearer " + accessToken
             }
         });
@@ -146,23 +142,25 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     if (!validation.isEmpty()) {
         res.status(400).json({
             status: 400,
-            message: "Bad request",
+            message: "Server-side validation error. Please check and try again.",
             errors: validation.array()
         });
         return;
     }
 
-    const { email, password } = req.body;
+    const { email, password, rememberMe } = req.body;
+
+
     try {
         const userExists = await User.findOne({ email: email });
         if (!userExists) {
             res.status(404).json({
                 status: 404,
-                message: "User not found",
+                message: `The user ${email} was not found. Please check your email address.`,
                 error: [{
                     type: "field",
                     value: email,
-                    msg: "User not found",
+                    msg: `The user ${email} was not found. Please check your email address.`,
                     path: "email",
                     location: "body"
                 }]
@@ -175,11 +173,11 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
         if (!passwordMatch) {
             res.status(401).json({
                 status: 401,
-                message: "Invalid password",
+                message: "The passwords do not match. Please check and try again.",
                 error: [{
                     type: "field",
                     value: password,
-                    msg: "Invalid password",
+                    msg: "The passwords do not match. Please check and try again.",
                     path: "password",
                     location: "body"
                 }]
@@ -187,22 +185,24 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        // generate access token
-        const accessToken = jwt
-            .sign(
-                {
-                    id: userExists.id,
-                },
-                JWT_SECRET as string,
-                { expiresIn: "2m" }
-            )
-
+        // Generate access token
+        const accessToken = jwt.sign(
+            {
+                id: userExists.id,
+                expiresIn: ACCESS_TOKEN_EXPIRATION_TIME as string
+            },
+            JWT_SECRET as string
+        )
 
         // generate refresh token
+        const jwtOptions: jwt.SignOptions | undefined = rememberMe
+            ? { expiresIn: REFRESH_TOKEN_EXPIRATION_TIME as StringValue }
+            : undefined;
+
         const refreshToken = jwt.sign(
             { id: userExists.id },
             REFRESH_TOKEN_SECRET as string,
-            { expiresIn: "7d" }
+            jwtOptions
         );
 
         // save refresh token in cookie
@@ -216,27 +216,26 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
 
         res.cookie("refresh_token", refreshToken, {
             httpOnly: false, // ❌ TEMPORAIREMENT désactiver HttpOnly pour voir/manipuler le cookie dans Postman
-            secure: false, // ✅ false en local (si tu n'utilises pas HTTPS)
+            secure: true, // ✅ false en local (si tu n'utilises pas HTTPS)
             path: "/", // ✅ mettre un chemin plus général pour qu'il soit envoyé sur toutes les routes
-            sameSite: "lax", // ✅ plus permissif pour les tests (strict bloque parfois même en local)
-            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 jours
+            sameSite: "none", // ✅ plus permissif pour les tests (strict bloque parfois même en local)
+            ...(rememberMe
+                ? { maxAge: toMs(REFRESH_TOKEN_EXPIRATION_TIME as StringValue) }
+                : {}),
         });
+
+
+        await User.updateOne(
+            { _id: userExists.id },
+            { $set: { refreshToken } }
+        );
 
 
         res.status(200).json({
             status: 200,
             message: 'User logged in successfully',
             data: {
-                user: {
-                    id: userExists._id,
-                    username: userExists.username,
-                    email: userExists.email,
-                    role: userExists.role,
-                    isAnonymous: userExists.isAnonymous,
-                    tempId: userExists.tempId,
-                    provider: userExists.provider,
-                    profilePhoto: userExists.profilePhoto
-                },
+                user: serializeUser(userExists),
                 accessToken: "Bearer " + accessToken
             }
         });
@@ -266,8 +265,71 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
 };
 
 
+export const logoutUser = async (req: Request, res: Response): Promise<void> => {
+    // L'utilisateur est déjà attaché à la requête via un middleware (par exemple, via JWT)
+    const user = req.user as IUser;
+
+    if (!user) {
+        res.status(401).json({
+            status: 401,
+            message: "User not authenticated",
+            error: [{
+                type: "authentication",
+                msg: "User not authenticated",
+                location: "user",
+            }]
+        });
+        return;
+    }
+
+    try {
+        // Trouver l'utilisateur dans la base de données
+        const existingUser = await User.findById(user.id);
+        if (!existingUser) {
+            res.status(404).json({
+                status: 404,
+                message: "User not found",
+                error: [{
+                    type: "user",
+                    msg: "User not found in the database",
+                    location: "user",
+                }]
+            });
+            return;
+        }
+
+        // Supprimer le refresh token de l'utilisateur dans la base de données
+        existingUser.refreshToken = null;
+        await existingUser.save();
+
+        // Supprimer le refresh token du cookie (en utilisant une cookie avec le flag HttpOnly)
+        res.clearCookie('refresh_token', {
+            httpOnly: false, // ❌ TEMPORAIREMENT désactiver HttpOnly pour voir/manipuler le cookie dans Postman
+            secure: true, // ✅ false en local (si tu n'utilises pas HTTPS)
+            path: "/", // ✅ mettre un chemin plus général pour qu'il soit envoyé sur toutes les routes
+            sameSite: "none", // ✅ plus permissif pour les tests (strict bloque parfois même en local)
+        });
+
+        res.status(200).json({
+            status: 200,
+            message: "Successfully logged out",
+            data: {
+                message: "Successfully logged out"
+            }
+        });
+    } catch (error) {
+        console.error("Error during logout:", error);
+        res.status(500).json({
+            status: 500,
+            message: "Internal server error",
+            error: error instanceof Error ? error.message : "Unknown error"
+        });
+    }
+};
+
+
 //refresh token
-export const refreshAccessToken = (req: Request, res: Response): void => {
+export const refreshAccessToken = async (req: Request, res: Response): Promise<void> => {
     const token = req.cookies.refresh_token;
 
     if (!token) {
@@ -286,15 +348,39 @@ export const refreshAccessToken = (req: Request, res: Response): void => {
     }
 
     try {
+        // Décoder le refresh token pour obtenir l'ID de l'utilisateur
         const decoded = jwt.verify(
             token,
             REFRESH_TOKEN_SECRET as string
         ) as { id: string };
 
+        // Trouver l'utilisateur avec l'ID extrait du token
+        const user = await User.findById(decoded.id);
+
+
+        if (!user || user.refreshToken !== token) {
+            // Si aucun utilisateur trouvé ou si le refresh token ne correspond pas
+            res.status(401).json({
+                status: 401,
+                message: "Invalid refresh token",
+                error: [{
+                    type: "cookie",
+                    value: token,
+                    msg: "Invalid refresh token",
+                    path: "refresh_token",
+                    location: "cookies"
+                }]
+            });
+            return;
+        }
+
+        // Créer un nouveau access token
         const newAccessToken = jwt.sign(
-            { id: decoded.id },
-            JWT_SECRET as string,
-            { expiresIn: "2m" }
+            {
+                id: decoded.id,
+                expiresIn: ACCESS_TOKEN_EXPIRATION_TIME as string
+            },
+            JWT_SECRET as string
         );
 
         res.status(200).json({
@@ -303,7 +389,8 @@ export const refreshAccessToken = (req: Request, res: Response): void => {
             data: {
                 accessToken: "Bearer " + newAccessToken
             }
-        });
+        }
+        );
 
     } catch (error: unknown) {
         if (error instanceof Error) {
@@ -353,8 +440,8 @@ export const getConnectedUser = async (req: Request, res: Response): Promise<voi
         }
 
         const foundUser = await User.findById(user._id)
-            .select('_id email username role isAnonymous tempId profilePhoto badges showBadges totalPrayersReceived totalUpvotesReceived totalPrayersMade isBenefactor')
-            .lean(); // Convertit en objet JS pour permettre des modifications
+            .select('_id email username role profilePhoto badges showBadges totalPrayersReceived totalHeartsReceived totalPrayersMade isBenefactor')
+            .lean();
 
 
         if (!foundUser) {
@@ -406,8 +493,9 @@ export const getAllUsers = async (req: Request, res: Response): Promise<void> =>
     try {
         // Récupération des utilisateurs sans exposer le mot de passe
         const users = await User.find()
-            .select('_id email username role isAnonymous tempId profilePhoto badges showBadges totalPrayersReceived totalUpvotesReceived totalPrayersMade isBenefactor')
+            .select('_id email username role profilePhoto badges showBadges totalPrayersReceived totalHeartsReceived totalPrayersMade isBenefactor password_reset_token password_reset_expires')
             .lean();
+
 
         if (!users || users.length === 0) {
             res.status(404).json({
@@ -561,9 +649,20 @@ export const getUserById = async (req: Request, res: Response): Promise<void> =>
 
     try {
         // Recherche de l'utilisateur par son _id
-        const user = await User.findById(userId, {
-            _id: 1, email: 1, username: 1, role: 1, isAnonymous: 1, tempId: 1, profilePhoto: 1, badges: 1, showBadges: 1, totalPrayersReceived: 1, totalUpvotesReceived: 1, totalPrayersMade: 1, isBenefactor: 1
-        });
+        const user = await User.findById(userId)
+            .select([
+                '_id',
+                'email',
+                'username',
+                'role',
+                'profilePhoto',
+                'badges',
+                'showBadges',
+                'totalPrayersReceived',
+                'totalHeartsReceived', // Remplacé totalUpvotesReceived par totalHeartsReceived
+                'totalPrayersMade',
+                'isBenefactor'
+            ]).lean();
 
         // Si l'utilisateur n'est pas trouvé
         if (!user) {

@@ -2,20 +2,19 @@ import { Document } from "mongoose";
 
 export default interface IUser extends Document {
     email: string;
-    username?: string; // Null si anonyme
+    username: string;
     password: string;
     role: string;
-    isAnonymous: boolean; // Connexion anonyme ou non
-    tempId?: string; // ID temporaire des anonymes (unique mais optionnel)
     provider: string; // "local" ou "google"
-    googleId?: string; // ID Google pour les utilisateurs connectés via Google (unique)
-    profilePhoto?: string; // URL de la photo de profil pour les utilisateurs connectés via Google
-    badges: string[]; // Liste des badges gagnés
-    showBadges: string[]; // Liste des badges que l'utilisateur choisit d'afficher sur son profil
-    totalPrayersReceived: number; // Nombre total de prières reçues
-    totalUpvotesReceived: number; // Nombre total d'upvotes reçus
-    totalPrayersMade: number; // Nombre total de prières effectuées
-    isBenefactor: boolean; // Indique si l'utilisateur a fait un don
-    password_reset_token: string | null; // Token de réinitialisation de mot de passe  
-    password_reset_expires: Date | null; // Date d'expiration du token
+    googleId?: string;
+    profilePhoto?: string;
+    badges: string[];
+    showBadges: string[];
+    totalPrayersReceived: number;
+    totalHeartsReceived: number; // 💖 Nombre total de "j'aime"
+    totalPrayersMade: number;
+    isBenefactor: boolean;
+    password_reset_token: string | null;
+    password_reset_expires: Date | null;
+    refreshToken: string | null;
 }

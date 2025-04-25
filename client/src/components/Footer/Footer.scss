@@ -1,17 +1,26 @@
-@import "../../assets/scss/common/utils";
+@use "../../assets/scss/common/1920px" as *;
 
 
 .footer-single {
-    padding: 0 30px;
-    height: 40px;
+    height: $apx-40;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+
+    background: var(--header-background-color);
+    backdrop-filter: blur($apx-10);
+    padding: $apx-24;
+    text-align: center;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
 
     .paragraph {
-        margin: 0 auto;
+        text-align: center;
+        color: var(--text-color);
+        font-size: $apx-16;
+        margin-bottom: 0;
     }
 
-    @include max($mobile) {
-        padding: 0 16px;
+    a {
+        text-decoration: underline;
     }
 }

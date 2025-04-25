@@ -1,6 +1,6 @@
-import { useState, useCallback } from 'react';
+import { useAuth } from '@/context/AuthContext';
 import { ApiError } from '@/Interface/Error';
-import Cookies from 'js-cookie';
+import { useState, useCallback } from 'react';
 
 interface UsePostResult<T> {
     isLoading: boolean;
@@ -13,6 +13,7 @@ export default function usePost<T>(url: string, authentication?: boolean): UsePo
     const [isLoading, setIsLoading] = useState(false);
     const [response, setResponse] = useState<T | null>(null);
     const [error, setError] = useState<ApiError | null>(null);
+    const { accessToken } = useAuth();
 
     const postData = useCallback(async (data: unknown): Promise<T | null> => {
         setIsLoading(true);
@@ -26,9 +27,9 @@ export default function usePost<T>(url: string, authentication?: boolean): UsePo
                 'Accept': 'application/json',
             };
 
-            if (authentication) {
-                const accessToken = Cookies.get('accessToken');  // Récupère le token du cookie
-                headers['Authorization'] = accessToken ? `${accessToken}` : '';
+            // Si authentification est requise et qu'on a un accessToken
+            if (authentication && accessToken) {
+                headers['Authorization'] = accessToken;
             }
 
             // Effectuer la requête POST avec les en-têtes et les données
@@ -36,6 +37,7 @@ export default function usePost<T>(url: string, authentication?: boolean): UsePo
                 method: 'POST',
                 headers,
                 body: JSON.stringify(data),
+                credentials: 'include',
             });
 
             if (!res.ok) {
@@ -45,7 +47,7 @@ export default function usePost<T>(url: string, authentication?: boolean): UsePo
                     message: errorData.message || "Une erreur est survenue.",
                     error: errorData.error || [],
                 });
-                return null; // Retourne `null` en cas d'erreur
+                return null;
 
             } else {
                 const responseData: T = await res.json();
@@ -63,7 +65,7 @@ export default function usePost<T>(url: string, authentication?: boolean): UsePo
         } finally {
             setIsLoading(false);
         }
-    }, [url, authentication]);
+    }, [url, authentication, accessToken]);
 
     return { isLoading, response, error, postData };
 }
