@@ -72,7 +72,10 @@ function Register() {
         }
     };
 
-
+    const googleAuth = () => {
+        const url = `${process.env.NEXT_PUBLIC_ENDPOINT_BASE_URL}/api/v1/users/google`;
+        window.open(url, "_self");
+    };
 
     return (
 
@@ -129,7 +132,7 @@ function Register() {
                         <span>or</span>
                     </div>
 
-                    <button type="button" className="google-button">
+                    <button type="button" className="google-button" onClick={googleAuth}>
                         <Image src="/logo/google.ico" alt="Google" width={20} height={20} />
                         Sign up with Google
                     </button>

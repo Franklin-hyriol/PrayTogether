@@ -1,7 +1,66 @@
+"use client"
 import Link from "next/link";
 import "./reset-password.scss";
+import { z } from "zod";
+import { useRouter, useSearchParams } from "next/navigation";
+import usePost from "@/hook/usePost";
+import { Data } from "@/Interface/Data";
+import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { toast, ToastContainer } from "react-toastify";
+import Icon from "@/components/Icomoon/Icomoon";
+
+
+const resetPasswordSchema = z.object({
+    password: z.string().min(8, { message: "Password must be at least 8 characters long" }).nonempty({ message: "Password cannot be empty" }),
+    confirmPassword: z.string().min(8, { message: "Passwords do not match" }).nonempty({ message: "Password cannot be empty" }),
+    token: z.string().nonempty({ message: "Token cannot be empty" }),
+});
+
+type IResetPassword = z.infer<typeof resetPasswordSchema>;
+
 
 function ResetPassword() {
+
+    const params = useSearchParams()
+    const { isLoading, error, postData } = usePost<Data<{ message: string }>>(process.env.NEXT_PUBLIC_ENDPOINT_BASE_URL + '/api/v1/users/reset-password');
+
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const router = useRouter();
+
+    const defaultValues = {
+        password: "",
+        confirmPassword: "",
+        token: params.get("token") || ""
+    };
+
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors, isValid },
+        trigger
+    } = useForm<IResetPassword>({
+        resolver: zodResolver(resetPasswordSchema),
+        defaultValues,
+        mode: "onChange",
+    });
+
+    const onSubmit = async (data: IResetPassword) => {
+        const result = await postData(data);
+
+        if (result?.status === 200) {
+            toast.success("Password update succesful");
+            reset();
+        }
+
+        setTimeout(() => {
+            router.push('/login');
+        }, 2000);
+    };
+
     return (
         <section className="reset-password">
             <div className="reset-password-card">
@@ -10,36 +69,33 @@ function ResetPassword() {
                     <p>Enter and confirm your new password</p>
                 </div>
 
-                <form className="reset-password-form" id="resetPasswordForm">
-                    <div className="server-error visible">
-                        Password reset failed. Please try again.
+                <form className="reset-password-form" id="resetPasswordForm" onSubmit={handleSubmit(onSubmit)}>
+                    <div className={`server-error ${error ? "visible" : ""}`}>
+                        {error?.message}
                     </div>
 
-                    <div className="input-group">
-                        <input
-                            type="password"
-                            name="newPassword"
-                            placeholder="New password"
-                            required
-                        />
-                        <div className="error-message">
-                            Password must be at least 8 characters long
+                    <label className="input-group">
+                        <div className="passwordContainer">
+                            <input type={showPassword ? "text" : "password"} placeholder="Password" {...register("password")} onBlur={() => trigger("password")} className={errors.password?.message ? "error" : ""} maxLength={255} />
+                            <button type="button" className="eyeButton" onClick={() => setShowPassword(!showPassword)}>
+                                {showPassword ? <Icon className="eye" aria-label="afficher le mot de passe" icon='eye-open' size={22} color='var(--primary-color)' /> : <Icon className="eye" aria-label="cacher le mot de passe" icon='eye-closed' size={22} color='var(--primary-color)' />}
+                            </button>
                         </div>
-                    </div>
+                        {errors.password?.message && <div className="error-message">{errors.password?.message}</div>}
+                    </label>
 
-                    <div className="input-group">
-                        <input
-                            type="password"
-                            name="confirmPassword"
-                            placeholder="Confirm new password"
-                            required
-                        />
-                        <div className="error-message">
-                            Passwords do not match
+
+                    <label className="input-group">
+                        <div className="passwordContainer">
+                            <input type={showConfirmPassword ? "text" : "password"} placeholder="Confirm Password" {...register("confirmPassword")} onBlur={() => trigger("confirmPassword")} className={errors.confirmPassword?.message ? "error" : ""} maxLength={255} />
+                            <button type="button" className="eyeButton" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                                {showConfirmPassword ? <Icon className="eye" aria-label="afficher le mot de passe" icon='eye-open' size={22} color='var(--primary-color)' /> : <Icon className="eye" aria-label="cacher le mot de passe" icon='eye-closed' size={22} color='var(--primary-color)' />}
+                            </button>
                         </div>
-                    </div>
+                        {errors.confirmPassword?.message && <div className="error-message">{errors.confirmPassword?.message}</div>}
+                    </label>
 
-                    <button type="submit" className="reset-button">
+                    <button type="submit" className="reset-button" disabled={!isValid || isLoading}>
                         <span className="button-text">Reset password</span>
                         <div className="loader"></div>
                     </button>
@@ -50,6 +106,7 @@ function ResetPassword() {
                     </div>
                 </form>
             </div>
+            <ToastContainer position="top-right" autoClose={5000} />
         </section>
     )
 }

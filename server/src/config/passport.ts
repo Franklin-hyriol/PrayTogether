@@ -1,10 +1,11 @@
 import passport from 'passport';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import { Strategy as LocalStrategy } from 'passport-local';
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import bcrypt from 'bcrypt';
 import User from '../models/User'; // Assure-toi que ce chemin est correct
 import dotenv from 'dotenv';
-import { JWT_SECRET } from './Env';
+import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, JWT_SECRET } from './Env';
 dotenv.config();
 
 const jwtOptions = {
@@ -51,52 +52,16 @@ passport.use(new JwtStrategy(jwtOptions, async (jwtPayload, done) => {
 
 
 // // Configuration de la stratégie Google
-// passport.use(new GoogleStrategy({
-//     clientID: 'YOUR_GOOGLE_CLIENT_ID',
-//     clientSecret: 'YOUR_GOOGLE_CLIENT_SECRET',
-//     callbackURL: '/auth/google/callback'
-// }, async (accessToken, refreshToken, profile, done) => {
-//     try {
-//         const user = await User.findOne({ where: { oauth_uid: profile.id, oauth_provider: 'google' } });
-//         if (user) {
-//             return done(null, user);
-//         } else {
-//             const newUser = await User.create({
-//                 username: profile.displayName,
-//                 email: profile.emails[0].value,
-//                 oauth_provider: 'google',
-//                 oauth_uid: profile.id
-//             });
-//             return done(null, newUser);
-//         }
-//     } catch (err) {
-//         return done(err);
-//     }
-// }));
-
-// // Configuration de la stratégie Facebook
-// passport.use(new FacebookStrategy({
-//     clientID: 'YOUR_FACEBOOK_APP_ID',
-//     clientSecret: 'YOUR_FACEBOOK_APP_SECRET',
-//     callbackURL: '/auth/facebook/callback',
-//     profileFields: ['id', 'displayName', 'email']
-// }, async (accessToken, refreshToken, profile, done) => {
-//     try {
-//         const user = await User.findOne({ where: { oauth_uid: profile.id, oauth_provider: 'facebook' } });
-//         if (user) {
-//             return done(null, user);
-//         } else {
-//             const newUser = await User.create({
-//                 username: profile.displayName,
-//                 email: profile.emails[0].value,
-//                 oauth_provider: 'facebook',
-//                 oauth_uid: profile.id
-//             });
-//             return done(null, newUser);
-//         }
-//     } catch (err) {
-//         return done(err);
-//     }
-// }));
+passport.use(new GoogleStrategy({
+    clientID: GOOGLE_CLIENT_ID as string,
+    clientSecret: GOOGLE_CLIENT_SECRET as string,
+    callbackURL: '/api/v1/users/google/callback'
+}, async (accessToken, refreshToken, profile, done) => {
+    try {
+        done(null, profile);
+    } catch (err) {
+        return done(err);
+    }
+}));
 
 export default passport;

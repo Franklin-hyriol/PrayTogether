@@ -1,5 +1,5 @@
 import express from 'express';
-import { createUser, getAllUsers, getConnectedUser, loginUser, getUserById, getResetPasswordToken, deleteUser, refreshAccessToken, logoutUser } from '../controllers/userController';
+import { createUser, getAllUsers, getConnectedUser, loginUser, getUserById, getResetPasswordToken, deleteUser, refreshAccessToken, logoutUser, resetUserPassword, GoogleAuth } from '../controllers/userController';
 import { checkSchema } from 'express-validator';
 import { CreateUserValidationSchema } from '../middlewares/Validation/userValidation/CreateUserValidationSchema';
 import { LoginUserValidationSchema } from '../middlewares/Validation/userValidation/LoginUserValidationSchema';
@@ -10,6 +10,9 @@ import checkAdmin from '../middlewares/authorisationMiddleware/checkAdmin';
 // import { updateUserPasswordValidationSchema } from '../middlewares/Validation/userValidation/updateUserPasswordValidationSchema';
 import { getResetPasswordTokenValidationSchema } from '../middlewares/Validation/userValidation/getResetPasswordTokenValidationSchema';
 import checkUsersByIdOrAdmin from '../middlewares/authorisationMiddleware/checkUsersByIdOrAdmin';
+import { resetUserPasswordValidationSchema } from '../middlewares/Validation/userValidation/resetUserPasswordValidationSchema';
+import passport from '../config/passport';
+import { NEXT_PUBLIC_ENDPOINT_BASE_URL } from '../config/Env';
 // import { resetUserPasswordValidationSchema } from '../middlewares/Validation/userValidation/resetUserPasswordValidationSchema';
 // import checkUsersByIdOrAdmin from '../middlewares/authorisationMiddleware/checkUsersByIdOrAdmin';
 
@@ -19,12 +22,8 @@ const router = express.Router();
 // Route pour créer un utilisateur
 router.post('/register', checkSchema(CreateUserValidationSchema), createUser);
 
-// Route pour renvoyer l'email de vérification
-// router.post('/resend-verification', checkSchema(getResetPasswordTokenValidationSchema), verifyUserEmail);
-
 // Route pour se connecter avec des identifiants locaux
 router.post('/login', checkSchema(LoginUserValidationSchema), loginUser);
-
 
 // Route pour deconnexion
 router.post('/logout', authenticateJWT, logoutUser);
@@ -43,14 +42,16 @@ router.get('/getallusers', authenticateJWT, checkAdmin, getAllUsers);
 // Route pour obtenir un token de reset de mot de passe
 router.post('/reset-password-token', checkSchema(getResetPasswordTokenValidationSchema), getResetPasswordToken);
 
-// // Route pour renvoyer l'email de réinitialisation de mot de passe
-// // router.post('/auth/resend-reset-password', checkSchema(getResetPasswordTokenValidationSchema), verifyUserEmail);
 
 // // Route pour reinitialiser le mot de passe
-// router.post('/reset-password', checkSchema(resetUserPasswordValidationSchema), resetUserPassword);
+router.post('/reset-password', checkSchema(resetUserPasswordValidationSchema), resetUserPassword);
 
 // // Route pour vérifier l'email d'un utilisateur
 // router.post('/verify-email/:token', verifyUserEmail);
+
+// Route pour se connecter avec Google
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
 
 // Route pour obtenir un utilisateur avec son ID
 router.get('/:id', authenticateJWT, getUserById);
@@ -65,16 +66,8 @@ router.delete('/:id', authenticateJWT, checkUsersByIdOrAdmin, deleteUser);
 // router.patch('/:id/password', authenticateJWT, checkSchema(updateUserPasswordValidationSchema), checkUsersByIdOrAdmin, updateUserPassword);
 
 
-
-// Route pour se connecter avec Google
-// router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-
 // // Route de callback pour Google
-// router.get('/google/callback', passport.authenticate('google', { session: false }), (req, res) => {
-//     // Générer un JWT et le renvoyer au client
-//     const token = jwt.sign({ id: req.user.id }, 'your_jwt_secret'); // Remplace par ta clé secrète
-//     res.json({ token });
-// });
+router.get('/google/callback', passport.authenticate('google', { session: false, }), GoogleAuth);
 
 // // Route pour se connecter avec Facebook (ajoute la stratégie Facebook de manière similaire à Google)
 // router.get('/facebook', passport.authenticate('facebook', { scope: ['email'] }));

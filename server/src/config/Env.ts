@@ -9,3 +9,6 @@ export const NODE_ENV = process.env.NODE_ENV;
 export const PORT = process.env.PORT;
 export const ACCESS_TOKEN_EXPIRATION_TIME = process.env.ACCESS_TOKEN_EXPIRATION_TIME;
 export const REFRESH_TOKEN_EXPIRATION_TIME = process.env.REFRESH_TOKEN_EXPIRATION_TIME;
+export const NEXT_PUBLIC_ENDPOINT_BASE_URL = process.env.NEXT_PUBLIC_ENDPOINT_BASE_URL;
+export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+export const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;

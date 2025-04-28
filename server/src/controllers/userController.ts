@@ -10,10 +10,11 @@ import crypto from 'crypto';
 import IUser from '../interfaces/UserInterface';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import { ACCESS_TOKEN_EXPIRATION_TIME, JWT_SECRET, REFRESH_TOKEN_EXPIRATION_TIME, REFRESH_TOKEN_SECRET } from '../config/Env';
+import { ACCESS_TOKEN_EXPIRATION_TIME, JWT_SECRET, NEXT_PUBLIC_ENDPOINT_BASE_URL, REFRESH_TOKEN_EXPIRATION_TIME, REFRESH_TOKEN_SECRET } from '../config/Env';
 import { toMs } from '../utils/toMs';
 import { StringValue } from 'ms';
 import { serializeUser } from '../helpers/serializeUser';
+import GoogleProfile from '../interfaces/GoogleProfile';
 dotenv.config();
 
 // Créer un nouvel utilisateur
@@ -150,7 +151,6 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
 
     const { email, password, rememberMe } = req.body;
 
-
     try {
         const userExists = await User.findOne({ email: email });
         if (!userExists) {
@@ -168,33 +168,49 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        // Verify password
+        // Vérifier le mot de passe
         const passwordMatch = await bcrypt.compare(password, userExists.password);
+
         if (!passwordMatch) {
-            res.status(401).json({
-                status: 401,
-                message: "The passwords do not match. Please check and try again.",
-                error: [{
-                    type: "field",
-                    value: password,
-                    msg: "The passwords do not match. Please check and try again.",
-                    path: "password",
-                    location: "body"
-                }]
-            });
+            // 👉 Cas spécial : utilisateur Google
+            if (userExists.provider === "google") {
+                res.status(403).json({
+                    status: 403,
+                    message: "You signed up with Google. Please log in with Google and update your password from your profile settings.",
+                    error: [{
+                        type: "field",
+                        value: email,
+                        msg: "You signed up with Google. Please log in with Google and update your password from your profile settings.",
+                        path: "password",
+                        location: "body"
+                    }]
+                });
+            } else {
+                // Cas normal : mauvais mot de passe classique
+                res.status(401).json({
+                    status: 401,
+                    message: "The passwords do not match. Please check and try again.",
+                    error: [{
+                        type: "field",
+                        value: password,
+                        msg: "The passwords do not match. Please check and try again.",
+                        path: "password",
+                        location: "body"
+                    }]
+                });
+            }
             return;
         }
 
-        // Generate access token
+        // Générer access token
         const accessToken = jwt.sign(
             {
                 id: userExists.id,
                 expiresIn: ACCESS_TOKEN_EXPIRATION_TIME as string
             },
             JWT_SECRET as string
-        )
+        );
 
-        // generate refresh token
         const jwtOptions: jwt.SignOptions | undefined = rememberMe
             ? { expiresIn: REFRESH_TOKEN_EXPIRATION_TIME as StringValue }
             : undefined;
@@ -205,31 +221,20 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
             jwtOptions
         );
 
-        // save refresh token in cookie
-        // res.cookie("refresh_token", refreshToken, {
-        //     httpOnly: true,
-        //     secure: process.env.NODE_ENV === "production",
-        //     path: "/refresh-token",
-        //     sameSite: "strict",
-        //     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 jours
-        // });
-
         res.cookie("refresh_token", refreshToken, {
-            httpOnly: false, // ❌ TEMPORAIREMENT désactiver HttpOnly pour voir/manipuler le cookie dans Postman
-            secure: true, // ✅ false en local (si tu n'utilises pas HTTPS)
-            path: "/", // ✅ mettre un chemin plus général pour qu'il soit envoyé sur toutes les routes
-            sameSite: "none", // ✅ plus permissif pour les tests (strict bloque parfois même en local)
+            httpOnly: false,
+            secure: true,
+            path: "/",
+            sameSite: "none",
             ...(rememberMe
                 ? { maxAge: toMs(REFRESH_TOKEN_EXPIRATION_TIME as StringValue) }
                 : {}),
         });
 
-
         await User.updateOne(
             { _id: userExists.id },
             { $set: { refreshToken } }
         );
-
 
         res.status(200).json({
             status: 200,
@@ -240,6 +245,92 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
             }
         });
 
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(500).json({
+                status: 500,
+                message: 'Internal server error',
+                error: {
+                    message: error.message,
+                    stack: error.stack
+                }
+            });
+        } else {
+            res.status(500).json({
+                status: 500,
+                message: 'Internal server error',
+                error: {
+                    message: 'Unknown error occurred',
+                    stack: ''
+                }
+            });
+        }
+    }
+};
+
+
+
+export const GoogleAuth = async (req: Request, res: Response): Promise<void> => {
+    const profile = req.user as GoogleProfile;
+
+    if (!profile || !profile.emails || profile.emails.length === 0) {
+        res.status(400).json({
+            status: 400,
+            message: "Bad request",
+            errors: [{
+                type: "field",
+                value: profile,
+                msg: "Email not provided by Google",
+                path: "email",
+                location: "body"
+            }]
+        });
+        return;
+    }
+
+    const email = profile.emails[0].value;
+    const username = profile.displayName;
+    const avatar = profile.photos?.[0]?.value ?? null;
+
+    try {
+        let user = await User.findOne({ email: email });
+
+        if (!user) {
+            // Création du nouvel utilisateur
+            user = new User({
+                email: email,
+                username: username,
+                password: await bcrypt.hash(Math.random().toString(36).slice(-8), 10),
+                role: email.toLowerCase() === 'franklinrazafy@gmail.com' ? 'admin' : 'user',
+                provider: 'google',
+                googleId: profile.id,
+                profilePhoto: avatar
+            });
+
+            await user.save();
+        }
+
+        const refreshToken = jwt.sign(
+            {
+                id: user.id
+            },
+            REFRESH_TOKEN_SECRET as string
+        );
+
+
+        await User.updateOne(
+            { _id: user.id },
+            { $set: { refreshToken } }
+        );
+
+        res.cookie("refresh_token", refreshToken, {
+            httpOnly: false, // ❌ TEMPORAIREMENT désactiver HttpOnly pour voir/manipuler le cookie dans Postman
+            secure: true, // ✅ false en local (si tu n'utilises pas HTTPS)
+            path: "/", // ✅ mettre un chemin plus général pour qu'il soit envoyé sur toutes les routes
+            sameSite: "none", // ✅ plus permissif pour les tests (strict bloque parfois même en local)
+        });
+
+        res.redirect(NEXT_PUBLIC_ENDPOINT_BASE_URL as string);
 
     } catch (error: unknown) {
         if (error instanceof Error) {
@@ -419,7 +510,6 @@ export const refreshAccessToken = async (req: Request, res: Response): Promise<v
 };
 
 
-
 // Méthode pour Obtenir le profil de l'utilisateur connecté
 export const getConnectedUser = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -549,7 +639,11 @@ export const getAllUsers = async (req: Request, res: Response): Promise<void> =>
 export const getResetPasswordToken = async (req: Request, res: Response): Promise<void> => {
     const validation = validationResult(req);
     if (!validation.isEmpty()) {
-        res.status(400).json({ errors: validation.array() });
+        res.status(400).json({
+            status: 400,
+            message: "Server-side validation error. Please check and try again.",
+            errors: validation.array()
+        });
         return;
     }
 
@@ -562,11 +656,11 @@ export const getResetPasswordToken = async (req: Request, res: Response): Promis
         if (!user) {
             res.status(404).json({
                 status: 404,
-                message: "User not found",
+                message: `The user ${email} was not found. Please check your email address.`,
                 error: [{
                     type: "field",
                     value: email,
-                    msg: "User not found",
+                    msg: `The user ${email} was not found. Please check your email address.`,
                     path: "email",
                     location: "body"
                 }]
@@ -592,18 +686,20 @@ export const getResetPasswordToken = async (req: Request, res: Response): Promis
         await user.save();
 
         // Génère le lien de réinitialisation
-        const resetLink = `${req.protocol}://${req.get('host')}/reset-password/${resetToken}`;
+        const resetLink = `${NEXT_PUBLIC_ENDPOINT_BASE_URL}/reset-password/?token=${resetToken}`;
+
+        console.log(resetLink);
 
         // Retourne le lien pour la réinitialisation
         res.status(200).json({
             status: 200,
             message: 'Password reset link generated successfully.',
             data: {
-                resetLink: resetLink
+                message: 'Password reset link generated successfully.',
             }
         });
 
-    } catch (error) {
+    } catch (error: unknown) {
         if (error instanceof Error) {
             res.status(500).json({
                 status: 500,
@@ -877,73 +973,94 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
 // }
 
 // // Méthode pour reinitialiser le mot de passe
-// export const resetUserPassword = async (req: Request, res: Response): Promise<void> => {
-//     const validation = validationResult(req);
-//     if (!validation.isEmpty()) {
-//         res.status(400).json({ errors: validation.array() });
-//         return;
-//     }
+export const resetUserPassword = async (req: Request, res: Response): Promise<void> => {
+    const validation = validationResult(req);
+    if (!validation.isEmpty()) {
+        res.status(400).json({
+            status: 400,
+            message: "Server-side validation error. Please check and try again.",
+            errors: validation.array()
+        });
+        return;
+    }
 
-//     const { token_reset, password_hash, password_hash_valid } = req.body;
+    const { token, password, confirm_password } = req.body;
 
-//     try {
-//         // Recherche l'utilisateur par le token de réinitialisation
-//         const user = await User.findOne({ where: { password_reset_token: token_reset } });
+    try {
+        // Recherche l'utilisateur par le token de réinitialisation
+        const user = await User.findOne({ where: { password_reset_token: token } });
 
-//         if (!user) {
-//             res.status(400).json({ error: 'Invalid or expired token.' });
-//             return;
-//         }
+        if (!user) {
+            res.status(404).json({
+                status: 404,
+                message: "Invalid or expired password reset token. Please request a new one.",
+                error: [{
+                    type: "field",
+                    value: token,
+                    msg: "Invalid or expired password reset token. Please request a new one.",
+                    path: "token",
+                    location: "body"
+                }]
+            });
+            return;
+        }
 
-//         // Vérifie que les mots de passe correspondent
-//         if (password_hash !== password_hash_valid) {
-//             res.status(400).json({ error: 'Passwords do not match.' });
-//             return;
-//         }
+        // Vérifie que les mots de passe correspondent
+        if (password !== confirm_password) {
+            res.status(400).json({
+                status: 400,
+                message: "The passwords do not match. Please check and try again.",
+                error: [{
+                    type: "field",
+                    value: password,
+                    msg: "The passwords do not match. Please check and try again.",
+                    path: "password",
+                    location: "body"
+                }]
+            });
+            return;
+        }
 
-//         // Hash le nouveau mot de passe
-//         const hashedPassword = await bcrypt.hash(password_hash, 10);
+        // Hash le nouveau mot de passe
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-//         // Met à jour le mot de passe de l'utilisateur
-//         user.password_hash = hashedPassword;
+        // Met à jour le mot de passe de l'utilisateur
+        user.password = hashedPassword;
 
-//         // Supprime le token de réinitialisation
-//         user.password_reset_token = null;
-//         user.password_reset_expires = null;
+        // Supprime le token de réinitialisation
+        user.password_reset_token = null;
+        user.password_reset_expires = null;
 
-//         // Sauvegarde l'utilisateur
-//         await user.save();
+        // Sauvegarde l'utilisateur
+        await user.save();
 
-//         res.status(200).json({ message: 'Password updated successfully.' });
-//     } catch (error) {
-//         res.status(500).json({ error: 'An error occurred while updating the password.' });
-//     }
-// };
-
-
-
-
-// // Methode pour verifier l'email d'un utilisateur
-// export const verifyUserEmail = async (req: Request, res: Response): Promise<void> => {
-//     const token = req.params.token; // Récupération du token depuis l'URL
-
-//     try {
-//         // Rechercher l'utilisateur correspondant au token
-//         const user = await User.findOne({ where: { verification_token: token } });
-
-//         if (!user) {
-//             res.status(400).json({ message: 'Invalid or expired token' });
-//             return;
-//         }
-
-//         // Marquer l'utilisateur comme vérifié
-//         user.email_verified = true;
-//         user.verification_token = null; // Supprimer le token après vérification
-//         await user.save();
-
-//         res.status(200).json({ message: 'Email verified successfully' });
-//     } catch (error) {
-//         res.status(500).json({ message: 'Internal server error', error: error });
-//     }
-// }
+        res.status(200).json({
+            status: 200,
+            message: 'Password updated successfully.',
+            data: {
+                message: "Password updated successfully."
+            }
+        });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(500).json({
+                status: 500,
+                message: 'Internal server error',
+                error: {
+                    message: error.message,
+                    stack: error.stack
+                }
+            });
+        } else {
+            res.status(500).json({
+                status: 500,
+                message: 'Internal server error',
+                error: {
+                    message: 'Unknown error occurred',
+                    stack: ''
+                }
+            });
+        }
+    }
+};
 

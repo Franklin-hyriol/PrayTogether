@@ -1,15 +1,15 @@
 export const resetUserPasswordValidationSchema = {
-    token_reset: {
+    token: {
         notEmpty: {
             errorMessage: 'Old password cannot be empty.'
         },
     },
-    password_hash: {
+    password: {
         notEmpty: {
             errorMessage: 'Password cannot be empty.'
         },
     },
-    password_hash_valid: {
+    confirm_password: {
         notEmpty: {
             errorMessage: 'Password cannot be empty.'
         },
