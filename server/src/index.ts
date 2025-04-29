@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import { PORT } from './config/Env';
 import http from 'http';  // Importer http pour créer le serveur
 import { Server } from 'socket.io';  // Importer socket.io
+import prayerRoutes from './routes/prayerRoutes';
 // import jwt from 'jsonwebtoken';  // Pour vérifier le token d'accès
 
 const app = express();
@@ -32,6 +33,7 @@ app.use(cors({
 
 // Utilisation des routes définies dans userRoutes
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/prayer', prayerRoutes);
 
 // Créer le serveur HTTP pour utiliser avec socket.io
 const server = http.createServer(app);

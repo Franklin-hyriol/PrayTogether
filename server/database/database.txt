@@ -31,8 +31,8 @@ module.exports = mongoose.model("PrayerRequest", prayerRequestSchema);
 
 
 const prayerSchema = new mongoose.Schema({
-  prayingUserId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false }, // Null si anonyme
-  targetUserId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false }, // Null si anonyme
+  prayingUserId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, 
+  targetUserId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // Null si anonyme
   prayerRequestId: { type: mongoose.Schema.Types.ObjectId, ref: "PrayerRequest", required: false },
   createdAt: { type: Date, default: Date.now },
 });
