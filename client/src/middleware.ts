@@ -3,12 +3,23 @@ import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
     const token = request.cookies.get('refresh_token');
+    const { pathname } = request.nextUrl;
 
-    if (request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/register') || request.nextUrl.pathname.startsWith('/forgot-password')) {
+    if (
+        pathname.startsWith('/login') ||
+        pathname.startsWith('/register') ||
+        pathname.startsWith('/forgot-password')
+    ) {
         if (token?.value) {
             return NextResponse.redirect(new URL('/', request.url));
         }
     }
 
-    return;
+    if (pathname === '/prayer-room' && !token?.value) {
+        const loginUrl = new URL('/login', request.url);
+        loginUrl.searchParams.set('redirect', '/prayer-room');
+        return NextResponse.redirect(loginUrl);
+    }
+
+    return NextResponse.next();
 }

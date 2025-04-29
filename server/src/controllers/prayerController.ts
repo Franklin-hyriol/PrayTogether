@@ -110,12 +110,53 @@ export const getAllPrayers = async (req: Request, res: Response): Promise<void> 
 }
 
 
+export const getPeopleWhoPrayed = async (req: Request, res: Response): Promise<void> => {
+    const prayerId = req.params.id;
+
+    try {
+        const prayer = await PrayerRequest.findById(prayerId).populate('prayedBy', 'username profilePhoto');
+
+        if (!prayer) {
+            res.status(404).json({
+                status: 404,
+                message: "Prayer not found.",
+                data: []
+            });
+            return;
+        }
+
+        res.status(200).json({
+            status: 200,
+            message: "People who prayed fetched successfully.",
+            data: prayer.prayedBy
+        });
+
+    } catch (error) {
+        const defaultError = {
+            type: "server",
+            value: "",
+            msg: error instanceof Error ? error.message : "Unknown error occurred",
+            path: "server",
+            location: "internal"
+        };
+
+        res.status(500).json({
+            status: 500,
+            message: "Internal server error",
+            error: [defaultError]
+        });
+    }
+};
+
+
 export const getMyPrayers = async (req: Request, res: Response): Promise<void> => {
     try {
         const user = req.user as IUser;
 
         // Récupération des prières de l'utilisateur depuis la base de données
-        const prayers = await PrayerRequest.find({ authorId: user._id });
+        const prayers = await PrayerRequest.find({ authorId: user._id })
+            .populate('authorId', 'username profilePhoto')
+            .exec();
 
         if (!prayers || prayers.length === 0) {
             res.status(404).json({

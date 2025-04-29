@@ -3,7 +3,7 @@ import authenticateJWT from '../middlewares/authMiddlewares/authenticateJWT';
 import checkAdmin from '../middlewares/authorisationMiddleware/checkAdmin';
 import { checkSchema } from 'express-validator';
 import { createPrayerValidationSchema } from '../middlewares/Validation/prayerRequest/createPrayerValidation';
-import { createPrayer, deletePrayer, getAllPrayers, getMyPrayers, getPrayerById, likeThisPrayer, prayForPrayer, updatePrayer } from '../controllers/prayerController';
+import { createPrayer, deletePrayer, getAllPrayers, getMyPrayers, getPeopleWhoPrayed, getPrayerById, likeThisPrayer, prayForPrayer, updatePrayer } from '../controllers/prayerController';
 import checkOwnerOrAdmin from '../middlewares/authorisationMiddleware/checkOwnerOrAdmin';
 
 const router = express.Router();
@@ -16,6 +16,9 @@ router.get('/', authenticateJWT, getAllPrayers);
 
 // 📖 Récupérer les prières de l'utilisateur connecté
 router.get('/my', authenticateJWT, getMyPrayers);
+
+// 🙋‍♂️ Récupérer les personnes qui ont prié pour une prière
+router.get('/:id/prayed-by', authenticateJWT, checkOwnerOrAdmin, getPeopleWhoPrayed);
 
 // 📖 Récupérer une prière spécifique par ID
 router.get('/:id', authenticateJWT, getPrayerById);

@@ -35,7 +35,7 @@ async function checkOwnerOrAdmin(req: Request, res: Response, next: NextFunction
             message: 'Forbidden: Access denied.',
             error: [{
                 type: 'forbidden',
-                msg: 'You do not have permission to modify or delete this prayer.',
+                msg: 'You do not have permission to view, modify or delete this element.',
                 path: 'params.id',
                 location: 'body'
             }]

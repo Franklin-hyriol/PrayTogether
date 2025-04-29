@@ -13,6 +13,7 @@ import usePost from "@/hook/usePost";
 import { Data } from "@/Interface/Data";
 import { LoginSignData } from "@/Interface/LoginSignData";
 import { toast, ToastContainer } from "react-toastify";
+import { googleAuthEndpoint, registerUserEndpoint } from "@/endpoint/User";
 
 
 const signupSchema = z.object({
@@ -37,7 +38,7 @@ function Register() {
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const { isLoading, error, postData } = usePost<Data<LoginSignData>>(process.env.NEXT_PUBLIC_ENDPOINT_BASE_URL + '/api/v1/users/register');
+    const { isLoading, error, postData } = usePost<Data<LoginSignData>>(registerUserEndpoint);
 
     const router = useRouter();
     const { setUser, setAccessToken } = useAuth();
@@ -73,7 +74,7 @@ function Register() {
     };
 
     const googleAuth = () => {
-        const url = `${process.env.NEXT_PUBLIC_ENDPOINT_BASE_URL}/api/v1/users/google`;
+        const url = googleAuthEndpoint;
         window.open(url, "_self");
     };
 

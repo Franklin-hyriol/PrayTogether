@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Data } from "@/Interface/Data";
 import usePost from "@/hook/usePost";
 import { toast, ToastContainer } from "react-toastify";
+import { getResetPasswordTokenEndpoint } from "@/endpoint/User";
 
 
 const forgotPasswordSchema = z.object({
@@ -21,7 +22,7 @@ const defaultValues = {
 
 function ForgotPassword() {
 
-    const { isLoading, error, postData } = usePost<Data<{ message: string }>>(process.env.NEXT_PUBLIC_ENDPOINT_BASE_URL + '/api/v1/users/reset-password-token');
+    const { isLoading, error, postData } = usePost<Data<{ message: string }>>(getResetPasswordTokenEndpoint);
 
     const {
         register,

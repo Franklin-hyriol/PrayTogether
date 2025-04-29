@@ -2,14 +2,15 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import usePost from "./usePost";
 import { Data } from "@/Interface/Data";
+import { logoutUserEndpoint } from "@/endpoint/User";
 
 export const useLogout = () => {
     const { setUser, setAccessToken } = useAuth();
     const router = useRouter();
 
     const { isLoading, error, postData } = usePost<Data<{ message: string }>>(
-        `${process.env.NEXT_PUBLIC_ENDPOINT_BASE_URL}/api/v1/users/logout`,
-        true // Authentification requise
+        logoutUserEndpoint,
+        true
     );
 
     const logout = async () => {
