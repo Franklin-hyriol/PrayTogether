@@ -588,17 +588,13 @@ export const getAllUsers = async (req: Request, res: Response): Promise<void> =>
 
 
         if (!users || users.length === 0) {
-            res.status(404).json({
-                status: 404,
+            res.status(200).json({
+                status: 200,
                 message: 'No users found.',
-                error: [
-                    {
-                        type: "not_found",
-                        value: "No users found",
-                        msg: "There are no users available in the system.",
-                        location: "body"
-                    }
-                ]
+                data: {
+                    users: [],
+                    total: 0
+                }
             });
         }
 

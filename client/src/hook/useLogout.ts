@@ -1,30 +1,36 @@
 import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "next/navigation";
 import usePost from "./usePost";
 import { Data } from "@/Interface/Data";
 import { logoutUserEndpoint } from "@/endpoint/User";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
 export const useLogout = () => {
     const { setUser, setAccessToken } = useAuth();
+
+
+    const { postData } = usePost(true);
     const router = useRouter();
 
-    const { isLoading, error, postData } = usePost<Data<{ message: string }>>(
-        logoutUserEndpoint,
-        true
-    );
+    const logoutMutation = useMutation({
+        // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+        mutationFn: (data: {}) => postData<Data<{ message: string }>>(logoutUserEndpoint, data),
+        onSuccess: (response) => {
+            if (response.status === 200) {
+                setUser(null);
+                setAccessToken(null);
+                router.push('/');
+            }
+        }
+    });
 
     const logout = async () => {
-        const response = await postData({}); // ou {} si ton backend attend un body vide non-null
-        if (response) {
-            setUser(null);
-            setAccessToken(null);
-            router.push('/'); // redirige vers la page de connexion
-        }
+        logoutMutation.mutate({});
     };
 
     return {
         logout,
-        isLoading,
-        error,
+        isLoading: logoutMutation.isPending,
+        error: logoutMutation.error,
     };
 };

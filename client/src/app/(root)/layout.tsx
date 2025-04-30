@@ -4,6 +4,7 @@ import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
 import { baseMetadata } from "../metadata";
 import AuthLoader from "@/components/AuthLoader/AuthLoader";
+import QueryProvider from "@/components/QueryProvider/QueryProvider";
 
 export const metadata = baseMetadata;
 
@@ -21,12 +22,12 @@ export default function HomeLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <>
+    <QueryProvider>
       <AuthLoader>
         <Header />
         <main className="main">{children}</main>
         <Footer />
       </AuthLoader>
-    </>
+    </QueryProvider>
   );
 }

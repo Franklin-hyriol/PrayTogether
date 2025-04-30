@@ -14,6 +14,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { googleAuthEndpoint, loginUserEndpoint } from "@/endpoint/User";
+import { useMutation } from "@tanstack/react-query";
 
 const loginSchema = z.object({
     email: z.string().trim().email({ message: "Please enter a valid email address" }).nonempty({ message: "Email cannot be empty" }),
@@ -32,7 +33,7 @@ const defaultValues = {
 function Login() {
 
     const [showPassword, setShowPassword] = useState(false);
-    const { isLoading, error, postData } = usePost<Data<LoginSignData>>(loginUserEndpoint);
+    const { postData } = usePost(false);
 
 
     const router = useRouter();
@@ -52,21 +53,27 @@ function Login() {
         mode: "onChange",
     });
 
-    const onSubmit = async (data: ILogin) => {
-        const result = await postData(data);
 
-        if (result?.status === 200 && result.data?.accessToken) {
-            setAccessToken(result.data?.accessToken);
-            setUser(result.data?.user);
+    const loginMutation = useMutation({
+        mutationFn: (data: ILogin) => postData<Data<LoginSignData>>(loginUserEndpoint, data),
+        onSuccess: (response) => {
+            if (response.status === 200 && response.data?.accessToken) {
+                setAccessToken(response.data?.accessToken);
+                setUser(response.data?.user);
 
-            toast.success("Login successful!");
+                toast.success("Login successful!");
 
-            reset();
+                reset();
 
-            setTimeout(() => {
-                router.push(redirect || '/');
-            }, 1000);
+                setTimeout(() => {
+                    router.push(redirect || '/');
+                }, 1000);
+            }
         }
+    });
+
+    const onSubmit = async (data: ILogin) => {
+        loginMutation.mutate(data);
     };
 
 
@@ -85,8 +92,8 @@ function Login() {
 
                 <form className="login-form" id="loginForm" onSubmit={handleSubmit(onSubmit)}>
                     {/* <!-- Example server error message --> */}
-                    <div className={`server-error ${error ? "visible" : ""}`}>
-                        {error?.message}
+                    <div className={`server-error ${loginMutation.isError ? "visible" : ""}`}>
+                        {loginMutation.error?.message}
                     </div>
 
                     <label className="input-group">
@@ -112,7 +119,7 @@ function Login() {
                         <Link href="/forgot-password" className="forgot">Forgot password?</Link>
                     </div>
 
-                    <button type="submit" className="login-button" disabled={!isValid || isLoading}>
+                    <button type="submit" className="login-button" disabled={!isValid || loginMutation.isPending}>
                         <span className="button-text">Log in</span>
                         <div className="loader"></div>
                     </button>
