@@ -10,6 +10,7 @@ import { Data } from "@/Interface/Data";
 import { IPrayer } from "@/Interface/IPrayer";
 import { toast, ToastContainer } from "react-toastify";
 import { createPrayersEndpoint } from "@/endpoint/Prayer";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface PrayerPopupProps {
     makeRequest: boolean
@@ -32,8 +33,8 @@ function PrayerPopup({ makeRequest, setMakeRequest }: PrayerPopupProps) {
     const overlayRef = useRef<HTMLDivElement>(null);
     const [visible, setVisible] = useState(false);
 
-
-    const { isLoading, error, postData } = usePost<Data<IPrayer[]>>(createPrayersEndpoint, true);
+    const { postData } = usePost(true);
+    const queryClient = useQueryClient();
 
 
     const {
@@ -51,21 +52,33 @@ function PrayerPopup({ makeRequest, setMakeRequest }: PrayerPopupProps) {
 
     const watchedText = watch("text");
 
-    const onSubmit = async (data: IPrayerRequest) => {
-        const result = await postData(data);
 
-        if (result?.status === 201) {
-            toast.success("Prayer request successful!");
+    const CreatePrayerMutation = useMutation({
+        mutationFn: (data: IPrayerRequest) => postData<Data<IPrayer[]>>(createPrayersEndpoint, data),
+        onSuccess: (response) => {
+            if (response?.status === 201) {
+                toast.success("Prayer request successful!");
 
-            reset();
+                reset();
+                queryClient.invalidateQueries({ queryKey: ['myPrayers'] });
 
-            setTimeout(() => {
-                setMakeRequest(false);
-            }, 1000);
-        } else {
-            toast.error(error?.message);
+                setTimeout(() => {
+                    setMakeRequest(false);
+                }, 1000);
+            }
+        },
+
+        onError: (error) => {
+            if (error instanceof Error) {
+                toast.error(error.message);
+            }
         }
+    });
+
+    const onSubmit = async (data: IPrayerRequest) => {
+        CreatePrayerMutation.mutate(data);
     };
+
 
     useEffect(() => {
         if (makeRequest) {
@@ -102,41 +115,43 @@ function PrayerPopup({ makeRequest, setMakeRequest }: PrayerPopupProps) {
     if (!visible) return null;
 
     return (
-        <div
-            id="prayerRequestPopup"
-            ref={overlayRef}
-            className={`popup-overlay ${makeRequest ? "active" : ""}`}
-        >
-            <div className="popup-content" ref={contentRef}>
-                <h2>Votre demande de prière</h2>
-                <form className="prayer-form" onSubmit={handleSubmit(onSubmit)}>
+        <>
+            <div
+                id="prayerRequestPopup"
+                ref={overlayRef}
+                className={`popup-overlay ${makeRequest ? "active" : ""}`}
+            >
+                <div className="popup-content" ref={contentRef}>
+                    <h2>Votre demande de prière</h2>
+                    <form className="prayer-form" onSubmit={handleSubmit(onSubmit)}>
 
-                    <div className="prayer-input-container">
-                        <textarea
-                            placeholder="Partagez votre demande de prière ici..."
-                            className="prayer-input"
-                            rows={5}
-                            maxLength={240}
-                            {...register("text")}
-                            onBlur={() => trigger("text")}
-                        />
-                        {errors.text && <span className="error">{errors.text.message}</span>}
-                        <span>{watchedText?.length ?? 0}/240</span>
-                    </div>
+                        <div className="prayer-input-container">
+                            <textarea
+                                placeholder="Partagez votre demande de prière ici..."
+                                className="prayer-input"
+                                rows={5}
+                                maxLength={240}
+                                {...register("text")}
+                                onBlur={() => trigger("text")}
+                            />
+                            {errors.text && <span className="error">{errors.text.message}</span>}
+                            <span>{watchedText?.length ?? 0}/240</span>
+                        </div>
 
 
-                    <div className="popup-buttons">
-                        <button type="button" className="btn btn-cancel" onClick={() => setMakeRequest(false)}>
-                            Annuler
-                        </button>
-                        <button type="submit" className="btn btn-primary" disabled={!isValid || isLoading}>
-                            Envoyer
-                        </button>
-                    </div>
-                </form>
+                        <div className="popup-buttons">
+                            <button type="button" className="btn btn-cancel" onClick={() => setMakeRequest(false)}>
+                                Annuler
+                            </button>
+                            <button type="submit" className="btn btn-primary" disabled={!isValid || CreatePrayerMutation.isPending}>
+                                Envoyer
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <ToastContainer position="top-right" autoClose={2000} style={{ zIndex: 2000 }} />
             </div>
-            <ToastContainer position="top-right" autoClose={2000} style={{ zIndex: 2000 }} />
-        </div>
+        </>
     );
 }
 

@@ -8,6 +8,7 @@ import { Data } from "@/Interface/Data";
 import usePost from "@/hook/usePost";
 import { toast, ToastContainer } from "react-toastify";
 import { getResetPasswordTokenEndpoint } from "@/endpoint/User";
+import { useMutation } from "@tanstack/react-query";
 
 
 const forgotPasswordSchema = z.object({
@@ -22,7 +23,7 @@ const defaultValues = {
 
 function ForgotPassword() {
 
-    const { isLoading, error, postData } = usePost<Data<{ message: string }>>(getResetPasswordTokenEndpoint);
+    const { postData } = usePost(false);
 
     const {
         register,
@@ -37,13 +38,19 @@ function ForgotPassword() {
     });
 
 
-    const onSubmit = async (data: IForgotPassword) => {
-        const result = await postData(data);
-
-        if (result?.status === 200) {
-            toast.success("Password reset link sent! Check your email.");
-            reset();
+    const forgotPasswordMutation = useMutation({
+        mutationFn: (data: IForgotPassword) => postData<Data<{ message: string }>>(getResetPasswordTokenEndpoint, data),
+        onSuccess: (response) => {
+            if (response.status === 200) {
+                toast.success("Password reset link sent! Check your email.");
+                reset();
+            }
         }
+    });
+
+
+    const onSubmit = async (data: IForgotPassword) => {
+        forgotPasswordMutation.mutate(data);
     };
 
 
@@ -58,8 +65,8 @@ function ForgotPassword() {
 
                 <form className="forgot-password-form" id="forgotPasswordForm" onSubmit={handleSubmit(onSubmit)}>
                     {/* Example server feedback */}
-                    <div className={`server-error ${error ? "visible" : ""}`}>
-                        {error?.message}
+                    <div className={`server-error ${forgotPasswordMutation.isError ? "visible" : ""}`}>
+                        {forgotPasswordMutation.error?.message}
                     </div>
 
                     <label className="input-group">
@@ -67,7 +74,7 @@ function ForgotPassword() {
                         {errors.email?.message && <div className="error-message">{errors.email?.message}</div>}
                     </label>
 
-                    <button type="submit" className="forgot-button" disabled={!isValid || isLoading}>
+                    <button type="submit" className="forgot-button" disabled={!isValid || forgotPasswordMutation.isPending}>
                         <span className="button-text">Send reset link</span>
                         <div className="loader"></div>
                     </button>

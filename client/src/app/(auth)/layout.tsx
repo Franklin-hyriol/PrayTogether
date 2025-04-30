@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "../globals.scss"; // garde les styles globaux
 import { Suspense } from "react";
 import ComponentsLoader from "@/components/ComponentsLoader/ComponentsLoader";
+import QueryProvider from "@/components/QueryProvider/QueryProvider";
 
 export const metadata: Metadata = {
     title: "Authentication | Pray Together",
@@ -21,9 +22,11 @@ export default function AuthLayout({
 }>) {
     return (
         <main className="auth-main">
-            <Suspense fallback={<ComponentsLoader />}>
-                {children}
-            </Suspense>
+            <QueryProvider>
+                <Suspense fallback={<ComponentsLoader />}>
+                    {children}
+                </Suspense>
+            </QueryProvider>
         </main>
     );
 }

@@ -1,9 +1,9 @@
 import { useAuth } from '@/context/AuthContext';
 
-export default function usePost(authentication = false) {
+export default function usePut(authentication = false) {
     const { accessToken } = useAuth();
 
-    const postData = async <T>(url: string, data: unknown): Promise<T> => {
+    const putData = async <T>(url: string, data: unknown): Promise<T> => {
         const headers: HeadersInit = {
             'Content-Type': 'application/json',
             Accept: 'application/json',
@@ -14,7 +14,7 @@ export default function usePost(authentication = false) {
         }
 
         const response = await fetch(url, {
-            method: 'POST',
+            method: 'PUT',
             headers,
             body: JSON.stringify(data),
             credentials: 'include',
@@ -32,5 +32,5 @@ export default function usePost(authentication = false) {
         return response.json();
     };
 
-    return { postData };
+    return { putData };
 }

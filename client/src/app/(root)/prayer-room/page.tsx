@@ -11,7 +11,9 @@ import useFetch from "@/hook/useFetch";
 import { IPrayer } from "@/Interface/IPrayer";
 import { Data } from "@/Interface/Data";
 import ComponentsLoader from "@/components/ComponentsLoader/ComponentsLoader";
-import { getMyPrayersEndpoint } from "@/endpoint/Prayer";
+import { getMyPrayersEndpoint, getPrayersEndpointWithFilter } from "@/endpoint/Prayer";
+import { useQuery } from "@tanstack/react-query";
+import DeleteConfirmation from "@/components/DeleteConfirmation/DeleteConfirmation";
 
 // const mockPrayerCards: PrayerCardProps[] = [
 //     {
@@ -95,34 +97,94 @@ import { getMyPrayersEndpoint } from "@/endpoint/Prayer";
 function PrayerRoom() {
 
     const [makeRequest, setMakeRequest] = useState(false);
-    const { isLoading, response, error } = useFetch<Data<IPrayer[]>>(getMyPrayersEndpoint, true);
+    const [selectedPrayerId, setSelectedPrayerId] = useState<string | null>(null);
+    const [showDeletePopup, setShowDeletePopup] = useState(false);
+
+    const { fetchData } = useFetch(true);
+
+
+    const { data: myPrayers, isLoading: isMyPrayersLoading, error: myPrayersError } = useQuery({
+        queryKey: ['myPrayers'],
+        queryFn: () => fetchData<Data<IPrayer[]>>(getMyPrayersEndpoint),
+    });
+
+
+    const { data: allPrayers, isLoading: isAllPrayersLoading, error: allPrayersError } = useQuery({
+        queryKey: ['allPrayers'],
+        queryFn: () => fetchData<Data<IPrayer[]>>(getPrayersEndpointWithFilter),
+    });
+
+
+    const handleDeleteClick = (id: string) => {
+        setSelectedPrayerId(id);
+        setShowDeletePopup(true);
+    };
 
 
     return (
         <>
-            <PrayerPopup makeRequest={makeRequest} setMakeRequest={setMakeRequest} />
-
             <section className="prayer-room">
                 <Filters />
 
-                {!error ? (<div className="prayer-cards-grid">
-                    {isLoading ? (
-                        <ComponentsLoader />
+                {/* Get my prayers */}
+                <div className="prayer-cards-grid">
+                    {!myPrayersError ? (
+                        isMyPrayersLoading ? (
+                            <ComponentsLoader />
+                        ) : (
+                            (myPrayers && myPrayers.data.length > 0) && (
+                                myPrayers.data.map((card, index) => (
+                                    <PrayerCard
+                                        key={index}
+                                        prayer={card}
+                                        currentUser
+                                        className="current-user"
+                                        onDelete={() => handleDeleteClick(card._id)}
+                                    />
+                                ))
+                            )
+                        )
                     ) : (
-                        response?.data.map((card, index) => (
-                            <PrayerCard key={index} prayer={card} currentUser className="current-user" />
-                        ))
+                        <div>Une erreur est survenue</div>
                     )}
-                </div>) : (
-                    <div>Une erreur est survenue</div>
-                )}
+
+                    {/* Get all prayers */}
+                    {!allPrayersError ? (
+                        isAllPrayersLoading ? (
+                            <ComponentsLoader />
+                        ) : (
+                            (allPrayers && allPrayers?.data.length > 0) && (
+                                allPrayers.data.map((card, index) => (
+                                    <PrayerCard
+                                        key={index}
+                                        prayer={card}
+                                        className=""
+                                    />
+                                ))
+                            )
+                        )
+                    ) : (
+                        <div>Une erreur est survenue</div>
+                    )}
+                </div>
 
                 <Pagination />
             </section>
 
             <button onClick={() => setMakeRequest(true)} className="send-prayer">+</button>
+
+            <PrayerPopup
+                makeRequest={makeRequest}
+                setMakeRequest={setMakeRequest}
+            />
+
+            <DeleteConfirmation
+                selectedPrayerId={selectedPrayerId}
+                showDeletePopup={showDeletePopup}
+                setShowDeletePopup={setShowDeletePopup}
+            />
         </>
-    )
+    );
 }
 
 export default PrayerRoom;

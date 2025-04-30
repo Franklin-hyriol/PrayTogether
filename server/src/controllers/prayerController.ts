@@ -72,14 +72,22 @@ export const createPrayer = async (req: Request, res: Response): Promise<void> =
 
 export const getAllPrayers = async (req: Request, res: Response): Promise<void> => {
     try {
-        // Récupère toutes les prières et peuple les informations de l'utilisateur
-        const prayers = await PrayerRequest.find()
+        const user = req.user as IUser;
+        const excludeCurrentUser = req.query.excludeCurrentUser === 'true';
+
+        const filter: any = {};
+
+        if (excludeCurrentUser && user) {
+            filter.authorId = { $ne: user._id };
+        }
+
+        const prayers = await PrayerRequest.find(filter)
             .populate('authorId', 'username profilePhoto')
             .exec();
 
         if (!prayers || prayers.length === 0) {
-            res.status(404).json({
-                status: 404,
+            res.status(200).json({
+                status: 200,
                 message: "No prayers found.",
                 data: []
             });
@@ -159,8 +167,8 @@ export const getMyPrayers = async (req: Request, res: Response): Promise<void> =
             .exec();
 
         if (!prayers || prayers.length === 0) {
-            res.status(404).json({
-                status: 404,
+            res.status(200).json({
+                status: 200,
                 message: "No prayers found for the user.",
                 data: []
             });
@@ -296,7 +304,9 @@ export const deletePrayer = async (req: Request, res: Response): Promise<void> =
         res.status(200).json({
             status: 200,
             message: "Prayer deleted successfully.",
-            data: deletedPrayer
+            data: {
+                _id: prayerId
+            }
         });
     } catch (error) {
         const defaultError = {

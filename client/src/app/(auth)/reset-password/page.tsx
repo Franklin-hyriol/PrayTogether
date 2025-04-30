@@ -11,6 +11,7 @@ import { useForm } from "react-hook-form";
 import { toast, ToastContainer } from "react-toastify";
 import Icon from "@/components/Icomoon/Icomoon";
 import { resetUserPasswordEndpoint } from "@/endpoint/User";
+import { useMutation } from "@tanstack/react-query";
 
 
 const resetPasswordSchema = z.object({
@@ -25,7 +26,8 @@ type IResetPassword = z.infer<typeof resetPasswordSchema>;
 function ResetPassword() {
 
     const params = useSearchParams()
-    const { isLoading, error, postData } = usePost<Data<{ message: string }>>(resetUserPasswordEndpoint);
+
+    const { postData } = usePost(false);
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -49,17 +51,23 @@ function ResetPassword() {
         mode: "onChange",
     });
 
-    const onSubmit = async (data: IResetPassword) => {
-        const result = await postData(data);
 
-        if (result?.status === 200) {
-            toast.success("Password update succesful");
-            reset();
+    const resetPasswordMutation = useMutation({
+        mutationFn: (data: IResetPassword) => postData<Data<{ message: string }>>(resetUserPasswordEndpoint, data),
+        onSuccess: (response) => {
+            if (response.status === 200) {
+                toast.success("Password update succesful");
+                reset();
+            }
+
+            setTimeout(() => {
+                router.push('/login');
+            }, 2000);
         }
+    });
 
-        setTimeout(() => {
-            router.push('/login');
-        }, 2000);
+    const onSubmit = async (data: IResetPassword) => {
+        resetPasswordMutation.mutate(data);
     };
 
     return (
@@ -71,8 +79,8 @@ function ResetPassword() {
                 </div>
 
                 <form className="reset-password-form" id="resetPasswordForm" onSubmit={handleSubmit(onSubmit)}>
-                    <div className={`server-error ${error ? "visible" : ""}`}>
-                        {error?.message}
+                    <div className={`server-error ${resetPasswordMutation.isError ? "visible" : ""}`}>
+                        {resetPasswordMutation.error?.message}
                     </div>
 
                     <label className="input-group">
@@ -96,7 +104,7 @@ function ResetPassword() {
                         {errors.confirmPassword?.message && <div className="error-message">{errors.confirmPassword?.message}</div>}
                     </label>
 
-                    <button type="submit" className="reset-button" disabled={!isValid || isLoading}>
+                    <button type="submit" className="reset-button" disabled={!isValid || resetPasswordMutation.isPending}>
                         <span className="button-text">Reset password</span>
                         <div className="loader"></div>
                     </button>

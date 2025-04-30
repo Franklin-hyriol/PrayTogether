@@ -14,6 +14,7 @@ import { Data } from "@/Interface/Data";
 import { LoginSignData } from "@/Interface/LoginSignData";
 import { toast, ToastContainer } from "react-toastify";
 import { googleAuthEndpoint, registerUserEndpoint } from "@/endpoint/User";
+import { useMutation } from "@tanstack/react-query";
 
 
 const signupSchema = z.object({
@@ -38,7 +39,11 @@ function Register() {
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const { isLoading, error, postData } = usePost<Data<LoginSignData>>(registerUserEndpoint);
+    const { postData } = usePost(false);
+
+
+
+
 
     const router = useRouter();
     const { setUser, setAccessToken } = useAuth();
@@ -55,22 +60,28 @@ function Register() {
         mode: "onChange",
     });
 
-    const onSubmit = async (data: ISignup) => {
-        const result = await postData(data);
 
-        if (result?.status === 201 && result.data?.accessToken) {
+    const signUpMutation = useMutation({
+        mutationFn: (data: ISignup) => postData<Data<LoginSignData>>(registerUserEndpoint, data),
+        onSuccess: (response) => {
+            if (response.status === 201 && response.data?.accessToken) {
+                setAccessToken(response.data?.accessToken);
+                setUser(response.data?.user);
 
-            setAccessToken(result.data?.accessToken);
-            setUser(result.data?.user);
+                toast.success("Login successful!");
 
-            toast.success("Registration successful!");
+                reset();
 
-            reset();
-
-            setTimeout(() => {
-                router.push('/');
-            }, 1000);
+                setTimeout(() => {
+                    router.push('/');
+                }, 1000);
+            }
         }
+    });
+
+
+    const onSubmit = async (data: ISignup) => {
+        signUpMutation.mutate(data);
     };
 
     const googleAuth = () => {
@@ -89,8 +100,8 @@ function Register() {
 
                 <form className="signup-form" id="signupForm" onSubmit={handleSubmit(onSubmit)}>
                     {/* Example server error message */}
-                    <div className={`server-error ${error ? "visible" : ""}`}>
-                        {error?.message}
+                    <div className={`server-error ${signUpMutation.isError ? "visible" : ""}`}>
+                        {signUpMutation.error?.message}
                     </div>
 
                     <label className="input-group">
@@ -124,7 +135,7 @@ function Register() {
                         {errors.confirmPassword?.message && <div className="error-message">{errors.confirmPassword?.message}</div>}
                     </label>
 
-                    <button type="submit" className="signup-button" disabled={!isValid || isLoading}>
+                    <button type="submit" className="signup-button" disabled={!isValid || signUpMutation.isPending}>
                         <span className="button-text">Sign up</span>
                         <div className="loader"></div>
                     </button>
