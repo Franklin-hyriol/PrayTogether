@@ -1,4 +1,5 @@
 "use client";
+import { getMeEndpoint } from "@/endpoint/User";
 import { User } from "@/Interface/User";
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
@@ -38,7 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
                 setAccessToken(accessToken);
 
-                const userRes = await fetch(process.env.NEXT_PUBLIC_ENDPOINT_BASE_URL + "/api/v1/users/me", {
+                const userRes = await fetch(getMeEndpoint, {
                     headers: {
                         Authorization: accessToken,
                     }

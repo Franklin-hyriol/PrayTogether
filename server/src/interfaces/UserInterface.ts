@@ -13,6 +13,7 @@ export default interface IUser extends Document {
     totalPrayersReceived: number;
     totalHeartsReceived: number; // 💖 Nombre total de "j'aime"
     totalPrayersMade: number;
+    totalHeartsGiven: string;
     isBenefactor: boolean;
     password_reset_token: string | null;
     password_reset_expires: Date | null;

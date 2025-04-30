@@ -2,21 +2,18 @@
 import Image from "next/image";
 import "./PrayerCard.scss";
 import { useEffect, useRef, useState } from "react";
+import { IPrayer } from "@/Interface/IPrayer";
+import { formatRelativeTime } from "@/utils/formatRelativeTime";
 
 export type PrayerCardProps = {
     currentUser?: boolean
-    name: string
-    image: string
-    timestamp: string
-    prayer: string
-    prayerStats?: number
-    className?: string
-    urgent?: boolean
+    prayer: IPrayer,
     online?: boolean
+    className?: string
     prayeringFor?: boolean
 }
 
-function PrayerCard({ currentUser, name, image, timestamp, prayer, prayerStats, className, urgent, online = false, prayeringFor }: PrayerCardProps) {
+function PrayerCard({ currentUser, prayer, className, online = false, prayeringFor }: PrayerCardProps) {
 
     const [showMenu, setShowMenu] = useState(false);
     const menuRef = useRef<HTMLDivElement | null>(null);
@@ -44,19 +41,18 @@ function PrayerCard({ currentUser, name, image, timestamp, prayer, prayerStats, 
 
 
                     <div className="user-avatar-container">
-                        <Image src={image} width={48} height={48} alt="Marie" className="user-avatar" />
+                        <Image src={prayer.authorId.profilePhoto ? prayer.authorId.profilePhoto : "/images/default_user_profile.jpg"} width={48} height={48} alt="Marie" className="user-avatar" />
                         <span className={`online-indicator ${online ? "online" : "offline"}`}></span>
                     </div>
 
                     <div className="user-details">
-                        <h3 className="user-name">{name}</h3>
-                        <span className="timestamp">{timestamp}</span>
+                        <h3 className="user-name">{prayer.authorId.username}</h3>
+                        <span className="timestamp">{formatRelativeTime(prayer.createdAt)}</span>
                     </div>
-
 
                 </div>
 
-                {urgent && <div className="prayer-tag urgent">Urgent</div>}
+                {prayer.isUrgent && <div className="prayer-tag urgent">Urgent</div>}
 
                 {/* <!-- Add three-dot menu --> */}
                 {currentUser &&
@@ -79,12 +75,12 @@ function PrayerCard({ currentUser, name, image, timestamp, prayer, prayerStats, 
                 }
             </div>
             <div className="prayer-content">
-                <p>{prayer}</p>
+                <p>{prayer.text}</p>
             </div>
 
             {currentUser ? (
                 <div className="prayer-stats">
-                    <span className="prayer-count">{prayerStats} personnes prient pour vous</span>
+                    <span className="prayer-count">{prayer.prayedBy.length} personnes prient pour vous</span>
                 </div>
             ) : (
                 <div className="prayer-actions">
@@ -97,7 +93,6 @@ function PrayerCard({ currentUser, name, image, timestamp, prayer, prayerStats, 
                         <button className="prayer-btn pray-btn">Je prie pour toi</button>
                     )}
                 </div>
-
             )}
 
         </div>

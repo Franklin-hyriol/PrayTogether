@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast, ToastContainer } from "react-toastify";
 import Icon from "@/components/Icomoon/Icomoon";
+import { resetUserPasswordEndpoint } from "@/endpoint/User";
 
 
 const resetPasswordSchema = z.object({
@@ -24,7 +25,7 @@ type IResetPassword = z.infer<typeof resetPasswordSchema>;
 function ResetPassword() {
 
     const params = useSearchParams()
-    const { isLoading, error, postData } = usePost<Data<{ message: string }>>(process.env.NEXT_PUBLIC_ENDPOINT_BASE_URL + '/api/v1/users/reset-password');
+    const { isLoading, error, postData } = usePost<Data<{ message: string }>>(resetUserPasswordEndpoint);
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);

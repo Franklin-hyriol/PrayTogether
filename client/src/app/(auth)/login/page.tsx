@@ -11,8 +11,9 @@ import { LoginSignData } from "@/Interface/LoginSignData";
 import usePost from "@/hook/usePost";
 import { Data } from "@/Interface/Data";
 import { toast, ToastContainer } from "react-toastify";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { googleAuthEndpoint, loginUserEndpoint } from "@/endpoint/User";
 
 const loginSchema = z.object({
     email: z.string().trim().email({ message: "Please enter a valid email address" }).nonempty({ message: "Email cannot be empty" }),
@@ -31,10 +32,12 @@ const defaultValues = {
 function Login() {
 
     const [showPassword, setShowPassword] = useState(false);
-    const { isLoading, error, postData } = usePost<Data<LoginSignData>>(process.env.NEXT_PUBLIC_ENDPOINT_BASE_URL + '/api/v1/users/login');
+    const { isLoading, error, postData } = usePost<Data<LoginSignData>>(loginUserEndpoint);
 
 
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const redirect = searchParams.get('redirect');
     const { setUser, setAccessToken } = useAuth();
 
     const {
@@ -53,7 +56,6 @@ function Login() {
         const result = await postData(data);
 
         if (result?.status === 200 && result.data?.accessToken) {
-
             setAccessToken(result.data?.accessToken);
             setUser(result.data?.user);
 
@@ -62,14 +64,14 @@ function Login() {
             reset();
 
             setTimeout(() => {
-                router.push('/');
+                router.push(redirect || '/');
             }, 1000);
         }
     };
 
 
     const googleAuth = () => {
-        const url = `${process.env.NEXT_PUBLIC_ENDPOINT_BASE_URL}/api/v1/users/google`;
+        const url = googleAuthEndpoint;
         window.open(url, "_self");
     };
 
@@ -132,7 +134,6 @@ function Login() {
             </div>
             <ToastContainer position="top-right" autoClose={1000} />
         </section>
-
     )
 }
 
