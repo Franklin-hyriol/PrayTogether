@@ -138,14 +138,14 @@ function PrayerRoom() {
                                         key={index}
                                         prayer={card}
                                         currentUser
-                                        className="current-user"
+                                        className="border-primary"
                                         onDelete={() => handleDeleteClick(card._id)}
                                     />
                                 ))
                             )
                         )
                     ) : (
-                        <div>Une erreur est survenue</div>
+                        <div>An error has occurred</div>
                     )}
 
                     {/* Get all prayers */}
@@ -164,7 +164,7 @@ function PrayerRoom() {
                             )
                         )
                     ) : (
-                        <div>Une erreur est survenue</div>
+                        <div>An error has occurred</div>
                     )}
                 </div>
 

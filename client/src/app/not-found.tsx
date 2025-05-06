@@ -1,4 +1,4 @@
-import "./globals.scss";
+import "./globals.css";
 import "../assets/scss/pages/not-found.scss";
 import Link from 'next/link';
 

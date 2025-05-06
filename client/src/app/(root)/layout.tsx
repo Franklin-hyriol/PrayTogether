@@ -1,5 +1,5 @@
 import type { Viewport } from "next";
-import "../globals.scss";
+import "../globals.css";
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
 import { baseMetadata } from "../metadata";
@@ -25,7 +25,9 @@ export default function HomeLayout({
     <QueryProvider>
       <AuthLoader>
         <Header />
-        <main className="main">{children}</main>
+        <main className="main relative z-0 p-8" style={{ minHeight: "calc(100vh - 4rem - 3rem)" }}>
+          {children}
+        </main>
         <Footer />
       </AuthLoader>
     </QueryProvider>

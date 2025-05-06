@@ -8,16 +8,17 @@ export function middleware(request: NextRequest) {
     if (
         pathname.startsWith('/login') ||
         pathname.startsWith('/register') ||
-        pathname.startsWith('/forgot-password')
+        pathname.startsWith('/forgot-password') ||
+        pathname.startsWith('/reset-password')
     ) {
         if (token?.value) {
             return NextResponse.redirect(new URL('/', request.url));
         }
     }
 
-    if (pathname === '/prayer-room' && !token?.value) {
+    if (!token?.value && (pathname === '/prayer-room' || pathname === '/profile')) {
         const loginUrl = new URL('/login', request.url);
-        loginUrl.searchParams.set('redirect', '/prayer-room');
+        loginUrl.searchParams.set('redirect', pathname);
         return NextResponse.redirect(loginUrl);
     }
 
