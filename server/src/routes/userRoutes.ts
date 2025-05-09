@@ -1,5 +1,5 @@
 import express from 'express';
-import { createUser, getAllUsers, getConnectedUser, loginUser, getUserById, getResetPasswordToken, deleteUser, refreshAccessToken, logoutUser, resetUserPassword, GoogleAuth } from '../controllers/userController';
+import { createUser, getAllUsers, getConnectedUser, loginUser, getUserById, getResetPasswordToken, deleteUser, refreshAccessToken, logoutUser, resetUserPassword, GoogleAuth, updateProfile } from '../controllers/userController';
 import { checkSchema } from 'express-validator';
 import { CreateUserValidationSchema } from '../middlewares/Validation/userValidation/CreateUserValidationSchema';
 import { LoginUserValidationSchema } from '../middlewares/Validation/userValidation/LoginUserValidationSchema';
@@ -34,6 +34,9 @@ router.get('/refresh-token', refreshAccessToken);
 
 // Route pour obtenir le profil de l'utilisateur connecté
 router.get('/me', authenticateJWT, getConnectedUser);
+
+
+router.post('/update-profile', authenticateJWT, updateProfile);
 
 // // Route pour obtenir tous les utilisateurs
 router.get('/getallusers', authenticateJWT, checkAdmin, getAllUsers);

@@ -5,16 +5,19 @@ import bcrypt from 'bcrypt';
 // import { generateVerificationToken } from '../utils/generateVerificationToken';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-// import { stat } from 'fs';
+import fs from 'fs';
 // import { sendEmail } from '../utils/sendEmail';
 import IUser from '../interfaces/UserInterface';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import { ACCESS_TOKEN_EXPIRATION_TIME, JWT_SECRET, NEXT_PUBLIC_ENDPOINT_BASE_URL, REFRESH_TOKEN_EXPIRATION_TIME, REFRESH_TOKEN_SECRET } from '../config/Env';
+import { ACCESS_TOKEN_EXPIRATION_TIME, BASE_URL, JWT_SECRET, NEXT_PUBLIC_ENDPOINT_BASE_URL, REFRESH_TOKEN_EXPIRATION_TIME, REFRESH_TOKEN_SECRET } from '../config/Env';
 import { toMs } from '../utils/toMs';
 import { StringValue } from 'ms';
 import { serializeUser } from '../helpers/serializeUser';
 import GoogleProfile from '../interfaces/GoogleProfile';
+import { upload } from '../services/upload';
+import multer from 'multer';
+import path from 'path';
 dotenv.config();
 
 // Créer un nouvel utilisateur
@@ -585,6 +588,125 @@ export const getConnectedUser = async (req: Request, res: Response): Promise<voi
                     message: 'Unknown error occurred',
                     stack: ''
                 }
+            });
+        }
+    }
+};
+
+
+export const updateProfile = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const user = req.user as IUser;
+
+        if (!user) {
+            res.status(401).json({
+                status: 401,
+                message: 'Unauthorized',
+                error: [{
+                    type: 'authentication',
+                    msg: 'User not authenticated',
+                    path: 'token',
+                    location: 'headers',
+                }],
+            });
+            return;
+        }
+
+        // Intégration du middleware upload.single()
+        upload.single('image')(req, res, async function (err) {
+            if (err instanceof multer.MulterError) {
+                res.status(400).json({
+                    status: 400,
+                    message: 'Bad request',
+                    error: [{
+                        type: 'multer',
+                        msg: err.message,
+                        path: 'image',
+                        location: 'body',
+                    }],
+                });
+                return;
+            } else if (err) {
+                res.status(400).json({
+                    status: 400,
+                    message: 'Bad request',
+                    error: [{
+                        type: 'multer',
+                        msg: err.message,
+                        path: 'image',
+                        location: 'body',
+                    }],
+                });
+                return;
+            }
+
+            if (!req.file) {
+                res.status(400).json({
+                    status: 400,
+                    message: 'Bad request',
+                    error: [{
+                        type: 'multer',
+                        msg: 'No image sent',
+                        path: 'image',
+                        location: 'body',
+                    }],
+                });
+                return;
+            }
+
+            // Supprimer l’ancienne image si elle existe
+            const previousImage = user.profilePhoto;
+            if (previousImage) {
+                const oldPath = path.join('uploads', path.basename(previousImage));
+                if (fs.existsSync(oldPath)) {
+                    fs.unlinkSync(oldPath);
+                }
+            }
+
+            // Construire l’URL relative (adaptée pour front + publique via express.static)
+            const newImageUrl = `${BASE_URL}/uploads/${req.file.filename}`;
+
+            // Mettre à jour l’utilisateur
+            const updatedUser = await User.findByIdAndUpdate(
+                user._id,
+                { profilePhoto: newImageUrl },
+                { new: true }
+            );
+
+            res.status(200).json({
+                status: 200,
+                message: 'Image de profil mise à jour',
+                data: {
+                    _id: updatedUser?._id,
+                    username: updatedUser?.username,
+                    email: updatedUser?.email,
+                    profilePhoto: updatedUser?.profilePhoto,
+                    role: updatedUser?.role,
+                    provider: updatedUser?.provider,
+                    isBenefactor: updatedUser?.isBenefactor,
+                    badges: updatedUser?.showBadges,
+                },
+            });
+        });
+
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(500).json({
+                status: 500,
+                message: 'Internal server error',
+                error: {
+                    message: error.message,
+                    stack: error.stack,
+                },
+            });
+        } else {
+            res.status(500).json({
+                status: 500,
+                message: 'Internal server error',
+                error: {
+                    message: 'Unknown error occurred',
+                    stack: '',
+                },
             });
         }
     }

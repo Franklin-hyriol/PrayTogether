@@ -7,3 +7,4 @@ export const registerUserEndpoint = `${baseUrl}/users/register`;
 export const resetUserPasswordEndpoint = `${baseUrl}/users/reset-password`;
 export const googleAuthEndpoint = `${baseUrl}/users/google`;
 export const logoutUserEndpoint = `${baseUrl}/users/logout`;
+export const updateProfileEndpoint = `${baseUrl}/users/update-profile`;

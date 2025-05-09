@@ -7,6 +7,7 @@ export const JWT_SECRET = process.env.JWT_SECRET;
 export const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
 export const NODE_ENV = process.env.NODE_ENV;
 export const PORT = process.env.PORT;
+export const BASE_URL = process.env.BASE_URL;
 export const ACCESS_TOKEN_EXPIRATION_TIME = process.env.ACCESS_TOKEN_EXPIRATION_TIME;
 export const REFRESH_TOKEN_EXPIRATION_TIME = process.env.REFRESH_TOKEN_EXPIRATION_TIME;
 export const NEXT_PUBLIC_ENDPOINT_BASE_URL = process.env.NEXT_PUBLIC_ENDPOINT_BASE_URL;
