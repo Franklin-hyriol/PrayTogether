@@ -7,9 +7,18 @@ import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useLogout } from "@/hook/useLogout";
 
+// Icons
+import { FaUser } from "react-icons/fa";
+import { IoSettingsSharp } from "react-icons/io5";
+import { IoLogOut } from "react-icons/io5";
+import { IoMdLogIn } from "react-icons/io";
+import { FaUserCheck } from "react-icons/fa";
+import { FaRegUserCircle } from "react-icons/fa";
+import { initSocket } from "@/services/socket";
+
 function Header() {
 
-    const { user } = useAuth();
+    const { user, accessToken } = useAuth();
     const [showDropdown, setShowDropdown] = useState(false);
     const menuRef = useRef<HTMLDivElement | null>(null);
     const { logout, isLoading } = useLogout();
@@ -27,44 +36,70 @@ function Header() {
         };
     }, [showDropdown]);
 
+
+    useEffect(() => {
+        if (accessToken) {
+            initSocket(accessToken);
+        }
+    }, [accessToken]);
+
+
     return (
-        <header className="header-container header">
-            <Link href="/" className="header-image logo" aria-label="Retourner à l'accueil">
-                <Image src="/logo/logo.png" alt="logo pray together" width={50} height={50} />
-                <span>Pray Together</span>
-            </Link>
 
-            {user ? (
-                <div className="user-profile" ref={menuRef}>
-                    <div className="profile-img-container" onClick={() => setShowDropdown(!showDropdown)}>
-                        <Image src={user.profilePhoto ? user.profilePhoto : "/images/default_user_profile.jpg"} width={40} height={40} alt="Profile" className="profile-img" />
-                    </div>
-                    <div className={`dropdown-menu ${showDropdown ? "show" : ""}`} id="profileDropdown">
-                        <Link href="/profile" className="dropdown-item">
-                            <span className="item-icon">👤</span>
-                            Profile
-                        </Link>
-                        <Link href="/settings" className="dropdown-item">
-                            <span className="item-icon">⚙️</span>
-                            Settings
-                        </Link>
-                        <div className="dropdown-divider"></div>
-                        <button onClick={() => logout()} disabled={isLoading} className="dropdown-item text-red">
-                            <span className="item-icon">🚪</span>
-                            Logout
-                        </button>
-                    </div>
-                </div>
-            ) : (
-                <div className="nav-buttons">
-                    <Link href="/login" className="btn btn-outline" aria-label="Login">Login</Link>
-                    <Link href="/register" className="btn btn-solid" aria-label="Register">Register</Link>
-                </div>
-            )
-            }
+        <header className="navbar bg-base-100 shadow-sm">
+            <div className="flex-1">
+                <Link href="/" className="navbar-brand text-2xl font-bold flex gap-2">
+                    <Image src="/logo/logo.png" alt="logo pray together" width={30} height={30} className="w-auto h-auto" />
+                    Pray Together
+                </Link>
+            </div>
 
 
+            <div className="flex gap-2">
+
+                {user ? (
+                    <nav className="dropdown dropdown-end">
+                        <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+                            <div className="w-10 rounded-full">
+                                {user.profilePhoto ? (
+                                    <Image src={user.profilePhoto} width={40} height={40} alt="Profile" className="profile-img" />
+                                ) : (
+                                    <FaRegUserCircle className="w-full h-full" />
+                                )}
+                            </div>
+                        </div>
+                        <ul
+                            tabIndex={0}
+                            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+                            <li>
+                                <Link href="/profile" className="text-lg">
+                                    <FaUser />
+                                    Profile
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/settings" className="text-lg">
+                                    <IoSettingsSharp />
+                                    Settings
+                                </Link>
+                            </li>
+
+                            <li>
+                                <button onClick={() => logout()} disabled={isLoading} className="logout-btn text-lg">
+                                    <IoLogOut />
+                                    Logout
+                                </button>
+                            </li>
+                        </ul>
+                    </nav>
+                ) : (<>
+                    <Link href="/login" className="btn" aria-label="Login"><IoMdLogIn /> Login</Link>
+                    <Link href="/register" className="btn btn-primary" aria-label="Register"><FaUserCheck /> Register</Link>
+                </>)}
+
+            </div>
         </header>
+
     );
 }
 

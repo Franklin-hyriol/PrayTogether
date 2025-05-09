@@ -1,20 +1,21 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import "./PrayerPopup.scss";
+import "./PrayerEdit.scss";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import usePost from "@/hook/usePost";
 import { Data } from "@/Interface/Data";
 import { IPrayer } from "@/Interface/IPrayer";
 import { toast } from "react-toastify";
-import { createPrayersEndpoint } from "@/endpoint/Prayer";
+import { updatePrayerByIdEndpoint } from "@/endpoint/Prayer";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import usePut from "@/hook/usePut";
 
-interface PrayerPopupProps {
-    makeRequest: boolean
-    setMakeRequest: React.Dispatch<React.SetStateAction<boolean>>
+interface PrayerEditProps {
+    openPopupEdit: boolean
+    setOpenPopupEdit: React.Dispatch<React.SetStateAction<boolean>>
+    prayerToEdit: IPrayer | null
 }
 
 const PrayerRequestSchema = z.object({
@@ -23,17 +24,18 @@ const PrayerRequestSchema = z.object({
 });
 
 type IPrayerRequest = z.infer<typeof PrayerRequestSchema>;
+
 const defaultValues = {
     text: "",
     isUrgent: false,
 };
 
-function PrayerPopup({ makeRequest, setMakeRequest }: PrayerPopupProps) {
+function PrayerEdit({ openPopupEdit, setOpenPopupEdit, prayerToEdit }: PrayerEditProps) {
     const contentRef = useRef<HTMLDivElement>(null);
     const overlayRef = useRef<HTMLDivElement>(null);
     const [visible, setVisible] = useState(false);
 
-    const { postData } = usePost(true);
+    const { putData } = usePut(true);
     const queryClient = useQueryClient();
 
 
@@ -54,16 +56,16 @@ function PrayerPopup({ makeRequest, setMakeRequest }: PrayerPopupProps) {
 
 
     const CreatePrayerMutation = useMutation({
-        mutationFn: (data: IPrayerRequest) => postData<Data<IPrayer[]>>(createPrayersEndpoint, data),
+        mutationFn: (data: IPrayerRequest) => putData<Data<IPrayer[]>>(`${updatePrayerByIdEndpoint}/${prayerToEdit?._id}`, data),
         onSuccess: (response) => {
-            if (response?.status === 201) {
-                toast.success("Prayer request successful!");
+            if (response?.status === 200) {
+                toast.success("Prayer update successful!");
 
                 reset();
                 queryClient.invalidateQueries({ queryKey: ['myPrayers'] });
 
                 setTimeout(() => {
-                    setMakeRequest(false);
+                    setOpenPopupEdit(false);
                 }, 1000);
             }
         },
@@ -81,13 +83,23 @@ function PrayerPopup({ makeRequest, setMakeRequest }: PrayerPopupProps) {
 
 
     useEffect(() => {
-        if (makeRequest) {
+        if (prayerToEdit?._id) {
+            reset({
+                text: prayerToEdit.text || "",
+                isUrgent: prayerToEdit.isUrgent || false,
+            });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [prayerToEdit?._id, reset]);
+
+    useEffect(() => {
+        if (openPopupEdit) {
             setVisible(true);
         } else {
             const timeout = setTimeout(() => setVisible(false), 300); // délai = durée transition
             return () => clearTimeout(timeout);
         }
-    }, [makeRequest]);
+    }, [openPopupEdit]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -99,18 +111,18 @@ function PrayerPopup({ makeRequest, setMakeRequest }: PrayerPopupProps) {
                 content &&
                 !content.contains(event.target as Node)
             ) {
-                setMakeRequest(false);
+                setOpenPopupEdit(false);
             }
         };
 
-        if (makeRequest) {
+        if (openPopupEdit) {
             document.addEventListener("mousedown", handleClickOutside);
         }
 
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
-    }, [makeRequest, setMakeRequest]);
+    }, [openPopupEdit, setOpenPopupEdit]);
 
     if (!visible) return null;
 
@@ -119,7 +131,7 @@ function PrayerPopup({ makeRequest, setMakeRequest }: PrayerPopupProps) {
             <div
                 id="prayerRequestPopup"
                 ref={overlayRef}
-                className={`popup-overlay ${makeRequest ? "active" : ""}`}
+                className={`popup-overlay ${openPopupEdit ? "active" : ""}`}
             >
 
                 <div className="card w-96 bg-base-100 card-md shadow-sm" ref={contentRef}>
@@ -127,7 +139,7 @@ function PrayerPopup({ makeRequest, setMakeRequest }: PrayerPopupProps) {
 
 
 
-                        <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
+                        <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
 
                             <fieldset className="fieldset relative">
                                 <legend className="fieldset-legend text-lg">Your Prayer Request</legend>
@@ -144,7 +156,7 @@ function PrayerPopup({ makeRequest, setMakeRequest }: PrayerPopupProps) {
                             </label>
 
                             <div className="justify-center gap-4 card-actions">
-                                <button className="btn btn-cancel" onClick={() => setMakeRequest(false)}>Cancel</button>
+                                <button className="btn btn-cancel" onClick={() => setOpenPopupEdit(false)}>Cancel</button>
                                 <button className="text-white btn btn-primary" disabled={!isValid || CreatePrayerMutation.isPending}>send</button>
                             </div>
 
@@ -156,10 +168,9 @@ function PrayerPopup({ makeRequest, setMakeRequest }: PrayerPopupProps) {
 
                     </div>
                 </div>
-
             </div>
         </>
     );
 }
 
-export default PrayerPopup;
+export default PrayerEdit;

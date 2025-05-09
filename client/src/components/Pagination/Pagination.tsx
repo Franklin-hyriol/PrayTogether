@@ -1,25 +1,16 @@
-import "./Pagination.scss"
-
 function Pagination() {
     return (
-        <div className="pagination">
-            <button className="pagination-btn" disabled>
-                <span className="pagination-icon">←</span>
-                Précédent
-            </button>
-            <div className="pagination-numbers">
-                <button className="pagination-number active">1</button>
-                <button className="pagination-number">2</button>
-                <button className="pagination-number">3</button>
-                <span className="pagination-dots">...</span>
-                <button className="pagination-number">12</button>
+        <div className="max-w-[1200px] mx-auto my-2 px-1 flex justify-center items-center gap-1 mt-6">
+            <div className="join gap-1">
+                <button className="join-item btn btn-outline">Previous page</button>
+                <button className="join-item btn">1</button>
+                <button className="join-item btn btn-active">2</button>
+                <button className="join-item btn">3</button>
+                <button className="join-item btn">4</button>
+                <button className="join-item btn btn-outline">Next</button>
             </div>
-            <button className="pagination-btn">
-                Suivant
-                <span className="pagination-icon">→</span>
-            </button>
         </div>
     )
 }
 
-export default Pagination
+export default Pagination;

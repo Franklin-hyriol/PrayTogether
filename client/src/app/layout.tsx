@@ -1,7 +1,8 @@
 
 import { AuthProvider } from "@/context/AuthContext";
-import "./globals.scss";
+import "./globals.css";
 import type { Metadata } from "next";
+import { ToastContainer } from "react-toastify";
 
 export const metadata: Metadata = {
     title: "Page not found | Pray Together",
@@ -20,6 +21,7 @@ export default function RootLayout({
                 <AuthProvider>
                     {children}
                 </AuthProvider>
+                <ToastContainer position="top-right" autoClose={1500} style={{ zIndex: 2000 }} />
             </body>
         </html>
     );

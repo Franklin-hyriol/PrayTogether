@@ -4,7 +4,7 @@ import useDelete from "@/hook/useDelete";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deletePrayerByIdEndpoint } from "@/endpoint/Prayer";
 import { Data } from "@/Interface/Data";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 
 
 interface DeleteConfirmationProps {
@@ -19,8 +19,6 @@ function DeleteConfirmation({ selectedPrayerId, showDeletePopup, setShowDeletePo
     const contentRef = useRef<HTMLDivElement>(null);
     const overlayRef = useRef<HTMLDivElement>(null);
     const [visible, setVisible] = useState(false);
-
-    console.log(selectedPrayerId);
 
     const { deleteData } = useDelete(true);
     const queryClient = useQueryClient();
@@ -92,26 +90,27 @@ function DeleteConfirmation({ selectedPrayerId, showDeletePopup, setShowDeletePo
 
 
     return (
-        <div
-            ref={overlayRef}
-            className={`popup-overlay ${showDeletePopup ? "active" : ""}`}
-            id="deleteConfirmationPopup"
-        >
-            <div className="popup-content confirmation-popup" ref={contentRef}>
-                <div className="popup-header">
-                    <h2>Confirmer la suppression</h2>
-                </div>
-                <div className="confirmation-content">
-                    <p>Êtes-vous sûr de vouloir supprimer cette prière ?</p>
-                    <p className="confirmation-warning">Cette action est irréversible.</p>
-                    <div className="confirmation-actions">
-                        <button className="confirmation-btn cancel-btn" onClick={() => setShowDeletePopup(false)}>Annuler</button>
-                        <button className="confirmation-btn delete-btn" onClick={handleDelete}>Supprimer</button>
+        <>
+            <div
+                ref={overlayRef}
+                className={`popup-overlay ${showDeletePopup ? "active" : ""}`}
+                id="deleteConfirmationPopup"
+            >
+                <div className="card w-96 bg-base-100 card-md shadow-sm" ref={contentRef}>
+                    <div className="card-body text-center">
+
+                        <h2 className="card-title">Confirm Deletion</h2>
+                        <p className="mb-2">Êtes-vous sûr de vouloir supprimer cette prière ?  <br /><span className="text-error">Cette action est irréversible.</span></p>
+                        <div className="justify-center gap-4 card-actions">
+                            <button className="btn" onClick={() => setShowDeletePopup(false)}>Cancel</button>
+                            <button className="btn btn-error text-white" onClick={handleDelete}>Delete</button>
+                        </div>
                     </div>
                 </div>
             </div>
-            <ToastContainer position="top-right" autoClose={2000} style={{ zIndex: 2000 }} />
-        </div>
+
+
+        </>
     )
 }
 

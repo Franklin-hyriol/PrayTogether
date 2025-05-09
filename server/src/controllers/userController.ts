@@ -439,25 +439,26 @@ export const refreshAccessToken = async (req: Request, res: Response): Promise<v
     }
 
     try {
-        // Décoder le refresh token pour obtenir l'ID de l'utilisateur
-        const decoded = jwt.verify(
-            token,
-            REFRESH_TOKEN_SECRET as string
-        ) as { id: string };
+        const decoded = jwt.verify(token, REFRESH_TOKEN_SECRET as string) as { id: string };
 
-        // Trouver l'utilisateur avec l'ID extrait du token
         const user = await User.findById(decoded.id);
 
+        if (!user) {
+            // Supprimer le cookie s’il n’y a pas d’utilisateur correspondant
+            res.clearCookie('refresh_token', {
+                httpOnly: false, // ❌ TEMPORAIRE pour debug (Postman/dev) — ✅ à remettre à `true` en PROD
+                secure: true,    // ❌ mettre `false` en local sans HTTPS — ✅ à garder `true` en PROD
+                path: "/",       // ✅ général pour toutes les routes
+                sameSite: "none" // ✅ plus permissif — en PROD tu peux mettre `"strict"` si pas besoin cross-domain
+            });
 
-        if (!user || user.refreshToken !== token) {
-            // Si aucun utilisateur trouvé ou si le refresh token ne correspond pas
             res.status(401).json({
                 status: 401,
-                message: "Invalid refresh token",
+                message: "User not found",
                 error: [{
                     type: "cookie",
                     value: token,
-                    msg: "Invalid refresh token",
+                    msg: "User not found",
                     path: "refresh_token",
                     location: "cookies"
                 }]
@@ -465,7 +466,22 @@ export const refreshAccessToken = async (req: Request, res: Response): Promise<v
             return;
         }
 
-        // Créer un nouveau access token
+        if (user.refreshToken !== token) {
+            // Si le token ne correspond pas à celui en base, on le supprime du navigateu
+            res.status(401).json({
+                status: 401,
+                message: "This session is no longer valid. Please log in again.",
+                error: [{
+                    type: "cookie",
+                    value: token,
+                    msg: "Invalid session (token mismatch). Re-authentication required.",
+                    path: "refresh_token",
+                    location: "cookies"
+                }]
+            });
+            return;
+        }
+
         const newAccessToken = jwt.sign(
             {
                 id: decoded.id,
@@ -480,34 +496,31 @@ export const refreshAccessToken = async (req: Request, res: Response): Promise<v
             data: {
                 accessToken: "Bearer " + newAccessToken
             }
-        }
-        );
+        });
 
     } catch (error: unknown) {
-        if (error instanceof Error) {
-            res.status(403).json({
-                status: 403,
-                message: "Invalid or expired refresh token",
-                error: [{
-                    type: "cookie",
-                    value: token,
-                    msg: "Invalid or expired refresh token",
-                    path: "refresh_token",
-                    location: "cookies"
-                }]
-            });
-        } else {
-            res.status(500).json({
-                status: 500,
-                message: "Internal server error",
-                error: {
-                    message: "Unknown error occurred",
-                    stack: ""
-                }
-            });
-        }
+        // Supprimer le cookie s’il est invalide ou expiré
+        res.clearCookie('refresh_token', {
+            httpOnly: false, // ❌ TEMPORAIRE — ✅ à remettre à `true` en PROD
+            secure: true,    // ❌ false en local — ✅ à garder `true` en PROD
+            path: "/",
+            sameSite: "none"
+        });
+
+        res.status(403).json({
+            status: 403,
+            message: "Invalid or expired refresh token",
+            error: [{
+                type: "cookie",
+                value: token,
+                msg: "Invalid or expired refresh token",
+                path: "refresh_token",
+                location: "cookies"
+            }]
+        });
     }
 };
+
 
 
 // Méthode pour Obtenir le profil de l'utilisateur connecté
@@ -863,6 +876,7 @@ export const getUserById = async (req: Request, res: Response): Promise<void> =>
 // Méthode pour supprimer un utilisateur
 export const deleteUser = async (req: Request, res: Response): Promise<void> => {
     const userId = req.params.id;
+
     try {
         const user = await User.findById(userId);
         if (!user) {
@@ -881,19 +895,14 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
             return;
         }
 
-        // // Suppression manuelle des documents liés
-        // await Post.deleteMany({ userId });
-        // await Comment.deleteMany({ userId });
+        // Supprime l'utilisateur et déclenche le hook `pre('deleteOne')`
+        await user.deleteOne();
 
-        // Suppression de l'utilisateur
-        await User.deleteOne({ _id: userId });
+        res.status(200).json({
+            status: 200,
+            message: 'User and related data deleted successfully'
+        });
 
-        res.status(200).json(
-            {
-                status: 200,
-                message: 'User and related data deleted successfully'
-            }
-        );
     } catch (error: unknown) {
         if (error instanceof Error) {
             res.status(500).json({

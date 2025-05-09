@@ -26,12 +26,31 @@ const userSchema = new Schema({
 userSchema.pre('deleteOne', { document: true, query: false }, async function (next) {
     try {
         const userId = this._id;
-        await mongoose.model('PrayerRequest').deleteMany({ authorId: userId });
+
+        const PrayerRequest = mongoose.model('PrayerRequest');
+        const PrayerInteraction = mongoose.model('PrayerInteraction');
+
+        // Trouver toutes les prières de l'utilisateur
+        const userPrayers = await PrayerRequest.find({ authorId: userId }).select('_id');
+        const userPrayerIds = userPrayers.map(p => p._id);
+
+        // Supprimer toutes les prières de l'utilisateur
+        await PrayerRequest.deleteMany({ authorId: userId });
+
+        // Supprimer toutes les interactions FAITES par l'utilisateur
+        await PrayerInteraction.deleteMany({ userId });
+
+        // Supprimer toutes les interactions REÇUES par les prières de l'utilisateur
+        if (userPrayerIds.length > 0) {
+            await PrayerInteraction.deleteMany({ prayerId: { $in: userPrayerIds } });
+        }
+
         next();
     } catch (err: unknown) {
         next(err as CallbackError);
     }
 });
+
 
 
 const User = mongoose.model<IUser>('User', userSchema);

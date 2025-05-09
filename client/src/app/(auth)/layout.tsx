@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import "../globals.scss"; // garde les styles globaux
+import "../globals.css";
 import { Suspense } from "react";
 import ComponentsLoader from "@/components/ComponentsLoader/ComponentsLoader";
 import QueryProvider from "@/components/QueryProvider/QueryProvider";
@@ -21,7 +21,7 @@ export default function AuthLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <main className="auth-main">
+        <main className="h-screen">
             <QueryProvider>
                 <Suspense fallback={<ComponentsLoader />}>
                     {children}
