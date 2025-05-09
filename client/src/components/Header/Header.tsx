@@ -14,10 +14,11 @@ import { IoLogOut } from "react-icons/io5";
 import { IoMdLogIn } from "react-icons/io";
 import { FaUserCheck } from "react-icons/fa";
 import { FaRegUserCircle } from "react-icons/fa";
+import { initSocket } from "@/services/socket";
 
 function Header() {
 
-    const { user } = useAuth();
+    const { user, accessToken } = useAuth();
     const [showDropdown, setShowDropdown] = useState(false);
     const menuRef = useRef<HTMLDivElement | null>(null);
     const { logout, isLoading } = useLogout();
@@ -35,12 +36,20 @@ function Header() {
         };
     }, [showDropdown]);
 
+
+    useEffect(() => {
+        if (accessToken) {
+            initSocket(accessToken);
+        }
+    }, [accessToken]);
+
+
     return (
 
         <header className="navbar bg-base-100 shadow-sm">
             <div className="flex-1">
-                <Link href="/" className="navbar-brand text-2xl font-bold flex w-fit gap-2">
-                    <Image src="/logo/logo.png" alt="logo pray together" width={30} height={30} />
+                <Link href="/" className="navbar-brand text-2xl font-bold flex gap-2">
+                    <Image src="/logo/logo.png" alt="logo pray together" width={30} height={30} className="w-auto h-auto" />
                     Pray Together
                 </Link>
             </div>

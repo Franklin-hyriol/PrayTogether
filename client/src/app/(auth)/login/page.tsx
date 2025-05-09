@@ -8,7 +8,7 @@ import { useState } from "react";
 import { LoginSignData } from "@/Interface/LoginSignData";
 import usePost from "@/hook/usePost";
 import { Data } from "@/Interface/Data";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { googleAuthEndpoint, loginUserEndpoint } from "@/endpoint/User";
@@ -94,7 +94,7 @@ function Login() {
 
                     <div className="flex flex-col items-center mb-8">
                         <div className="bg-gray-100 w-14 h-14 rounded-full flex items-center justify-center">
-                            <Image src="/logo/logo.png" alt="logo pray together" width={30} height={30} />
+                            <Image src="/logo/logo.png" alt="logo pray together" width={30} height={30} className="w-auto h-auto" />
                         </div>
                         <h1 className="text-xl font-semibold text-gray-800 mt-8">Welcome</h1>
                         <p className="text-sm text-gray-500 mt-1">Please login to your account</p>
@@ -176,8 +176,6 @@ function Login() {
                     </div>
                 </div>
             </div>
-
-            <ToastContainer position="top-right" autoClose={1000} />
         </section>
     )
 }

@@ -16,4 +16,21 @@
         border: 2px solid #22c55e;
         background: linear-gradient(to bottom right, #ffffff, #f0fff7);
     }
+
+    .animate-like-float {
+        animation: likeFloat 1s ease-out forwards;
+    }
+}
+
+
+@keyframes likeFloat {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -30px);
+    }
 }

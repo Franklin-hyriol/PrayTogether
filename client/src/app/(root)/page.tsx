@@ -14,7 +14,7 @@ export default function Home() {
       </div>
 
       <div className="flex-1">
-        <Image className="pointer-events-none" src="/images/pray_illustration.svg" alt="Hero Image" width={500} height={500} />
+        <Image className="pointer-events-none" src="/images/pray_illustration.svg" alt="Hero Image" width={500} height={500} priority />
       </div>
 
     </section>

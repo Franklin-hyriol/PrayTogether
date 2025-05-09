@@ -8,7 +8,7 @@ import { Data } from "@/Interface/Data";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { resetUserPasswordEndpoint } from "@/endpoint/User";
 import { useMutation } from "@tanstack/react-query";
 
@@ -85,7 +85,7 @@ function ResetPassword() {
 
                     <div className="flex flex-col items-center mb-8">
                         <div className="bg-gray-100 w-14 h-14 rounded-full flex items-center justify-center">
-                            <Image src="/logo/logo.png" alt="logo pray together" width={30} height={30} />
+                            <Image src="/logo/logo.png" alt="logo pray together" width={30} height={30} className="w-auto h-auto" />
                         </div>
                         <h1 className="text-xl font-semibold text-gray-800 mt-8">Reset Password</h1>
                         <p className="text-sm text-gray-500 mt-1">Please enter your new password</p>
@@ -162,9 +162,6 @@ function ResetPassword() {
                     </div>
                 </div>
             </div>
-
-
-            <ToastContainer position="top-right" autoClose={5000} />
         </section>
     )
 }
