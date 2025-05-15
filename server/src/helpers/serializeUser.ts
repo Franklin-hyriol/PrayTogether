@@ -9,6 +9,11 @@ export function serializeUser(user: IUser) {
         role: user.role,
         provider: user.provider,
         isBenefactor: user.isBenefactor,
-        badges: user.showBadges,
+        totalPrayersReceived: user.totalPrayersReceived,
+        totalHeartsReceived: user.totalHeartsReceived,
+        totalPrayersMade: user.totalPrayersMade,
+        totalHeartsGiven: user.totalHeartsGiven,
+        totalPrayersCreated: user.totalPrayersCreated,
+        createdAt: user.createdAt,
     };
 }

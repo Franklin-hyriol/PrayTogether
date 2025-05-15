@@ -9,5 +9,17 @@
     {
         "email": "franklin@example.com",
         "password": "123456789"
+    },
+
+    
+    {
+        "code": "prayer_10",
+        "name": "10 Prières",
+        "description": "Tu as prié pour 10 personnes.",
+        "icon": "/icons/prayer_10.png",
+        "condition": {
+            "type": "totalPrayersMade",
+            "threshold": 10
+        }
     }
 ]

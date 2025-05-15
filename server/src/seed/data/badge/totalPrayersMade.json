@@ -1,0 +1,102 @@
+[
+    {
+        "code": "prayers_prayed_for_1",
+        "name": "First Prayer Given",
+        "description": "You've prayed for someone for the first time, an act of love and spiritual connection 🙏",
+        "icon": "🙏",
+        "condition": {
+            "type": "totalPrayersMade",
+            "value": 1
+        }
+    },
+    {
+        "code": "prayers_prayed_for_5",
+        "name": "Heaven's Echo",
+        "description": "5 prayers given, your echo resonates in the heavens 🌟🙏",
+        "icon": "🌟",
+        "condition": {
+            "type": "totalPrayersMade",
+            "value": 5
+        }
+    },
+    {
+        "code": "prayers_prayed_for_10",
+        "name": "Prayer of Solidarity",
+        "description": "10 prayers given, a true spiritual solidarity 💫",
+        "icon": "💫",
+        "condition": {
+            "type": "totalPrayersMade",
+            "value": 10
+        }
+    },
+    {
+        "code": "prayers_prayed_for_20",
+        "name": "Flame of Hope",
+        "description": "20 prayers given, illuminating your path like a flame of hope 🔥",
+        "icon": "🔥",
+        "condition": {
+            "type": "totalPrayersMade",
+            "value": 20
+        }
+    },
+    {
+        "code": "prayers_prayed_for_30",
+        "name": "Sacred Network",
+        "description": "30 prayers given, creating a sacred network of prayers between souls 🕊️",
+        "icon": "🕊️",
+        "condition": {
+            "type": "totalPrayersMade",
+            "value": 30
+        }
+    },
+    {
+        "code": "prayers_prayed_for_50",
+        "name": "Awakened Wisdom",
+        "description": "50 prayers given, a sign of wisdom and spiritual growth 📿",
+        "icon": "📿",
+        "condition": {
+            "type": "totalPrayersMade",
+            "value": 50
+        }
+    },
+    {
+        "code": "prayers_prayed_for_75",
+        "name": "Voices of Angels",
+        "description": "75 prayers given, a chorus of voices rising to the heavens 👼",
+        "icon": "👼",
+        "condition": {
+            "type": "totalPrayersMade",
+            "value": 75
+        }
+    },
+    {
+        "code": "prayers_prayed_for_100",
+        "name": "Heaven's Gates",
+        "description": "100 prayers given, opening the gates of heaven and peace 🌈",
+        "icon": "🌈",
+        "condition": {
+            "type": "totalPrayersMade",
+            "value": 100
+        }
+    },
+    {
+        "code": "prayers_prayed_for_150",
+        "name": "Divine Light",
+        "description": "150 prayers given, bringing divine light into your life ✨",
+        "icon": "✨",
+        "condition": {
+            "type": "totalPrayersMade",
+            "value": 150
+        }
+    },
+    {
+        "code": "prayers_prayed_for_200",
+        "name": "Celestial Harmony",
+        "description": "200 prayers given, a celestial harmony that unites the heart and soul 🌌",
+        "icon": "🌌",
+        "condition": {
+            "type": "totalPrayersMade",
+            "value": 200
+        }
+    }
+]

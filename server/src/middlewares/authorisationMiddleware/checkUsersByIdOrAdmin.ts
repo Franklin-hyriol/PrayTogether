@@ -15,7 +15,14 @@ function checkUsersByIdOrAdmin(req: Request, res: Response, next: NextFunction) 
         res.status(403).json(
             {
                 status: 403,
-                message: 'Access denied: You do not have permission to perform this action.'
+                message: 'Access denied: You do not have permission to perform this action.',
+                error: [
+                    {
+                        type: 'access_denied',
+                        msg: 'Access denied: You do not have permission to perform this action.',
+                        location: 'user'
+                    }
+                ]
             }
         );
     }

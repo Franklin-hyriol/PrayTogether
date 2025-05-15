@@ -1,5 +1,5 @@
 import express from 'express';
-import { createUser, getAllUsers, getConnectedUser, loginUser, getUserById, getResetPasswordToken, deleteUser, refreshAccessToken, logoutUser, resetUserPassword, GoogleAuth } from '../controllers/userController';
+import { createUser, getAllUsers, getConnectedUser, loginUser, getUserById, getResetPasswordToken, deleteUser, refreshAccessToken, logoutUser, resetUserPassword, GoogleAuth, updateProfile, updateUser } from '../controllers/userController';
 import { checkSchema } from 'express-validator';
 import { CreateUserValidationSchema } from '../middlewares/Validation/userValidation/CreateUserValidationSchema';
 import { LoginUserValidationSchema } from '../middlewares/Validation/userValidation/LoginUserValidationSchema';
@@ -13,6 +13,7 @@ import checkUsersByIdOrAdmin from '../middlewares/authorisationMiddleware/checkU
 import { resetUserPasswordValidationSchema } from '../middlewares/Validation/userValidation/resetUserPasswordValidationSchema';
 import passport from '../config/passport';
 import { NEXT_PUBLIC_ENDPOINT_BASE_URL } from '../config/Env';
+import { UpdateUserValidationSchema } from '../middlewares/Validation/userValidation/UpdateUserValidationSchema';
 // import { resetUserPasswordValidationSchema } from '../middlewares/Validation/userValidation/resetUserPasswordValidationSchema';
 // import checkUsersByIdOrAdmin from '../middlewares/authorisationMiddleware/checkUsersByIdOrAdmin';
 
@@ -35,6 +36,9 @@ router.get('/refresh-token', refreshAccessToken);
 // Route pour obtenir le profil de l'utilisateur connecté
 router.get('/me', authenticateJWT, getConnectedUser);
 
+
+router.post('/update-profile', authenticateJWT, updateProfile);
+
 // // Route pour obtenir tous les utilisateurs
 router.get('/getallusers', authenticateJWT, checkAdmin, getAllUsers);
 
@@ -56,8 +60,8 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 // Route pour obtenir un utilisateur avec son ID
 router.get('/:id', authenticateJWT, getUserById);
 
-// //Route pour mettre a jour un utilisateur
-// router.patch('/:id', authenticateJWT, checkSchema(UpdateUserValidationSchema), checkUpdatePermissions, updateUser);
+//Route pour mettre a jour un utilisateur
+router.patch('/:id', authenticateJWT, checkSchema(UpdateUserValidationSchema), checkUsersByIdOrAdmin, updateUser);
 
 // Route pour supprimer un utilisateur
 router.delete('/:id', authenticateJWT, checkUsersByIdOrAdmin, deleteUser);

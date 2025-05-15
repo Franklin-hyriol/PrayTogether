@@ -3,68 +3,50 @@ export const UpdateUserValidationSchema = {
         optional: true,
         isLength: {
             options: { min: 3, max: 255 },
-            errorMessage: 'Username must be between 3 and 255 characters long.'
+            errorMessage: 'Username must be between 3 and 255 characters long.',
+        },
+        isString: {
+            errorMessage: 'Username must be a string.',
+        },
+    },
+
+    password: {
+        optional: true,
+        isString: {
+            errorMessage: 'Password must be a string.',
         },
         notEmpty: {
-            errorMessage: 'Username cannot be empty.'
+            errorMessage: 'Current password cannot be empty.',
         },
-        isString: {
-            errorMessage: 'Username must be a string.'
-        }
     },
-    email: {
+
+    newPassword: {
         optional: true,
-        isEmail: {
-            errorMessage: 'Email must be valid.'
+        isString: {
+            errorMessage: 'New password must be a string.',
         },
         isLength: {
-            options: { max: 255 },
-            errorMessage: 'Email cannot exceed 255 characters.'
-        }
-    },
-    role: {
-        optional: true,
-        isIn: {
-            options: [['user', 'moderator', 'admin']],
-            errorMessage: 'Role must be one of: user, moderator, admin.'
+            options: { min: 8 },
+            errorMessage: 'New password must be at least 8 characters long.',
         },
-        notEmpty: {
-            errorMessage: 'Role cannot be empty.'
-        }
     },
-    profile_picture: {
+
+    confirmPassword: {
         optional: true,
-        isString: {
-            errorMessage: 'Profile picture must be a string.'
+        custom: {
+            options: (value: string, { req }: any) => {
+                if (req.body.newPassword && value !== req.body.newPassword) {
+                    throw new Error('Password confirmation does not match new password.');
+                }
+                return true;
+            },
         },
-        isLength: {
-            options: { max: 255 },
-            errorMessage: 'Profile picture URL cannot exceed 255 characters.'
-        }
     },
-    bio: {
-        optional: true,
-        isString: {
-            errorMessage: 'Bio must be a string.'
-        }
-    },
-    badge_id: {
-        optional: true,
-        isInt: {
-            errorMessage: 'Badge ID must be an integer.'
-        }
-    },
-    moderator_threshold: {
-        optional: true,
-        isInt: {
-            options: { min: 0 },
-            errorMessage: 'Moderator threshold must be a non-negative integer.'
-        }
-    },
-    email_verified: {
+
+    isBenefactor: {
         optional: true,
         isBoolean: {
-            errorMessage: 'Email verified must be a boolean value.'
-        }
-    }
-}
+            errorMessage: 'isBenefactor must be a boolean.',
+        },
+    },
+};

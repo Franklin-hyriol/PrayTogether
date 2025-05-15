@@ -1,10 +1,15 @@
 export interface User {
-    _id: string;
+    id: string;
     username: string;
     email: string;
     profilePhoto: string;
     role: string;
     provider: string;
     isBenefactor: boolean;
-    badges: string[];
+    totalPrayersReceived: number;
+    totalHeartsReceived: number;
+    totalPrayersMade: number;
+    totalHeartsGiven: number;
+    totalPrayersCreated: number;
+    createdAt: string;
 }

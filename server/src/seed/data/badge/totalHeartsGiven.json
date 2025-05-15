@@ -1,0 +1,102 @@
+[
+    {
+        "code": "hearts_given_1",
+        "name": "First Heart",
+        "description": "You gave your first heart, an act of kindness 💖",
+        "icon": "💖",
+        "condition": {
+            "type": "totalHeartsGiven",
+            "value": 1
+        }
+    },
+    {
+        "code": "hearts_given_5",
+        "name": "Golden Heart",
+        "description": "5 hearts given, your love shines brightly around you 🌟💖",
+        "icon": "🌟",
+        "condition": {
+            "type": "totalHeartsGiven",
+            "value": 5
+        }
+    },
+    {
+        "code": "hearts_given_10",
+        "name": "Light Source",
+        "description": "10 hearts given, a light of love to brighten the world ✨💖",
+        "icon": "✨",
+        "condition": {
+            "type": "totalHeartsGiven",
+            "value": 10
+        }
+    },
+    {
+        "code": "hearts_given_20",
+        "name": "Heart of Compassion",
+        "description": "20 hearts given, infinite compassion transforming souls 💖💫",
+        "icon": "💫",
+        "condition": {
+            "type": "totalHeartsGiven",
+            "value": 20
+        }
+    },
+    {
+        "code": "hearts_given_30",
+        "name": "Love Vibration",
+        "description": "30 hearts given, a vibration of love that grows with every beat 💖🌊",
+        "icon": "🌊",
+        "condition": {
+            "type": "totalHeartsGiven",
+            "value": 30
+        }
+    },
+    {
+        "code": "hearts_given_50",
+        "name": "Ray of Kindness",
+        "description": "50 hearts given, a ray of kindness for everyone around you 💖🌞",
+        "icon": "🌞",
+        "condition": {
+            "type": "totalHeartsGiven",
+            "value": 50
+        }
+    },
+    {
+        "code": "hearts_given_75",
+        "name": "Universal Heart",
+        "description": "75 hearts given, your love creates a bridge between all beings 💖🌍",
+        "icon": "🌍",
+        "condition": {
+            "type": "totalHeartsGiven",
+            "value": 75
+        }
+    },
+    {
+        "code": "hearts_given_100",
+        "name": "Infinite Love",
+        "description": "100 hearts given, endless love, as infinite as the universe 💖✨",
+        "icon": "✨",
+        "condition": {
+            "type": "totalHeartsGiven",
+            "value": 100
+        }
+    },
+    {
+        "code": "hearts_given_150",
+        "name": "Power of Love",
+        "description": "150 hearts given, a powerful love that knows no limits 💖💪",
+        "icon": "💪",
+        "condition": {
+            "type": "totalHeartsGiven",
+            "value": 150
+        }
+    },
+    {
+        "code": "hearts_given_200",
+        "name": "Divine Heart",
+        "description": "200 hearts given, you've reached a divine level of generosity and love 💖👑",
+        "icon": "👑",
+        "condition": {
+            "type": "totalHeartsGiven",
+            "value": 200
+        }
+    }
+]

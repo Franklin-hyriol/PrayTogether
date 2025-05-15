@@ -5,9 +5,9 @@ import { createContext, useContext, useState, useEffect, ReactNode } from "react
 
 type AuthContextType = {
     accessToken: string | null;
-    setAccessToken: (t: string | null) => void;
+    setAccessToken: React.Dispatch<React.SetStateAction<string | null>>;
     user: User | null;
-    setUser: (u: User | null) => void;
+    setUser: React.Dispatch<React.SetStateAction<User | null>>;
     loading: boolean;
 };
 

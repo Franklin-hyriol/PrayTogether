@@ -3,7 +3,7 @@ import Image from "next/image";
 import "./PrayerCard.scss";
 import { useEffect, useRef, useState } from "react";
 import { Iauthor, IPrayer } from "@/Interface/IPrayer";
-import { formatRelativeTime } from "@/utils/formatRelativeTime";
+import { formatRelativeTime } from "@/utils/formatDateTime";
 
 // Icons
 import { MdOutlineEdit } from "react-icons/md";

@@ -24,7 +24,7 @@ router.get('/:id/prayed-by', authenticateJWT, checkOwnerOrAdmin, getPeopleWhoPra
 router.get('/:id', authenticateJWT, getPrayerById);
 
 // 📝 Modifier une prière (seulement par son auteur ou admin)
-router.put('/:id', authenticateJWT, checkOwnerOrAdmin, checkSchema(createPrayerValidationSchema), updatePrayer);
+router.patch('/:id', authenticateJWT, checkOwnerOrAdmin, checkSchema(createPrayerValidationSchema), updatePrayer);
 
 // 🗑️ Supprimer une prière (seulement par son auteur ou admin)
 router.delete('/:id', authenticateJWT, checkOwnerOrAdmin, deletePrayer);

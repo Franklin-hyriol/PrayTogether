@@ -5,16 +5,19 @@ import bcrypt from 'bcrypt';
 // import { generateVerificationToken } from '../utils/generateVerificationToken';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-// import { stat } from 'fs';
+import fs from 'fs';
 // import { sendEmail } from '../utils/sendEmail';
 import IUser from '../interfaces/UserInterface';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import { ACCESS_TOKEN_EXPIRATION_TIME, JWT_SECRET, NEXT_PUBLIC_ENDPOINT_BASE_URL, REFRESH_TOKEN_EXPIRATION_TIME, REFRESH_TOKEN_SECRET } from '../config/Env';
+import { ACCESS_TOKEN_EXPIRATION_TIME, BASE_URL, JWT_SECRET, NEXT_PUBLIC_ENDPOINT_BASE_URL, REFRESH_TOKEN_EXPIRATION_TIME, REFRESH_TOKEN_SECRET } from '../config/Env';
 import { toMs } from '../utils/toMs';
 import { StringValue } from 'ms';
 import { serializeUser } from '../helpers/serializeUser';
 import GoogleProfile from '../interfaces/GoogleProfile';
+import { upload } from '../services/upload';
+import multer from 'multer';
+import path from 'path';
 dotenv.config();
 
 // Créer un nouvel utilisateur
@@ -543,7 +546,6 @@ export const getConnectedUser = async (req: Request, res: Response): Promise<voi
         }
 
         const foundUser = await User.findById(user._id)
-            .select('_id email username role profilePhoto badges showBadges totalPrayersReceived totalHeartsReceived totalPrayersMade isBenefactor')
             .lean();
 
 
@@ -565,7 +567,7 @@ export const getConnectedUser = async (req: Request, res: Response): Promise<voi
         res.status(200).json({
             status: 200,
             message: "User retrieved successfully",
-            data: foundUser
+            data: serializeUser(foundUser)
         });
     } catch (error: unknown) {
         if (error instanceof Error) {
@@ -591,12 +593,137 @@ export const getConnectedUser = async (req: Request, res: Response): Promise<voi
 };
 
 
+export const updateProfile = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const user = req.user as IUser;
+
+        if (!user) {
+            res.status(401).json({
+                status: 401,
+                message: 'Unauthorized',
+                error: [{
+                    type: 'authentication',
+                    msg: 'User not authenticated',
+                    path: 'token',
+                    location: 'headers',
+                }],
+            });
+            return;
+        }
+
+        // Intégration du middleware upload.single()
+        upload.single('image')(req, res, async function (err) {
+            if (err instanceof multer.MulterError) {
+                res.status(400).json({
+                    status: 400,
+                    message: 'Bad request',
+                    error: [{
+                        type: 'multer',
+                        msg: err.message,
+                        path: 'image',
+                        location: 'body',
+                    }],
+                });
+                return;
+            } else if (err) {
+                res.status(400).json({
+                    status: 400,
+                    message: 'Bad request',
+                    error: [{
+                        type: 'multer',
+                        msg: err.message,
+                        path: 'image',
+                        location: 'body',
+                    }],
+                });
+                return;
+            }
+
+            if (!req.file) {
+                res.status(400).json({
+                    status: 400,
+                    message: 'Bad request',
+                    error: [{
+                        type: 'multer',
+                        msg: 'No image sent',
+                        path: 'image',
+                        location: 'body',
+                    }],
+                });
+                return;
+            }
+
+            // Supprimer l’ancienne image si elle existe
+            const previousImage = user.profilePhoto;
+            if (previousImage) {
+                const oldPath = path.join('uploads', path.basename(previousImage));
+                if (fs.existsSync(oldPath)) {
+                    fs.unlinkSync(oldPath);
+                }
+            }
+
+            // Construire l’URL relative (adaptée pour front + publique via express.static)
+            const newImageUrl = `${BASE_URL}/uploads/${req.file.filename}`;
+
+            // Mettre à jour l’utilisateur
+            const updatedUser = await User.findByIdAndUpdate(
+                user._id,
+                { profilePhoto: newImageUrl },
+                { new: true }
+            );
+
+            if (!updatedUser) {
+                res.status(404).json({
+                    status: 404,
+                    message: 'User not found',
+                    error: [{
+                        type: "field",
+                        value: user._id,
+                        msg: "User not found",
+                        path: "_id",
+                        location: "params"
+                    }]
+                });
+                return;
+            }
+
+            res.status(200).json({
+                status: 200,
+                message: 'Profile image updated',
+                data: serializeUser(updatedUser),
+            });
+        });
+
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(500).json({
+                status: 500,
+                message: 'Internal server error',
+                error: {
+                    message: error.message,
+                    stack: error.stack,
+                },
+            });
+        } else {
+            res.status(500).json({
+                status: 500,
+                message: 'Internal server error',
+                error: {
+                    message: 'Unknown error occurred',
+                    stack: '',
+                },
+            });
+        }
+    }
+};
+
+
 // Obtenir tous les utilisateurs
 export const getAllUsers = async (req: Request, res: Response): Promise<void> => {
     try {
         // Récupération des utilisateurs sans exposer le mot de passe
         const users = await User.find()
-            .select('_id email username role profilePhoto badges showBadges totalPrayersReceived totalHeartsReceived totalPrayersMade isBenefactor password_reset_token password_reset_expires')
+            .select('_id email username role profilePhoto totalPrayersReceived totalHeartsReceived totalPrayersMade isBenefactor password_reset_token password_reset_expires, refreshToken, createdAt')
             .lean();
 
 
@@ -754,20 +881,7 @@ export const getUserById = async (req: Request, res: Response): Promise<void> =>
 
     try {
         // Recherche de l'utilisateur par son _id
-        const user = await User.findById(userId)
-            .select([
-                '_id',
-                'email',
-                'username',
-                'role',
-                'profilePhoto',
-                'badges',
-                'showBadges',
-                'totalPrayersReceived',
-                'totalHeartsReceived', // Remplacé totalUpvotesReceived par totalHeartsReceived
-                'totalPrayersMade',
-                'isBenefactor'
-            ]).lean();
+        const user = await User.findById(userId).lean();
 
         // Si l'utilisateur n'est pas trouvé
         if (!user) {
@@ -790,7 +904,7 @@ export const getUserById = async (req: Request, res: Response): Promise<void> =>
         res.status(200).json({
             status: 200,
             message: 'User retrieved successfully.',
-            data: user
+            data: serializeUser(user)
         });
     } catch (error: unknown) {
         if (error instanceof Error) {
@@ -816,62 +930,122 @@ export const getUserById = async (req: Request, res: Response): Promise<void> =>
 };
 
 // //Metter a jour un utilisateur
-// export const updateUser = async (req: Request, res: Response): Promise<void> => {
-//     const validation = validationResult(req);
-//     if (!validation.isEmpty()) {
-//         res.status(400).json({ errors: validation.array() });
-//         return;
-//     }
+export const updateUser = async (req: Request, res: Response): Promise<void> => {
+    const validation = validationResult(req);
+    if (!validation.isEmpty()) {
+        res.status(400).json({
+            status: 400,
+            message: "Bad request",
+            errors: validation.array()
+        });
+        return;
+    }
 
+    const userId = req.params.id;
+    const {
+        username,
+        password,
+        newPassword,
+        role, // <- pas utilisé ici mais peut-être dans un futur besoin ?
+        isBenefactor
+    } = req.body;
 
-//     const userId = req.params.id;
-//     try {
-//         const user = await User.findByPk(userId);
-//         if (!user) {
-//             res.status(404).json({ message: 'User not found' });
-//             return;
-//         }
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            res.status(404).json({
+                status: 404,
+                message: 'User not found',
+                error: [{
+                    type: "field",
+                    value: userId,
+                    msg: "User not found",
+                    path: "id",
+                    location: "params"
+                }]
+            });
+            return;
+        }
 
-//         // Extrait les champs du corps de la requête
-//         const { username, email, role, profile_picture, bio, points, badge_id, moderator_threshold, email_verified } = req.body;
+        // ✅ Mise à jour du nom d'utilisateur (sans vérification de doublon ici)
+        if (username !== undefined) user.username = username;
 
-//         // Met à jour l'utilisateur avec les champs spécifiés
-//         await user.update({
-//             username,
-//             email,
-//             role,
-//             profile_picture,
-//             bio,
-//             points,
-//             badge_id,
-//             moderator_threshold,
-//             email_verified
-//         });
+        // 🔐 Gestion du changement de mot de passe
+        if (newPassword) {
+            // 🛑 Si utilisateur est inscrit via Google, il ne peut pas changer son mot de passe ici
+            if (user.provider === 'google') {
+                res.status(400).json({
+                    status: 400,
+                    message: 'Password change not allowed for Google accounts. Use "Forgot password" instead.',
+                    error: [{
+                        type: "provider",
+                        value: "google",
+                        msg: "You cannot change your password for a Google account. Please use the 'Forgot password' option instead.",
+                        path: "newPassword",
+                        location: "body"
+                    }]
+                });
+                return;
+            }
 
-//         // Récupère l'utilisateur mis à jour avec les attributs souhaités
-//         const updatedUser = await User.findByPk(userId, {
-//             attributes: [
-//                 'id',
-//                 'username',
-//                 'email',
-//                 'role',
-//                 'profile_picture',
-//                 'bio',
-//                 'points',
-//                 'badge_id',
-//                 'moderator_threshold'
-//             ]
-//         });
+            if (!password) {
+                res.status(400).json({
+                    status: 400,
+                    message: 'Current password is required to change password',
+                    error: [{
+                        type: "field",
+                        value: '',
+                        msg: "Current password is required",
+                        path: "password",
+                        location: "body"
+                    }]
+                });
+                return;
+            }
 
-//         // Retourne l'utilisateur mis à jour
-//         res.status(200).json(updatedUser);
-//     } catch (error) {
-//         res.status(500).json({
-//             message: 'Internal server error',
-//             error: error
-//         });
-//     }
-// };
+            const passwordMatch = await bcrypt.compare(password, user.password);
+            if (!passwordMatch) {
+                res.status(401).json({
+                    status: 401,
+                    message: 'Current password is incorrect',
+                    error: [{
+                        type: "field",
+                        value: password,
+                        msg: "Current password is incorrect",
+                        path: "password",
+                        location: "body"
+                    }]
+                });
+                return;
+            }
+
+            const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+            user.password = hashedNewPassword;
+        }
+
+        if (isBenefactor !== undefined) user.isBenefactor = isBenefactor;
+
+        await user.save();
+
+        res.status(200).json({
+            status: 200,
+            message: 'User updated successfully',
+            data: serializeUser(user)
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: 500,
+            message: 'Internal server error',
+            error: [{
+                type: "server",
+                value: null,
+                msg: error instanceof Error ? error.message : "Unknown error occurred",
+                path: "",
+                location: "server"
+            }]
+        });
+    }
+};
 
 // Méthode pour supprimer un utilisateur
 export const deleteUser = async (req: Request, res: Response): Promise<void> => {
