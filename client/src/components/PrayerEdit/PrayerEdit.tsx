@@ -10,7 +10,7 @@ import { IPrayer } from "@/Interface/IPrayer";
 import { toast } from "react-toastify";
 import { updatePrayerByIdEndpoint } from "@/endpoint/Prayer";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import usePut from "@/hook/usePut";
+import usePatch from "@/hook/usePatch";
 
 interface PrayerEditProps {
     openPopupEdit: boolean
@@ -35,7 +35,7 @@ function PrayerEdit({ openPopupEdit, setOpenPopupEdit, prayerToEdit }: PrayerEdi
     const overlayRef = useRef<HTMLDivElement>(null);
     const [visible, setVisible] = useState(false);
 
-    const { putData } = usePut(true);
+    const { patchData } = usePatch(true);
     const queryClient = useQueryClient();
 
 
@@ -56,7 +56,7 @@ function PrayerEdit({ openPopupEdit, setOpenPopupEdit, prayerToEdit }: PrayerEdi
 
 
     const CreatePrayerMutation = useMutation({
-        mutationFn: (data: IPrayerRequest) => putData<Data<IPrayer[]>>(`${updatePrayerByIdEndpoint}/${prayerToEdit?._id}`, data),
+        mutationFn: (data: IPrayerRequest) => patchData<Data<IPrayer[]>>(`${updatePrayerByIdEndpoint}/${prayerToEdit?._id}`, data),
         onSuccess: (response) => {
             if (response?.status === 200) {
                 toast.success("Prayer update successful!");

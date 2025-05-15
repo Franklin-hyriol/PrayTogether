@@ -36,7 +36,7 @@ function ProfileAvatar() {
         },
         onSuccess: (response) => {
             toast.success("Avatar updated")
-            setUser(response.data);
+            setUser(prev => prev ? { ...prev, profilePhoto: response.data.profilePhoto } : prev);
             resetField('image')
         },
         onError: () => {

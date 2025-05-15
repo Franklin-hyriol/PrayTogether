@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon",
     "build": "tsc",
-    "preview": "node dist/index.js"
+    "preview": "node dist/index.js",
+    "seed:badge": "ts-node ./src/seed/script/seedBadges.ts"
   },
   "repository": {
     "type": "git",

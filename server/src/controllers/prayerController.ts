@@ -8,10 +8,12 @@ import PrayerInteraction from "../models/prayerInteraction";
 import { emitEventForUser } from "../services/emitEventForUser";
 import removeAccents from 'remove-accents';
 import { EnrichedPrayer } from "../interfaces/PrayerRequestInterface";
+import { checkAndAssignAllBadges } from "../services/checkAndAssignAllBadges";
 
 export const createPrayer = async (req: Request, res: Response): Promise<void> => {
     const validation = validationResult(req);
     const user = req.user as IUser;
+
     if (!validation.isEmpty()) {
         res.status(400).json({
             status: 400,
@@ -47,6 +49,16 @@ export const createPrayer = async (req: Request, res: Response): Promise<void> =
         });
 
         const savedPrayer = await newPrayer.save();
+
+        // ➕ Incrémentation du compteur de prières créées
+        await User.findByIdAndUpdate(authorId, { $inc: { totalPrayersCreated: 1 } });
+
+        // 📝 Récupérer à nouveau l'utilisateur avec ses données mises à jour
+        const updatedUser = await User.findById(authorId);
+
+        if (updatedUser) {
+            await checkAndAssignAllBadges(updatedUser);
+        }
 
         res.status(201).json({
             status: 201,
@@ -353,6 +365,7 @@ export const updatePrayer = async (req: Request, res: Response): Promise<void> =
 export const deletePrayer = async (req: Request, res: Response): Promise<void> => {
     try {
         const prayerId = req.params.id;
+        const user = req.user as IUser;  // Récupérer l'utilisateur connecté
 
         const prayer = await PrayerRequest.findById(prayerId);
         if (!prayer) {
@@ -366,6 +379,11 @@ export const deletePrayer = async (req: Request, res: Response): Promise<void> =
 
         // Déclenche le hook pre('deleteOne') sur PrayerRequest
         await prayer.deleteOne();
+
+        // Décrémente le compteur totalPrayersCreated de l'utilisateur
+        await User.findByIdAndUpdate(user._id, {
+            $inc: { totalPrayersCreated: -1 }  // Décrémentation de la valeur
+        });
 
         res.status(200).json({
             status: 200,
@@ -436,10 +454,14 @@ export const prayForPrayer = async (req: Request, res: Response): Promise<void> 
         if (author) {
             author.totalPrayersReceived += 1;
             await author.save();
+
+            await checkAndAssignAllBadges(author);
         }
 
         user.totalPrayersMade += 1;
         await user.save();
+
+        await checkAndAssignAllBadges(user);
 
         await emitEventForUser(prayerId, "prayedForNotification");
 
@@ -521,11 +543,15 @@ export const likeThisPrayer = async (req: Request, res: Response): Promise<void>
             if (author) {
                 author.totalHeartsReceived += 1;
                 await author.save();
+
+                await checkAndAssignAllBadges(author);
             }
 
             user.totalHeartsGiven += 1;
             await user.save();
             await emitEventForUser(prayerId, "likeNotification");
+
+            await checkAndAssignAllBadges(user);
 
             res.status(200).json({
                 status: 200,

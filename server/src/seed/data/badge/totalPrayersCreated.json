@@ -1,0 +1,102 @@
+[
+    {
+        "code": "prayers_created_1",
+        "name": "First Prayer Created",
+        "description": "You've created your first prayer, a step towards helping others 🙏",
+        "icon": "🙏",
+        "condition": {
+            "type": "totalPrayersCreated",
+            "value": 1
+        }
+    },
+    {
+        "code": "prayers_created_5",
+        "name": "Bridge of Hope",
+        "description": "5 prayers created, building bridges of hope for others 🌉🙏",
+        "icon": "🌉",
+        "condition": {
+            "type": "totalPrayersCreated",
+            "value": 5
+        }
+    },
+    {
+        "code": "prayers_created_10",
+        "name": "Guardian of Souls",
+        "description": "10 prayers created, guiding others with your prayers 💫",
+        "icon": "💫",
+        "condition": {
+            "type": "totalPrayersCreated",
+            "value": 10
+        }
+    },
+    {
+        "code": "prayers_created_20",
+        "name": "Beacon of Light",
+        "description": "20 prayers created, your light shines brightly for others 🔥",
+        "icon": "🔥",
+        "condition": {
+            "type": "totalPrayersCreated",
+            "value": 20
+        }
+    },
+    {
+        "code": "prayers_created_30",
+        "name": "Pathfinder",
+        "description": "30 prayers created, showing the way to others with your guidance 🛤️",
+        "icon": "🛤️",
+        "condition": {
+            "type": "totalPrayersCreated",
+            "value": 30
+        }
+    },
+    {
+        "code": "prayers_created_50",
+        "name": "Spiritual Pillar",
+        "description": "50 prayers created, a pillar of support and faith for others 🏛️",
+        "icon": "🏛️",
+        "condition": {
+            "type": "totalPrayersCreated",
+            "value": 50
+        }
+    },
+    {
+        "code": "prayers_created_75",
+        "name": "Healing Hands",
+        "description": "75 prayers created, your hands bring healing to those in need 👐",
+        "icon": "👐",
+        "condition": {
+            "type": "totalPrayersCreated",
+            "value": 75
+        }
+    },
+    {
+        "code": "prayers_created_100",
+        "name": "Angel's Touch",
+        "description": "100 prayers created, you are a touch of divine inspiration for others 👼",
+        "icon": "👼",
+        "condition": {
+            "type": "totalPrayersCreated",
+            "value": 100
+        }
+    },
+    {
+        "code": "prayers_created_150",
+        "name": "Sacred Journey",
+        "description": "150 prayers created, a sacred journey of compassion and connection 🛣️",
+        "icon": "🛣️",
+        "condition": {
+            "type": "totalPrayersCreated",
+            "value": 150
+        }
+    },
+    {
+        "code": "prayers_created_200",
+        "name": "Divine Messenger",
+        "description": "200 prayers created, you carry the divine message to many 📜",
+        "icon": "📜",
+        "condition": {
+            "type": "totalPrayersCreated",
+            "value": 200
+        }
+    }
+]

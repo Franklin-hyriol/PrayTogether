@@ -46,7 +46,7 @@ function Header() {
 
     return (
 
-        <header className="navbar bg-base-100 shadow-sm">
+        <header className="navbar bg-base-100 shadow-sm sticky top-0 z-50">
             <div className="flex-1">
                 <Link href="/" className="navbar-brand text-2xl font-bold flex gap-2">
                     <Image src="/logo/logo.png" alt="logo pray together" width={30} height={30} className="w-auto h-auto" />

@@ -1,0 +1,102 @@
+[
+    {
+        "code": "hearts_received_1",
+        "name": "First Spark",
+        "description": "You've received your first heart, a spark of love 💖",
+        "icon": "💫",
+        "condition": {
+            "type": "totalHeartsReceived",
+            "value": 1
+        }
+    },
+    {
+        "code": "hearts_received_5",
+        "name": "Gentle Breeze",
+        "description": "5 hearts accompany you, like a gentle breeze warming your soul 🌬️💞",
+        "icon": "💞",
+        "condition": {
+            "type": "totalHeartsReceived",
+            "value": 5
+        }
+    },
+    {
+        "code": "hearts_received_10",
+        "name": "Caress of Love",
+        "description": "10 hearts sent with kindness, a caress of love shared 🌸",
+        "icon": "🌷",
+        "condition": {
+            "type": "totalHeartsReceived",
+            "value": 10
+        }
+    },
+    {
+        "code": "hearts_received_20",
+        "name": "Stars in the Sky",
+        "description": "20 hearts shine for you, lighting your path with love ✨💖",
+        "icon": "⭐",
+        "condition": {
+            "type": "totalHeartsReceived",
+            "value": 20
+        }
+    },
+    {
+        "code": "hearts_received_30",
+        "name": "River of Affection",
+        "description": "30 hearts flow to you, a river of pure affection 💧💗",
+        "icon": "🌊",
+        "condition": {
+            "type": "totalHeartsReceived",
+            "value": 30
+        }
+    },
+    {
+        "code": "hearts_received_50",
+        "name": "Vibration of Love",
+        "description": "50 hearts vibrate for you, an echo of love shared across the universe 🌌❤️",
+        "icon": "💫",
+        "condition": {
+            "type": "totalHeartsReceived",
+            "value": 50
+        }
+    },
+    {
+        "code": "hearts_received_75",
+        "name": "Sacred Flame",
+        "description": "75 hearts burn within you, a flame of eternal love 🔥💘",
+        "icon": "🔥",
+        "condition": {
+            "type": "totalHeartsReceived",
+            "value": 75
+        }
+    },
+    {
+        "code": "hearts_received_100",
+        "name": "Ocean of Gratitude",
+        "description": "100 hearts create an ocean of love and gratitude 🌊💝",
+        "icon": "🌊",
+        "condition": {
+            "type": "totalHeartsReceived",
+            "value": 100
+        }
+    },
+    {
+        "code": "hearts_received_150",
+        "name": "Divine Harmony",
+        "description": "150 hearts sing a melody of love in perfect harmony 🎶💖",
+        "icon": "🎶",
+        "condition": {
+            "type": "totalHeartsReceived",
+            "value": 150
+        }
+    },
+    {
+        "code": "hearts_received_200",
+        "name": "Universal Heart",
+        "description": "200 hearts beat in unison, a universal love with no borders 🌍💘",
+        "icon": "🌍",
+        "condition": {
+            "type": "totalHeartsReceived",
+            "value": 200
+        }
+    }
+]

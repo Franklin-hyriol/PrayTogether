@@ -1,9 +1,9 @@
 import { useAuth } from '@/context/AuthContext';
 
-export default function usePut(authentication = false) {
+export default function usePatch(authentication = false) {
     const { accessToken } = useAuth();
 
-    const putData = async <T>(url: string, data: unknown): Promise<T> => {
+    const patchData = async <T>(url: string, data: unknown): Promise<T> => {
         const headers: HeadersInit = {
             'Content-Type': 'application/json',
             Accept: 'application/json',
@@ -14,7 +14,7 @@ export default function usePut(authentication = false) {
         }
 
         const response = await fetch(url, {
-            method: 'PUT',
+            method: 'PATCH',
             headers,
             body: JSON.stringify(data),
             credentials: 'include',
@@ -32,5 +32,5 @@ export default function usePut(authentication = false) {
         return response.json();
     };
 
-    return { putData };
+    return { patchData };
 }

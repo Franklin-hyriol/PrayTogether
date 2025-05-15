@@ -1,0 +1,102 @@
+[
+    {
+        "code": "prayers_received_1",
+        "name": "First Light",
+        "description": "You received your first prayer 🙏",
+        "icon": "🌱",
+        "condition": {
+            "type": "totalPrayersReceived",
+            "value": 1
+        }
+    },
+    {
+        "code": "prayers_received_5",
+        "name": "Ray of Hope",
+        "description": "5 prayers — your journey begins.",
+        "icon": "🔅",
+        "condition": {
+            "type": "totalPrayersReceived",
+            "value": 5
+        }
+    },
+    {
+        "code": "prayers_received_10",
+        "name": "Faithful Support",
+        "description": "10 people have prayed for you.",
+        "icon": "💌",
+        "condition": {
+            "type": "totalPrayersReceived",
+            "value": 10
+        }
+    },
+    {
+        "code": "prayers_received_20",
+        "name": "Helping Hand",
+        "description": "20 prayers have lifted you up.",
+        "icon": "🤝",
+        "condition": {
+            "type": "totalPrayersReceived",
+            "value": 20
+        }
+    },
+    {
+        "code": "prayers_received_30",
+        "name": "Silent Strength",
+        "description": "30 prayers received in faith.",
+        "icon": "💫",
+        "condition": {
+            "type": "totalPrayersReceived",
+            "value": 30
+        }
+    },
+    {
+        "code": "prayers_received_50",
+        "name": "Uplifted",
+        "description": "50 people have supported you in prayer.",
+        "icon": "🌟",
+        "condition": {
+            "type": "totalPrayersReceived",
+            "value": 50
+        }
+    },
+    {
+        "code": "prayers_received_75",
+        "name": "Circle of Grace",
+        "description": "75 prayers show lasting support.",
+        "icon": "🕊️",
+        "condition": {
+            "type": "totalPrayersReceived",
+            "value": 75
+        }
+    },
+    {
+        "code": "prayers_received_100",
+        "name": "Carried Heart",
+        "description": "100 prayers have accompanied your path.",
+        "icon": "❤️",
+        "condition": {
+            "type": "totalPrayersReceived",
+            "value": 100
+        }
+    },
+    {
+        "code": "prayers_received_150",
+        "name": "Pillar of Faith",
+        "description": "You’ve inspired 150 prayers.",
+        "icon": "🔔",
+        "condition": {
+            "type": "totalPrayersReceived",
+            "value": 150
+        }
+    },
+    {
+        "code": "prayers_received_200",
+        "name": "Shared Light",
+        "description": "200 prayers have walked with you.",
+        "icon": "🌠",
+        "condition": {
+            "type": "totalPrayersReceived",
+            "value": 200
+        }
+    }
+]
