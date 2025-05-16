@@ -39,11 +39,13 @@ function PrayerCard({ currentUser, prayer, className, online = false, prayeringF
     const queryClient = useQueryClient();
 
 
+    // Pray for Someone
     const PrayforYouMutation = useMutation({
         mutationFn: () => postData<Data<IPrayer[]>>(prayForPrayerEndpoint(prayer._id), {}),
         onSuccess: (response) => {
             if (response?.status === 200) {
                 queryClient.invalidateQueries({ queryKey: ['allPrayers'] });
+                queryClient.invalidateQueries({ queryKey: ['AllBadges'] });
             }
         },
 
@@ -54,11 +56,13 @@ function PrayerCard({ currentUser, prayer, className, online = false, prayeringF
         }
     });
 
+    // Like Prayer
     const LikePrayerMutation = useMutation({
         mutationFn: () => postData<Data<IPrayer[]>>(likePrayerEndpoint(prayer._id), {}),
         onSuccess: (response) => {
             if (response?.status === 200) {
                 queryClient.invalidateQueries({ queryKey: ['allPrayers'] });
+                queryClient.invalidateQueries({ queryKey: ['AllBadges'] });
             }
         },
 

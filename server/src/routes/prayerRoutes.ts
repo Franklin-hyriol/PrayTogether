@@ -2,7 +2,7 @@ import express from 'express';
 import authenticateJWT from '../middlewares/authMiddlewares/authenticateJWT';
 import checkAdmin from '../middlewares/authorisationMiddleware/checkAdmin';
 import { checkSchema } from 'express-validator';
-import { createPrayerValidationSchema } from '../middlewares/Validation/prayerRequest/createPrayerValidation';
+import { createPrayerValidationSchema } from '../middlewares/Validation/prayerValidation/createPrayerValidation';
 import { createPrayer, deletePrayer, getAllPrayers, getMyPrayers, getPeopleWhoPrayed, getPrayerById, likeThisPrayer, prayForPrayer, updatePrayer } from '../controllers/prayerController';
 import checkOwnerOrAdmin from '../middlewares/authorisationMiddleware/checkOwnerOrAdmin';
 

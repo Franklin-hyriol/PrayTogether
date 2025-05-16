@@ -4,6 +4,8 @@ export default interface IPrayerRequest {
     authorId: Types.ObjectId;
     text: string;
     isUrgent: boolean;
+    visibilityUntil: Date;
+    expiresAt: Date;
     createdAt: Date;
     updatedAt: Date;
 }

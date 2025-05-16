@@ -12,7 +12,6 @@ import { getResetPasswordTokenValidationSchema } from '../middlewares/Validation
 import checkUsersByIdOrAdmin from '../middlewares/authorisationMiddleware/checkUsersByIdOrAdmin';
 import { resetUserPasswordValidationSchema } from '../middlewares/Validation/userValidation/resetUserPasswordValidationSchema';
 import passport from '../config/passport';
-import { NEXT_PUBLIC_ENDPOINT_BASE_URL } from '../config/Env';
 import { UpdateUserValidationSchema } from '../middlewares/Validation/userValidation/UpdateUserValidationSchema';
 // import { resetUserPasswordValidationSchema } from '../middlewares/Validation/userValidation/resetUserPasswordValidationSchema';
 // import checkUsersByIdOrAdmin from '../middlewares/authorisationMiddleware/checkUsersByIdOrAdmin';
