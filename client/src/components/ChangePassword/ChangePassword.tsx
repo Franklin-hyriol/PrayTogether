@@ -107,6 +107,8 @@ function ChangePassword({ className }: ChangePasswordProps) {
       </div>
 	  {/* Error */}
 
+    <input type="text" defaultValue={user?.username} name="username" autoComplete="username" style={{ display: "none" }} aria-hidden="true" />
+
       {/* Password */}
       <div className="space-y-1">
         <label
