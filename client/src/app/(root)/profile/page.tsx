@@ -115,8 +115,8 @@ function Profile() {
                 </div>
 
                 <div className="form-tabs flex justify-center gap-4 mb-8 pb-4 border-[#e5e7eb] border-b">
-                    <button className={`tab-btn ${tab === 1 ? "active" : ""}`} data-tab="personal-info" onClick={() => setTab(1)}>Informations personnelles</button>
-                    <button className={`tab-btn ${tab === 2 ? "active" : ""}`} data-tab="password" onClick={() => setTab(2)}>Mot de passe</button>
+                    <button className={`tab-btn ${tab === 1 ? "active" : ""}`} data-tab="personal-info" onClick={() => setTab(1)}>Personal info</button>
+                    <button className={`tab-btn ${tab === 2 ? "active" : ""}`} data-tab="password" onClick={() => setTab(2)}>Password</button>
                 </div>
 
                 <div className="w-full">

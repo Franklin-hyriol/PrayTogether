@@ -9,6 +9,9 @@ import { emitEventForUser } from "../services/emitEventForUser";
 import removeAccents from 'remove-accents';
 import { EnrichedPrayer } from "../interfaces/PrayerRequestInterface";
 import { checkAndAssignAllBadges } from "../services/checkAndAssignAllBadges";
+import { toMs } from "../utils/toMs";
+import { PRAYER_EXPIRATION_DURATION, PRAYER_VISIBILITY_DURATION } from "../config/Env";
+import { StringValue } from "ms";
 
 export const createPrayer = async (req: Request, res: Response): Promise<void> => {
     const validation = validationResult(req);
@@ -42,13 +45,35 @@ export const createPrayer = async (req: Request, res: Response): Promise<void> =
             return;
         }
 
+        // ✅ Vérifier qu'il a moins de 2 prières actives
+        const activePrayerCount = await PrayerRequest.countDocuments({
+            authorId: authorId,
+            visibilityUntil: { $gt: new Date() } // Encore actives
+        });
+
+        if (activePrayerCount >= 2) {
+            res.status(403).json({
+                status: 403,
+                message: "You have reached the limit of 2 active prayers.",
+                error: [{
+                    type: "limit",
+                    value: "",
+                    msg: "You already have 2 active prayers.",
+                    path: "prayer",
+                    location: "body"
+                }]
+            });
+            return;
+        }
+
+        // ✅ Création de la nouvelle prière
         const now = new Date();
         const newPrayer = new PrayerRequest({
             authorId,
             text,
             isUrgent: isUrgent || false,
-            visibilityUntil: new Date(now.getTime() + 2 * 60 * 1000),
-            expiresAt: new Date(now.getTime() + 3 * 60 * 1000)
+            visibilityUntil: new Date(now.getTime() + toMs(PRAYER_VISIBILITY_DURATION as StringValue || "1d")),
+            expiresAt: new Date(now.getTime() + toMs(PRAYER_EXPIRATION_DURATION as StringValue || "7d")),
         });
 
         const savedPrayer = await newPrayer.save();
@@ -58,7 +83,6 @@ export const createPrayer = async (req: Request, res: Response): Promise<void> =
 
         // 📝 Récupérer à nouveau l'utilisateur avec ses données mises à jour
         const updatedUser = await User.findById(authorId);
-
         if (updatedUser) {
             await checkAndAssignAllBadges(updatedUser);
         }
@@ -84,7 +108,7 @@ export const createPrayer = async (req: Request, res: Response): Promise<void> =
             error: [defaultError]
         });
     }
-}
+};
 
 export const getAllPrayers = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -93,12 +117,18 @@ export const getAllPrayers = async (req: Request, res: Response): Promise<void> 
         const searchQueryRaw = (req.query.search as string)?.trim();
         const searchQuery = searchQueryRaw ? removeAccents(searchQueryRaw.toLowerCase()) : null;
 
+        // Pagination
+        const page = parseInt(req.query.page as string, 10) || 1;
+        const limit = parseInt(req.query.limit as string, 10) || 10;
+        const skip = (page - 1) * limit;
+
         const now = new Date();
         const baseFilter: any = {
             authorId: { $ne: user._id },
             visibilityUntil: { $gt: now } // 👉 seulement les prières encore visibles
         };
 
+        // Récupère toutes les prières visibles
         const prayers = await PrayerRequest.find(baseFilter)
             .populate('authorId', 'username profilePhoto')
             .lean();
@@ -134,19 +164,19 @@ export const getAllPrayers = async (req: Request, res: Response): Promise<void> 
             };
         });
 
+        // Filtrage par recherche
         if (searchQuery) {
-            const searchWords = searchQuery.split(/\s+/); // découpe par espace
-
+            const searchWords = searchQuery.split(/\s+/);
             enrichedPrayers = enrichedPrayers.filter(p => {
                 const text = p.normalizedText || "";
                 const author = p.normalizedAuthor || "";
-
                 return searchWords.every(word =>
                     text.includes(word) || author.includes(word)
                 );
             });
         }
 
+        // Filtrage par type
         if (filterType === "prayed") {
             enrichedPrayers = enrichedPrayers.filter(p => p.isPrayed);
         } else if (filterType === "liked") {
@@ -157,13 +187,25 @@ export const getAllPrayers = async (req: Request, res: Response): Promise<void> 
             enrichedPrayers = enrichedPrayers.filter(p => p.isUrgent === true);
         }
 
-        // Supprimer les champs temporaires
+        // Suppression des champs temporaires
         enrichedPrayers = enrichedPrayers.map(({ normalizedText, normalizedAuthor, ...rest }) => rest);
+
+        // Calcul pagination
+        const totalCount = enrichedPrayers.length;
+        const totalPages = Math.ceil(totalCount / limit);
+        const paginatedPrayers = enrichedPrayers.slice(skip, skip + limit);
 
         res.status(200).json({
             status: 200,
             message: "Prayers retrieved successfully.",
-            data: enrichedPrayers
+            data: paginatedPrayers,
+            pagination: {
+                totalItems: totalCount,
+                totalPages,
+                currentPage: page,
+                hasNextPage: page < totalPages,
+                hasPrevPage: page > 1
+            }
         });
     } catch (error) {
         res.status(500).json({
@@ -233,7 +275,7 @@ export const getMyPrayers = async (req: Request, res: Response): Promise<void> =
         // 🔥 Étape 1 : Supprimer les prières expirées
         await PrayerRequest.deleteMany({
             authorId: user._id,
-            expiresAt: { $lt: now }
+            expiresAt: { $lt: now },
         });
 
         // 🔍 Lecture des paramètres
@@ -251,64 +293,62 @@ export const getMyPrayers = async (req: Request, res: Response): Promise<void> =
         const [totalCount, prayers] = await Promise.all([
             PrayerRequest.countDocuments(filter),
             PrayerRequest.find(filter)
-                .sort({ createdAt: -1 }) // Optionnel : les plus récentes en premier
+                .sort({ createdAt: -1 }) // Les plus récentes en premier
                 .skip(skip)
                 .limit(limit)
-                .populate('authorId', 'username profilePhoto')
-                .lean()
+                .populate("authorId", "username profilePhoto")
+                .lean(),
         ]);
 
-        if (!prayers || prayers.length === 0) {
-            res.status(200).json({
-                status: 200,
-                message: "No prayers found for the user.",
-                data: [],
-                page,
-                totalPages: Math.ceil(totalCount / limit),
-                totalCount
-            });
-            return;
-        }
+        // ✨ Enrichir les prières avec les compteurs de likes/prayers
+        const enrichedPrayers = await Promise.all(
+            prayers.map(async (prayer) => {
+                const interactions = await PrayerInteraction.find({
+                    prayerId: prayer._id,
+                });
 
-        // ✨ Enrichir avec les compteurs
-        const enrichedPrayers = await Promise.all(prayers.map(async (prayer) => {
-            const interactions = await PrayerInteraction.find({ prayerId: prayer._id });
+                const likesCount = interactions.filter((i) => i.type === "liked").length;
+                const prayersCount = interactions.filter((i) => i.type === "prayed").length;
 
-            const likesCount = interactions.filter(i => i.type === 'liked').length;
-            const prayersCount = interactions.filter(i => i.type === 'prayed').length;
+                return {
+                    ...prayer,
+                    likesCount,
+                    prayersCount,
+                };
+            })
+        );
 
-            return {
-                ...prayer,
-                likesCount,
-                prayersCount
-            };
-        }));
+        const totalPages = Math.ceil(totalCount / limit);
 
         res.status(200).json({
             status: 200,
             message: "User's prayers retrieved successfully.",
             data: enrichedPrayers,
-            page,
-            totalPages: Math.ceil(totalCount / limit),
-            totalCount
+            pagination: {
+                totalItems: totalCount,
+                totalPages,
+                currentPage: page,
+                hasNextPage: page < totalPages,
+                hasPrevPage: page > 1,
+            },
         });
-
     } catch (error) {
         const defaultError = {
             type: "server",
             value: "",
             msg: error instanceof Error ? error.message : "Unknown error occurred",
             path: "server",
-            location: "internal"
+            location: "internal",
         };
 
         res.status(500).json({
             status: 500,
             message: "Internal server error",
-            error: [defaultError]
+            error: [defaultError],
         });
     }
 };
+
 
 export const getPrayerById = async (req: Request, res: Response): Promise<void> => {
     try {

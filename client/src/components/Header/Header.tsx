@@ -49,7 +49,10 @@ function Header() {
   return (
     <header className="navbar bg-base-100 sticky top-0 z-50 shadow-sm">
       <div className="flex-1">
-        <Link href="/" className="navbar-brand flex gap-2 text-2xl font-bold w-fit">
+        <Link
+          href="/"
+          className="navbar-brand flex w-fit gap-2 text-2xl font-bold"
+        >
           <Image
             src="/logo/logo.png"
             alt="logo pray together"
@@ -61,19 +64,19 @@ function Header() {
         </Link>
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex gap-4">
         {user ? (
-          <nav className="dropdown dropdown-end">
-            <div className="flex gap-4">
-              {(pathname !== "/" && pathname !== "/prayer-room") && (
-                <Link
-                  className="btn btn-primary p-2 text-base font-normal"
-                  href="/prayer-room"
-                >
-                  Back to Prayer Room
-                </Link>
-              )}
+          <div className="flex gap-4">
+            {pathname !== "/" && pathname !== "/prayer-room" && (
+              <Link
+                className="btn btn-primary p-2 text-base font-normal"
+                href="/prayer-room"
+              >
+                Back to Prayer Room
+              </Link>
+            )}
 
+            <nav className="dropdown dropdown-end">
               <div
                 tabIndex={0}
                 role="button"
@@ -93,36 +96,37 @@ function Header() {
                   )}
                 </div>
               </div>
-            </div>
-            <ul
-              tabIndex={0}
-              className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
-            >
-              <li>
-                <Link href="/profile" className="text-lg">
-                  <FaUser />
-                  Profile
-                </Link>
-              </li>
-              <li>
-                <Link href="/settings" className="text-lg">
-                  <IoSettingsSharp />
-                  Settings
-                </Link>
-              </li>
 
-              <li>
-                <button
-                  onClick={() => logout()}
-                  disabled={isLoading}
-                  className="logout-btn text-lg"
-                >
-                  <IoLogOut />
-                  Logout
-                </button>
-              </li>
-            </ul>
-          </nav>
+              <ul
+                tabIndex={0}
+                className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
+              >
+                <li>
+                  <Link href="/profile" className="text-lg">
+                    <FaUser />
+                    Profile
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/settings" className="text-lg">
+                    <IoSettingsSharp />
+                    Settings
+                  </Link>
+                </li>
+
+                <li>
+                  <button
+                    onClick={() => logout()}
+                    disabled={isLoading}
+                    className="logout-btn text-lg"
+                  >
+                    <IoLogOut />
+                    Logout
+                  </button>
+                </li>
+              </ul>
+            </nav>
+          </div>
         ) : (
           <>
             <Link href="/login" className="btn" aria-label="Login">

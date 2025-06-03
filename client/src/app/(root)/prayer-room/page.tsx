@@ -1,4 +1,3 @@
-
 "use client";
 
 import PrayerCard from "@/components/PrayerCard/PrayerCard";
@@ -10,7 +9,10 @@ import { IPrayer } from "@/Interface/IPrayer";
 import { Data } from "@/Interface/Data";
 import ComponentsLoader from "@/components/ComponentsLoader/ComponentsLoader";
 import { getMyPrayersEndpoint, getAllPrayersEndpoint } from "@/endpoint/Prayer";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import DeleteConfirmation from "@/components/DeleteConfirmation/DeleteConfirmation";
 
 // Icons
@@ -21,170 +23,174 @@ import { toast } from "react-toastify";
 import { useDebounce } from "@/hook/useDebounce";
 import Filters from "@/components/Filters/Filters";
 
-
 function PrayerRoom() {
+  const [makeRequest, setMakeRequest] = useState(false);
+  const [selectedPrayerId, setSelectedPrayerId] = useState<string | null>(null);
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [showEditPopup, setShowEditPopup] = useState(false);
+  const [prayerToEdit, setPrayerToEdit] = useState<IPrayer | null>(null);
 
-    const [makeRequest, setMakeRequest] = useState(false);
-    const [selectedPrayerId, setSelectedPrayerId] = useState<string | null>(null);
-    const [showDeletePopup, setShowDeletePopup] = useState(false);
-    const [showEditPopup, setShowEditPopup] = useState(false);
-    const [prayerToEdit, setPrayerToEdit] = useState<IPrayer | null>(null);
+  // Filters Buttons
+  const [filters, setFilters] = useState("");
 
-    // Filters Buttons
-    const [filters, setFilters] = useState("");
+  // Search input
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 400); // 400ms d'attente
 
-    // Search input
-    const [search, setSearch] = useState('');
-    const debouncedSearch = useDebounce(search, 400); // 400ms d'attente
+  const { fetchData } = useFetch(true);
+  const queryClient = useQueryClient();
+  const [currentPage, setCurrentPage] = useState(1);
 
-    const { fetchData } = useFetch(true);
-    const queryClient = useQueryClient();
+  // get my prayers
+  const {
+    data: myPrayers,
+    isLoading: isMyPrayersLoading,
+    error: myPrayersError,
+  } = useQuery({
+    queryKey: ["myPrayers"],
+    queryFn: () =>
+      fetchData<Data<IPrayer[]>>(getMyPrayersEndpoint()),
+  });
 
-    // get my prayers
-    const { data: myPrayers, isLoading: isMyPrayersLoading, error: myPrayersError } = useQuery({
-        queryKey: ['myPrayers'],
-        queryFn: () => fetchData<Data<IPrayer[]>>(`${getMyPrayersEndpoint}?onlyActive=true`),
-    });
+  // get all prayers
+  const {
+    data: allPrayers,
+    isLoading: isAllPrayersLoading,
+    error: allPrayersError
+  } = useQuery({
+    queryKey: ["allPrayers", filters, debouncedSearch, currentPage],
+    queryFn: () =>
+      fetchData<Data<IPrayer[]>>(
+        `${getAllPrayersEndpoint}?page=${currentPage}&limit&filter=${filters}&search=${encodeURIComponent(debouncedSearch)}`,
+      ),
+    refetchOnWindowFocus: true,
+    refetchInterval: 30000,
+    refetchIntervalInBackground: false,
+    staleTime: 30000,
+  });
 
-    // get all prayers
-    const { data: allPrayers, isLoading: isAllPrayersLoading, error: allPrayersError } = useQuery({
-        queryKey: ['allPrayers', filters, debouncedSearch],
-        queryFn: () =>
-            fetchData<Data<IPrayer[]>>(
-                `${getAllPrayersEndpoint}?filter=${filters}&search=${encodeURIComponent(debouncedSearch)}`
-            ),
-        enabled: !!debouncedSearch || filters !== "" || filters === "",
+  const handleDeleteClick = (id: string) => {
+    setSelectedPrayerId(id);
+    setShowDeletePopup(true);
+  };
 
+  const handleEditClick = (prayer: IPrayer) => {
+    setPrayerToEdit(prayer);
+    setShowEditPopup(true);
+  };
 
-        refetchOnWindowFocus: true,
-        refetchInterval: 30000,
-        refetchIntervalInBackground: false,
-        staleTime: 30000,
-    });
+  useEffect(() => {
+    const socket = getSocket();
 
-
-    const handleDeleteClick = (id: string) => {
-        setSelectedPrayerId(id);
-        setShowDeletePopup(true);
-    };
-
-
-    const handleEditClick = (prayer: IPrayer) => {
-        setPrayerToEdit(prayer);
-        setShowEditPopup(true);
-    };
-
-
-    useEffect(() => {
-        const socket = getSocket();
-
-        if (socket) {
-            socket.on('prayedForNotification', (data) => {
-                if (data) {
-                    queryClient.invalidateQueries({ queryKey: ['myPrayers'] });
-                    toast.success("Someone prayed for you 🙏");
-                }
-            });
-            ['likeNotification', 'likeRemovedNotification'].forEach(event => {
-                socket.on(event, (data) => {
-                    if (data) {
-                        queryClient.invalidateQueries({ queryKey: ['myPrayers'] });
-                    }
-                });
-            });
+    if (socket) {
+      socket.on("prayedForNotification", (data) => {
+        if (data) {
+          queryClient.invalidateQueries({ queryKey: ["myPrayers"] });
+          toast.success("Someone prayed for you 🙏");
         }
+      });
+      ["likeNotification", "likeRemovedNotification"].forEach((event) => {
+        socket.on(event, (data) => {
+          if (data) {
+            queryClient.invalidateQueries({ queryKey: ["myPrayers"] });
+          }
+        });
+      });
+    }
 
-        return () => {
-            // Nettoyer l'écouteur lors de la déconnexion du composant
-            const socket = getSocket();
-            if (socket) {
-                socket.off('prayedForNotification');
-                socket.off('likeNotification');
-            }
-        };
-    }, [queryClient]);
+    return () => {
+      // Nettoyer l'écouteur lors de la déconnexion du composant
+      const socket = getSocket();
+      if (socket) {
+        socket.off("prayedForNotification");
+        socket.off("likeNotification");
+      }
+    };
+  }, [queryClient]);
 
+  return (
+    <>
+      <section className="prayer-room">
+        <Filters
+          search={search}
+          setSearch={setSearch}
+          filter={filters}
+          setFilter={setFilters}
+        />
 
-    return (
-        <>
-            <section className="prayer-room">
-                <Filters search={search} setSearch={setSearch} filter={filters} setFilter={setFilters} />
+        {/* Get my prayers */}
+        <div className="mx-auto grid max-w-[1200px] grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-6 p-4">
+          {!myPrayersError ? (
+            isMyPrayersLoading ? (
+              <ComponentsLoader />
+            ) : myPrayers && myPrayers.data.length > 0 ? (
+              myPrayers.data.map((card, index) => (
+                <PrayerCard
+                  key={index}
+                  prayer={card}
+                  currentUser
+                  className="border-primary"
+                  onDelete={() => handleDeleteClick(card._id)}
+                  onEdit={() => handleEditClick(card)}
+                />
+              ))
+            ) : null
+          ) : (
+            <div className="text-red-600">Error: {myPrayersError?.message}</div>
+          )}
 
-                {/* Get my prayers */}
-                <div className="max-w-[1200px] mx-auto grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-6 p-4">
-                    {!myPrayersError ? (
-                        isMyPrayersLoading ? (
-                            <ComponentsLoader />
-                        ) : (
-                            (myPrayers && myPrayers.data.length > 0) ? (
-                                myPrayers.data.map((card, index) => (
-                                    <PrayerCard
-                                        key={index}
-                                        prayer={card}
-                                        currentUser
-                                        className="border-primary"
-                                        onDelete={() => handleDeleteClick(card._id)}
-                                        onEdit={() => handleEditClick(card)}
-                                    />
-                                ))
-                            ) : (
-                                null
-                            )
-                        )
-                    ) : (
-                        <div className="text-red-600">Error: {myPrayersError?.message}</div>
-                    )}
+          {/* Get all prayers */}
+          {!allPrayersError ? (
+            isAllPrayersLoading ? (
+              <ComponentsLoader />
+            ) : allPrayers && allPrayers?.data.length > 0 ? (
+              allPrayers.data.map((card) => (
+                <PrayerCard
+                  key={card._id}
+                  prayer={card}
+                  className={card.isPrayed ? "praying-for" : ""}
+                  prayeringFor={card.isPrayed}
+                  likedBy={card.isLiked}
+                />
+              ))
+            ) : null
+          ) : (
+            <div className="text-red-600">Error: {myPrayersError?.message}</div>
+          )}
+        </div>
 
-                    {/* Get all prayers */}
-                    {!allPrayersError ? (
-                        isAllPrayersLoading ? (
-                            <ComponentsLoader />
-                        ) : (
-                            (allPrayers && allPrayers?.data.length > 0) ? (
-                                allPrayers.data.map((card, index) => (
-                                    <PrayerCard
-                                        key={index}
-                                        prayer={card}
-                                        className={card.isPrayed ? 'praying-for' : ''}
-                                        prayeringFor={card.isPrayed}
-                                        likedBy={card.isLiked}
-                                    />
-                                ))
-                            ) : (
-                                null
-                            )
-                        )
-                    ) : (
-                        <div className="text-red-600">Error: {myPrayersError?.message}</div>
-                    )}
-                </div>
+        {allPrayers?.pagination && (
+          <Pagination
+            pagination={allPrayers.pagination}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
+        )}
+      </section>
 
-                <Pagination />
-            </section>
+      {myPrayers?.data && myPrayers.data.length < 2 && (
+        <button
+          onClick={() => setMakeRequest(true)}
+          className="btn btn-circle border-primary fixed right-8 bottom-16 z-50 h-12 w-12 shadow-sm transition-all duration-300 hover:scale-110 hover:shadow-lg"
+        >
+          <MdAdd className="text-3xl" />
+        </button>
+      )}
 
+      <PrayerPopup makeRequest={makeRequest} setMakeRequest={setMakeRequest} />
 
-            <button onClick={() => setMakeRequest(true)} className="w-12 h-12 btn btn-circle fixed bottom-16 right-8 shadow-sm hover:shadow-lg hover:scale-110 transition-all duration-300 z-50 border-primary">
-                <MdAdd className="text-3xl" />
-            </button>
+      <DeleteConfirmation
+        selectedPrayerId={selectedPrayerId}
+        showDeletePopup={showDeletePopup}
+        setShowDeletePopup={setShowDeletePopup}
+      />
 
-            <PrayerPopup
-                makeRequest={makeRequest}
-                setMakeRequest={setMakeRequest}
-            />
-
-            <DeleteConfirmation
-                selectedPrayerId={selectedPrayerId}
-                showDeletePopup={showDeletePopup}
-                setShowDeletePopup={setShowDeletePopup}
-            />
-
-            <PrayerEdit
-                openPopupEdit={showEditPopup}
-                setOpenPopupEdit={setShowEditPopup}
-                prayerToEdit={prayerToEdit}
-            />
-        </>
-    );
+      <PrayerEdit
+        openPopupEdit={showEditPopup}
+        setOpenPopupEdit={setShowEditPopup}
+        prayerToEdit={prayerToEdit}
+      />
+    </>
+  );
 }
 
 export default PrayerRoom;

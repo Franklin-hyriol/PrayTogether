@@ -1,7 +1,7 @@
 import { baseUrl } from "./baseUrl";
 
 export const createPrayersEndpoint = `${baseUrl}/prayer`;
-export const getMyPrayersEndpoint = `${baseUrl}/prayer/my`;
+export const getMyPrayersEndpoint = (page: number = 1, limit: number = 10, onlyActive: boolean = true) => `${baseUrl}/prayer/my?page=${page}&limit=${limit}&onlyActive=${onlyActive}`;
 export const getAllPrayersEndpoint = `${baseUrl}/prayer/`;
 export const getPrayerByIdEndpoint = `${baseUrl}/prayer/`;
 export const deletePrayerByIdEndpoint = `${baseUrl}/prayer/`;

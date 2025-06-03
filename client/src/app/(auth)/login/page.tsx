@@ -69,7 +69,7 @@ function Login() {
                 reset();
 
                 setTimeout(() => {
-                    router.push(redirect || '/');
+                    router.push(redirect || '/prayer-room');
                 }, 1000);
             }
         }
