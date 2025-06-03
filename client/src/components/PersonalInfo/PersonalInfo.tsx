@@ -20,6 +20,8 @@ import { Data } from "@/Interface/Data";
 import { getAllBadgesEndpoint } from "@/endpoint/badge";
 import ComponentsLoader from "../ComponentsLoader/ComponentsLoader";
 import FiltersBadge from "../FiltersBadge/FiltersBadge";
+import { IPrayer } from "@/Interface/IPrayer";
+import { getMyPrayersEndpoint } from "@/endpoint/Prayer";
 
 type PersonalInfoProps = {
   className?: string;
@@ -27,8 +29,13 @@ type PersonalInfoProps = {
 
 function PersonalInfo({ className }: PersonalInfoProps) {
   const { user } = useAuth();
-  const { ref, inView } = useInView();
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  // ref pour l'infinite scroll des badges
+  const { ref: refBadges, inView: inViewBadges } = useInView();
+
+  // ref pour l'infinite scroll des prières
+  const { ref: refPrayers, inView: inViewPrayers } = useInView();
+  const scrollBadgesRef = useRef<HTMLDivElement>(null);
+  const scrollPrayersRef = useRef<HTMLDivElement>(null);
   const [filtersBadges, setFiltersBadges] = useState("earned");
   const { fetchData } = useFetch(true);
 
@@ -55,21 +62,46 @@ function PersonalInfo({ className }: PersonalInfoProps) {
 
   //   Scroll infinite
   useEffect(() => {
-    if (inView && hasNextPage && !isFetchingNextPage) {
+    if (inViewBadges && hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
     //eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inView, hasNextPage, isFetchingNextPage]);
+  }, [inViewBadges, hasNextPage, isFetchingNextPage]);
 
   //   Scroll to top
   useEffect(() => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTo({ top: 0, behavior: "smooth" });
+    if (scrollBadgesRef.current) {
+      scrollBadgesRef.current.scrollTo({ top: 0, behavior: "smooth" });
     }
   }, [filtersBadges]);
   // Badges //////////////////////////////////////////////////
 
   // History //////////////////////////////////////////////////
+
+  const {
+    data: allMyPrayers,
+    fetchNextPage: fetchNextPageMyPrayers,
+    hasNextPage: hasNextPageMyPrayers,
+    isFetchingNextPage: isFetchingNextPageMyPrayers,
+    error: allMyPrayersError,
+    isLoading: isAllMyPrayersLoading,
+  } = useInfiniteQuery({
+    queryKey: ["allMyPrayers"],
+    queryFn: ({ pageParam = 1 }) =>
+      fetchData<Data<IPrayer[]>>(getMyPrayersEndpoint(pageParam, 10, false)),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      const nextPage = allPages.length + 1;
+      return lastPage.pagination?.hasNextPage ? nextPage : undefined;
+    },
+  });
+
+  useEffect(() => {
+    if (inViewPrayers && hasNextPageMyPrayers && !isFetchingNextPageMyPrayers) {
+      fetchNextPageMyPrayers();
+    }
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inViewPrayers, hasNextPageMyPrayers, isFetchingNextPageMyPrayers]);
 
   // History //////////////////////////////////////////////////
 
@@ -122,9 +154,28 @@ function PersonalInfo({ className }: PersonalInfoProps) {
       <div className="mb-8 rounded-xl bg-white p-6 shadow-md">
         <h2 className="mb-6 text-xl font-medium">Prayer History</h2>
         <div className="flex w-full flex-col gap-4">
-          <HistoryItem />
-          <HistoryItem />
-          <HistoryItem />
+          <div
+            className="relative flex max-h-96 min-h-50 w-full flex-col gap-4 overflow-y-auto p-1"
+            ref={scrollPrayersRef}
+          >
+            {allMyPrayersError ? (
+              <p>{allMyPrayersError.message}</p>
+            ) : isAllMyPrayersLoading ? (
+              <ComponentsLoader className="absolute top-1/2 left-1/2" />
+            ) : (
+              allMyPrayers?.pages.map((page) =>
+                page.data.map((prayer) => (
+                  <HistoryItem key={prayer._id} prayer={prayer} />
+                )),
+              )
+            )}
+
+            {hasNextPageMyPrayers && (
+              <div ref={refPrayers} className="mx-auto my-4">
+                <ComponentsLoader />
+              </div>
+            )}
+          </div>
         </div>
       </div>
       {/* History */}
@@ -137,7 +188,7 @@ function PersonalInfo({ className }: PersonalInfoProps) {
 
         <div
           className="relative flex max-h-80 min-h-50 w-full flex-col gap-4 overflow-y-auto p-1"
-          ref={scrollContainerRef}
+          ref={scrollBadgesRef}
         >
           {allBadgesError ? (
             <p>{allBadgesError.message}</p>
@@ -152,7 +203,7 @@ function PersonalInfo({ className }: PersonalInfoProps) {
           )}
 
           {hasNextPage && (
-            <div ref={ref} className="mx-auto my-4">
+            <div ref={refBadges} className="mx-auto my-4">
               <ComponentsLoader />
             </div>
           )}

@@ -78,7 +78,7 @@ function Register() {
                 reset();
 
                 setTimeout(() => {
-                    router.push('/');
+                    router.push('/prayer-room');
                 }, 1000);
             }
         }

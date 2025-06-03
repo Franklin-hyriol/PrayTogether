@@ -144,8 +144,8 @@ function PrayerPopup({ makeRequest, setMakeRequest }: PrayerPopupProps) {
                             </label>
 
                             <div className="justify-center gap-4 card-actions">
-                                <button className="btn btn-cancel" onClick={() => setMakeRequest(false)}>Cancel</button>
-                                <button className="text-white btn btn-primary" disabled={!isValid || CreatePrayerMutation.isPending}>send</button>
+                                <button type="button" className="btn btn-cancel" onClick={() => setMakeRequest(false)}>Cancel</button>
+                                <button type="submit" className="text-white btn btn-primary" disabled={!isValid || CreatePrayerMutation.isPending}>send</button>
                             </div>
 
 
