@@ -223,11 +223,16 @@ export const getAllPrayers = async (req: Request, res: Response): Promise<void> 
 };
 
 export const getPeopleWhoPrayed = async (req: Request, res: Response): Promise<void> => {
-    const prayerId = req.params.id;
-
     try {
-        const prayer = await PrayerRequest.findById(prayerId);
-        if (!prayer) {
+        const prayerId = req.params.id;
+        const now = new Date();
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = 4;
+        const skip = (page - 1) * limit;
+
+        // 🔍 Vérification de l'existence de la prière
+        const prayerExists = await PrayerRequest.exists({ _id: prayerId });
+        if (!prayerExists) {
             res.status(404).json({
                 status: 404,
                 message: "Prayer not found.",
@@ -236,18 +241,42 @@ export const getPeopleWhoPrayed = async (req: Request, res: Response): Promise<v
             return;
         }
 
-        // Récupérer les interactions de type "prayed"
-        const interactions = await PrayerInteraction.find({
-            prayerId,
-            type: "prayed"
-        }).populate("userId", "username profilePhoto");
+        // 📦 Récupération des données avec pagination
+        const [totalCount, interactions] = await Promise.all([
+            PrayerInteraction.countDocuments({
+                prayerId,
+                type: "prayed"
+            }),
+            PrayerInteraction.find({
+                prayerId,
+                type: "prayed"
+            })
+                .sort({ createdAt: -1 }) // Les plus récentes en premier
+                .skip(skip)
+                .limit(limit)
+                .populate("userId", "username profilePhoto")
+                .lean()
+        ]);
 
-        const users = interactions.map(inter => inter.userId);
+        // ✨ Formatage des données de réponse
+        const users = interactions.map(inter => ({
+            user: inter.userId,
+            prayedAt: inter.createdAt
+        }));
+
+        const totalPages = Math.ceil(totalCount / limit);
 
         res.status(200).json({
             status: 200,
             message: "People who prayed fetched successfully.",
-            data: users
+            data: users,
+            pagination: {
+                totalItems: totalCount,
+                totalPages,
+                currentPage: page,
+                hasNextPage: page < totalPages,
+                hasPrevPage: page > 1,
+            },
         });
 
     } catch (error) {

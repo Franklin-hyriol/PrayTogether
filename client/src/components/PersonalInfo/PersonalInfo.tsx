@@ -162,6 +162,14 @@ function PersonalInfo({ className }: PersonalInfoProps) {
               <p>{allMyPrayersError.message}</p>
             ) : isAllMyPrayersLoading ? (
               <ComponentsLoader className="absolute top-1/2 left-1/2" />
+            ) : allMyPrayers?.pages.flatMap((page) => page.data).length ===
+              0 ? (
+              <p className="flex items-center justify-center gap-2 py-4 text-sm text-gray-500 italic">
+                <span role="img" aria-label="Empty box">
+                  📦
+                </span>
+                No prayers in history.
+              </p>
             ) : (
               allMyPrayers?.pages.map((page) =>
                 page.data.map((prayer) => (

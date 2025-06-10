@@ -26,9 +26,10 @@ export type PrayerCardProps = {
     likedBy?: boolean
     onDelete?: () => void
     onEdit?: () => void
+    onShowPeoplePraying?: () => void
 }
 
-function PrayerCard({ currentUser, prayer, className, online = false, prayeringFor, likedBy, onDelete, onEdit }: PrayerCardProps) {
+function PrayerCard({ currentUser, prayer, className, online = false, prayeringFor, likedBy, onDelete, onEdit, onShowPeoplePraying }: PrayerCardProps) {
 
     const [showMenu, setShowMenu] = useState(false);
     const menuRef = useRef<HTMLDivElement | null>(null);
@@ -90,8 +91,8 @@ function PrayerCard({ currentUser, prayer, className, online = false, prayeringF
 
 
     const handleClick = () => {
-        const wasLiked = likedBy; // snapshot avant mutation
-        LikePrayerMutation.mutate(); // met à jour likedBy
+        const wasLiked = likedBy; 
+        LikePrayerMutation.mutate();
 
         setAnimationText(wasLiked ? "-1" : "+1");
 
@@ -163,18 +164,15 @@ function PrayerCard({ currentUser, prayer, className, online = false, prayeringF
                                 </div>
                             </div>
                         }
-
-
-
                     </div>
 
-                    <p className="card-text text-base break-all">{prayer.text}</p>
+                    <p className="card-text text-base break-word">{prayer.text}</p>
 
 
                     <div className=" card-actions">
                         {currentUser ? (
                             <div className="text-primary text-base flex justify-between w-full">
-                                <span>{prayer.prayersCount} people are praying for you</span>
+                                <span className="cursor-pointer" onClick={onShowPeoplePraying} >{prayer.prayersCount} {prayer.prayersCount === 1 ? "person" : "people"} are praying for you</span>
                                 <div className="flex items-center gap-1 text-red-500">
                                     <IoIosHeart className="text-xl" />
                                     <span>{prayer.likesCount}</span>

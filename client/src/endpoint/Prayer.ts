@@ -9,3 +9,4 @@ export const updatePrayerByIdEndpoint = `${baseUrl}/prayer/`;
 
 export const prayForPrayerEndpoint = (prayerId: string) => `${baseUrl}/prayer/${prayerId}/pray`;
 export const likePrayerEndpoint = (prayerId: string) => `${baseUrl}/prayer/${prayerId}/like`;
+export const getPeopleWhoPrayedEndpoint = (prayerId: string, page: number = 1, limit: number = 4) => `${baseUrl}/prayer/${prayerId}/prayed-by?page=${page}&limit=${limit}`;
