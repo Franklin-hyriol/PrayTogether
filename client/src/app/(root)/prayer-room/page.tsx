@@ -9,10 +9,7 @@ import { IPrayer } from "@/Interface/IPrayer";
 import { Data } from "@/Interface/Data";
 import ComponentsLoader from "@/components/ComponentsLoader/ComponentsLoader";
 import { getMyPrayersEndpoint, getAllPrayersEndpoint } from "@/endpoint/Prayer";
-import {
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import DeleteConfirmation from "@/components/DeleteConfirmation/DeleteConfirmation";
 
 // Icons
@@ -22,12 +19,14 @@ import { getSocket } from "@/services/socket";
 import { toast } from "react-toastify";
 import { useDebounce } from "@/hook/useDebounce";
 import Filters from "@/components/Filters/Filters";
+import PrayingForYou from "@/components/PrayingForYou/PrayingForYou";
 
 function PrayerRoom() {
   const [makeRequest, setMakeRequest] = useState(false);
   const [selectedPrayerId, setSelectedPrayerId] = useState<string | null>(null);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [showEditPopup, setShowEditPopup] = useState(false);
+  const [showPeopleWhoPrayPopup, setShowPeopleWhoPrayPopup] = useState(false);
   const [prayerToEdit, setPrayerToEdit] = useState<IPrayer | null>(null);
 
   // Filters Buttons
@@ -48,15 +47,14 @@ function PrayerRoom() {
     error: myPrayersError,
   } = useQuery({
     queryKey: ["myPrayers"],
-    queryFn: () =>
-      fetchData<Data<IPrayer[]>>(getMyPrayersEndpoint()),
+    queryFn: () => fetchData<Data<IPrayer[]>>(getMyPrayersEndpoint()),
   });
 
   // get all prayers
   const {
     data: allPrayers,
     isLoading: isAllPrayersLoading,
-    error: allPrayersError
+    error: allPrayersError,
   } = useQuery({
     queryKey: ["allPrayers", filters, debouncedSearch, currentPage],
     queryFn: () =>
@@ -77,6 +75,11 @@ function PrayerRoom() {
   const handleEditClick = (prayer: IPrayer) => {
     setPrayerToEdit(prayer);
     setShowEditPopup(true);
+  };
+
+  const handleShowPeopleWhoPrayClick = (id: string) => {
+    setSelectedPrayerId(id);
+    setShowPeopleWhoPrayPopup(true);
   };
 
   useEffect(() => {
@@ -124,14 +127,17 @@ function PrayerRoom() {
             isMyPrayersLoading ? (
               <ComponentsLoader />
             ) : myPrayers && myPrayers.data.length > 0 ? (
-              myPrayers.data.map((card, index) => (
+              myPrayers.data.map((prayer) => (
                 <PrayerCard
-                  key={index}
-                  prayer={card}
+                  key={prayer._id}
+                  prayer={prayer}
                   currentUser
                   className="border-primary"
-                  onDelete={() => handleDeleteClick(card._id)}
-                  onEdit={() => handleEditClick(card)}
+                  onDelete={() => handleDeleteClick(prayer._id)}
+                  onEdit={() => handleEditClick(prayer)}
+                  onShowPeoplePraying={() =>
+                    handleShowPeopleWhoPrayClick(prayer._id)
+                  }
                 />
               ))
             ) : null
@@ -144,13 +150,13 @@ function PrayerRoom() {
             isAllPrayersLoading ? (
               <ComponentsLoader />
             ) : allPrayers && allPrayers?.data.length > 0 ? (
-              allPrayers.data.map((card) => (
+              allPrayers.data.map((prayer) => (
                 <PrayerCard
-                  key={card._id}
-                  prayer={card}
-                  className={card.isPrayed ? "praying-for" : ""}
-                  prayeringFor={card.isPrayed}
-                  likedBy={card.isLiked}
+                  key={prayer._id}
+                  prayer={prayer}
+                  className={prayer.isPrayed ? "praying-for" : ""}
+                  prayeringFor={prayer.isPrayed}
+                  likedBy={prayer.isLiked}
                 />
               ))
             ) : null
@@ -159,7 +165,7 @@ function PrayerRoom() {
           )}
         </div>
 
-        {allPrayers?.pagination && (
+        {allPrayers?.pagination && allPrayers?.pagination?.totalPages > 1 && (
           <Pagination
             pagination={allPrayers.pagination}
             onPageChange={(page) => setCurrentPage(page)}
@@ -188,6 +194,12 @@ function PrayerRoom() {
         openPopupEdit={showEditPopup}
         setOpenPopupEdit={setShowEditPopup}
         prayerToEdit={prayerToEdit}
+      />
+
+      <PrayingForYou
+        selectedPrayerId={selectedPrayerId}
+        showPeoplePrayingPopup={showPeopleWhoPrayPopup}
+        setShowPeoplePrayingPopup={setShowPeopleWhoPrayPopup}
       />
     </>
   );
