@@ -261,7 +261,7 @@ export const getPeopleWhoPrayed = async (req: Request, res: Response): Promise<v
         // ✨ Formatage des données de réponse
         const users = interactions.map(inter => ({
             user: inter.userId,
-            prayedAt: inter.createdAt
+            createdAt: inter.createdAt
         }));
 
         const totalPages = Math.ceil(totalCount / limit);
@@ -295,6 +295,81 @@ export const getPeopleWhoPrayed = async (req: Request, res: Response): Promise<v
         });
     }
 };
+
+
+export const getPeopleWhoLiked = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const prayerId = req.params.id;
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = 4;
+        const skip = (page - 1) * limit;
+
+        // 🔍 Vérification de l'existence de la prière
+        const prayerExists = await PrayerRequest.exists({ _id: prayerId });
+        if (!prayerExists) {
+            res.status(404).json({
+                status: 404,
+                message: "Prayer not found.",
+                data: []
+            });
+            return;
+        }
+
+        // 📦 Récupération des interactions de type "liked" avec pagination
+        const [totalCount, interactions] = await Promise.all([
+            PrayerInteraction.countDocuments({
+                prayerId,
+                type: "liked"
+            }),
+            PrayerInteraction.find({
+                prayerId,
+                type: "liked"
+            })
+                .sort({ createdAt: -1 }) // Les plus récents en premier
+                .skip(skip)
+                .limit(limit)
+                .populate("userId", "username profilePhoto")
+                .lean()
+        ]);
+
+        // ✨ Formatage des données de réponse
+        const users = interactions.map(inter => ({
+            user: inter.userId,
+            createdAt: inter.createdAt
+        }));
+
+        const totalPages = Math.ceil(totalCount / limit);
+
+        res.status(200).json({
+            status: 200,
+            message: "People who liked fetched successfully.",
+            data: users,
+            pagination: {
+                totalItems: totalCount,
+                totalPages,
+                currentPage: page,
+                hasNextPage: page < totalPages,
+                hasPrevPage: page > 1,
+            },
+        });
+
+    } catch (error) {
+        const defaultError = {
+            type: "server",
+            value: "",
+            msg: error instanceof Error ? error.message : "Unknown error occurred",
+            path: "server",
+            location: "internal"
+        };
+
+        res.status(500).json({
+            status: 500,
+            message: "Internal server error",
+            error: [defaultError]
+        });
+    }
+};
+
 
 export const getMyPrayers = async (req: Request, res: Response): Promise<void> => {
     try {

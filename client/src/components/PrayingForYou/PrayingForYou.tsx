@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import "./PrayingForYou.scss";
 import PrayerPerson from "../PrayerPerson/PrayerPerson";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { getPeopleWhoPrayedEndpoint } from "@/endpoint/Prayer";
+import { getPeopleWhoPrayedEndpoint, getPeopleWhoLikedEndpoint } from "@/endpoint/Prayer";
 import useFetch from "@/hook/useFetch";
 import { IPrayingForYou } from "@/Interface/IPrayingForYou";
 import { Data } from "@/Interface/Data";
@@ -23,17 +23,30 @@ function PrayingForYou({
   const contentRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const scrollPeopleRef = useRef<HTMLDivElement>(null);
+
   const [visible, setVisible] = useState(false);
+  const [activeTab, setActiveTab] = useState<0 | 1>(0); // 0 = prayed, 1 = liked
+
   const { fetchData } = useFetch(true);
 
-  // Ref pour l'infinite scroll des personnes qui prient
+  // Références pour l'infinite scroll
   const { ref: refPeople, inView: inViewPeople } = useInView();
 
+  const commonQueryConfig = {
+    initialPageParam: 1,
+    getNextPageParam: (lastPage: Data<IPrayingForYou[]>, allPages: Data<IPrayingForYou[]>[]) => {
+      const nextPage = allPages.length + 1;
+      return lastPage.pagination?.hasNextPage ? nextPage : undefined;
+    },
+    enabled: !!selectedPrayerId && showPeoplePrayingPopup,
+  };
+
+  // 🔍 Query pour les "prayed"
   const {
     data: peopleWhoPrayed,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
+    fetchNextPage: fetchNextPrayedPage,
+    hasNextPage: hasNextPrayedPage,
+    isFetchingNextPage: isFetchingNextPrayedPage,
     error: peopleWhoPrayedError,
     isLoading: isPeopleWhoPrayedLoading,
   } = useInfiniteQuery({
@@ -42,22 +55,47 @@ function PrayingForYou({
       fetchData<Data<IPrayingForYou[]>>(
         getPeopleWhoPrayedEndpoint(selectedPrayerId as string, pageParam, 4)
       ),
-    initialPageParam: 1,
-    getNextPageParam: (lastPage, allPages) => {
-      const nextPage = allPages.length + 1;
-      return lastPage.pagination?.hasNextPage ? nextPage : undefined;
-    },
-    enabled: !!selectedPrayerId && showPeoplePrayingPopup,
+    ...commonQueryConfig,
   });
 
-  // Scroll infinite
-  useEffect(() => {
-    if (inViewPeople && hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
-    }
-    //eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inViewPeople, hasNextPage, isFetchingNextPage]);
+  // 🔍 Query pour les "liked"
+  const {
+    data: peopleWhoLiked,
+    fetchNextPage: fetchNextLikedPage,
+    hasNextPage: hasNextLikedPage,
+    isFetchingNextPage: isFetchingNextLikedPage,
+    error: peopleWhoLikedError,
+    isLoading: isPeopleWhoLikedLoading,
+  } = useInfiniteQuery({
+    queryKey: ["peopleWhoLiked", selectedPrayerId],
+    queryFn: ({ pageParam = 1 }) =>
+      fetchData<Data<IPrayingForYou[]>>(
+        getPeopleWhoLikedEndpoint(selectedPrayerId as string, pageParam, 4)
+      ),
+    ...commonQueryConfig,
+  });
 
+  // Infinite scroll par onglet actif
+  useEffect(() => {
+    if (!inViewPeople) return;
+
+    if (activeTab === 0 && hasNextPrayedPage && !isFetchingNextPrayedPage) {
+      fetchNextPrayedPage();
+    } else if (activeTab === 1 && hasNextLikedPage && !isFetchingNextLikedPage) {
+      fetchNextLikedPage();
+    }
+  }, [
+    inViewPeople,
+    activeTab,
+    hasNextPrayedPage,
+    isFetchingNextPrayedPage,
+    hasNextLikedPage,
+    isFetchingNextLikedPage,
+    fetchNextPrayedPage,
+    fetchNextLikedPage,
+  ]);
+
+  // Affichage progressif
   useEffect(() => {
     if (showPeoplePrayingPopup) {
       setVisible(true);
@@ -67,6 +105,7 @@ function PrayingForYou({
     }
   }, [showPeoplePrayingPopup]);
 
+  // Fermeture au clic extérieur
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const overlay = overlayRef.current;
@@ -91,6 +130,11 @@ function PrayingForYou({
 
   if (!visible) return null;
 
+  // 💡 Données selon l'onglet actif
+  const activeData = activeTab === 0 ? peopleWhoPrayed : peopleWhoLiked;
+  const activeError = activeTab === 0 ? peopleWhoPrayedError : peopleWhoLikedError;
+  const activeIsLoading = activeTab === 0 ? isPeopleWhoPrayedLoading : isPeopleWhoLikedLoading;
+
   return (
     <>
       <div
@@ -103,33 +147,50 @@ function PrayingForYou({
           ref={contentRef}
         >
           <div className="card-body">
-            <h2 className="card-title">People praying for you</h2>
-            <div 
+            <h2 className="card-title">Interactions Statistics</h2>
+
+            <div className="flex gap-2 mb-4">
+              <button
+                className={`btn btn-sm ${activeTab === 0 ? "btn-primary" : "btn-outline"}`}
+                onClick={() => setActiveTab(0)}
+              >
+                People who prayed
+              </button>
+              <button
+                className={`btn btn-sm ${activeTab === 1 ? "btn-primary" : "btn-outline"}`}
+                onClick={() => setActiveTab(1)}
+              >
+                People who liked
+              </button>
+            </div>
+
+            <div
               className="relative flex max-h-[310px] min-h-fit w-full flex-col gap-2 overflow-y-auto p-1"
               ref={scrollPeopleRef}
             >
-              {peopleWhoPrayedError ? (
+              {activeError ? (
                 <p className="text-error text-center py-4">
-                  {peopleWhoPrayedError.message}
+                  {activeError.message}
                 </p>
-              ) : isPeopleWhoPrayedLoading ? (
+              ) : activeIsLoading ? (
                 <ComponentsLoader className="absolute top-1/2 left-1/2" />
-              ) : peopleWhoPrayed?.pages.flatMap((page) => page.data).length === 0 ? (
+              ) : activeData?.pages.flatMap((page) => page.data).length === 0 ? (
                 <p className="flex items-center justify-center gap-2 py-4 text-sm text-gray-500 italic">
                   <span role="img" aria-label="Praying hands">
                     🙏
                   </span>
-                  No one is praying for you yet.
+                  No interactions yet.
                 </p>
               ) : (
-                peopleWhoPrayed?.pages.map((page) =>
+                activeData?.pages.map((page) =>
                   page.data.map((person) => (
-                    <PrayerPerson key={person.user._id} PeoplePraying={person} />
+                    <PrayerPerson key={person.user._id} PeoplePraying={person} action={activeTab === 0 ? "Prayed" : "Liked"} />
                   ))
                 )
               )}
 
-              {hasNextPage && (
+              {/* Infinite Loader */}
+              {(activeTab === 0 ? hasNextPrayedPage : hasNextLikedPage) && (
                 <div ref={refPeople} className="mx-auto my-4">
                   <ComponentsLoader />
                 </div>
