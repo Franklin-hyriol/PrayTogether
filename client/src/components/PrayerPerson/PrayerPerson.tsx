@@ -3,7 +3,7 @@ import { formatRelativeTime } from "@/utils/formatDateTime";
 import Image from "next/image";
 import { FaRegUserCircle } from "react-icons/fa";
 
-function PrayerPerson({ PeoplePraying }: { PeoplePraying: IPrayingForYou }) {
+function PrayerPerson({ PeoplePraying, action }: { PeoplePraying: IPrayingForYou, action: string }) {
   return (
     <div className="border-base-300 flex items-center gap-4 border-b pt-1 pb-2 last:border-b-0">
       <div className="h-12 w-12 rounded-full object-cover">
@@ -24,7 +24,7 @@ function PrayerPerson({ PeoplePraying }: { PeoplePraying: IPrayingForYou }) {
           {PeoplePraying.user.username}
         </h3>
         <span className="text-base-content/60 text-sm">
-          Prayed {formatRelativeTime(PeoplePraying.prayedAt.toString())}
+          {action} {formatRelativeTime(PeoplePraying.createdAt.toString())}
         </span>
       </div>
     </div>

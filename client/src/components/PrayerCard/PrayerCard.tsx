@@ -171,8 +171,8 @@ function PrayerCard({ currentUser, prayer, className, online = false, prayeringF
 
                     <div className=" card-actions">
                         {currentUser ? (
-                            <div className="text-primary text-base flex justify-between w-full">
-                                <span className="cursor-pointer" onClick={onShowPeoplePraying} >{prayer.prayersCount} {prayer.prayersCount === 1 ? "person" : "people"} are praying for you</span>
+                            <div className="text-primary text-base flex justify-between w-full cursor-pointer" onClick={onShowPeoplePraying}>
+                                <span>{prayer.prayersCount} {prayer.prayersCount === 1 ? "person" : "people"} are praying for you</span>
                                 <div className="flex items-center gap-1 text-red-500">
                                     <IoIosHeart className="text-xl" />
                                     <span>{prayer.likesCount}</span>

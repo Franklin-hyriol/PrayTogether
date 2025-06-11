@@ -6,5 +6,5 @@ interface StrictUser {
 
 export interface IPrayingForYou {
     user: StrictUser;
-    prayedAt: Date; // Si vous transformez toujours la string en Date
+    createdAt: Date; // Si vous transformez toujours la string en Date
 }
