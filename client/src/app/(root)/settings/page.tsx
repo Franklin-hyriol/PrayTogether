@@ -1,20 +1,69 @@
+"use client";
 import Accessibility from "@/components/Accessibility/Accessibility";
 import DeleteCompte from "@/components/DeleteCompte/DeleteCompte";
 import Language from "@/components/Language/Language";
 import Theme from "@/components/Theme/Theme";
+import { useSettingsContext } from "@/context/SettingsContext";
+import { patchUserSettingsEndpoint } from "@/endpoint/Settings";
+import usePatch from "@/hook/usePatch";
+import { Data } from "@/Interface/Data";
+import { IAccessibility, ISettings } from "@/Interface/ISettings";
+import { useMutation } from "@tanstack/react-query";
+
+type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
+};
 
 function Settings() {
+  const { settings, updateLocalSettings } = useSettingsContext();
+
+  const { patchData } = usePatch(true);
+
+  const { mutate: patchSettings } = useMutation({
+    mutationFn: (newSettings: DeepPartial<ISettings>) =>
+      patchData<Data<ISettings>>(patchUserSettingsEndpoint, newSettings),
+    onSuccess: (data) => {
+      updateLocalSettings(data.data);
+    },
+    onError: (err) => {
+      console.error("Erreur lors de la mise à jour des paramètres", err);
+    },
+  });
+
+  // Exemple de gestion d’un changement de thème
+  const handleThemeChange = (newTheme: string) => {
+    patchSettings({ theme: newTheme });
+  };
+
+  // Exemple de gestion d’un changement d’accessibilité
+  const handleAccessibilityChange = (
+    newAccessibility: Partial<IAccessibility>,
+  ) => {
+    patchSettings({ accessibility: newAccessibility });
+  };
+
+  // Exemple de changement de langue
+  const handleLanguageChange = (newLang: string) => {
+    patchSettings({ language: newLang });
+  };
+
   return (
     <section className="mx-auto max-w-[1200px] overflow-hidden rounded-2xl bg-white p-4 shadow-md">
-        <h1 className="text-2xl font-bold mb-8 text-center">Paramètres</h1>
+      <h1 className="mb-8 text-center text-2xl font-bold">Settings</h1>
 
-        <Theme />
+      <Theme theme={settings?.theme as string} onThemeChange={handleThemeChange} />
 
-        <Accessibility />
+      <Accessibility
+        accessibility={settings?.accessibility as IAccessibility}
+        onAccessibilityChange={handleAccessibilityChange}
+      />
 
-        <Language />
+      <Language
+        language={settings?.language as string}
+        onLanguageChange={handleLanguageChange}
+      />
 
-        <DeleteCompte />
+      <DeleteCompte />
     </section>
   );
 }
