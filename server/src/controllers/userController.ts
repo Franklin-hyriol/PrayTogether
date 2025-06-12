@@ -18,6 +18,7 @@ import GoogleProfile from '../interfaces/GoogleProfile';
 import { upload } from '../services/upload';
 import multer from 'multer';
 import path from 'path';
+import Settings from '../models/Settings';
 dotenv.config();
 
 // Créer un nouvel utilisateur
@@ -81,14 +82,6 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
         )
 
         // save refresh token in cookie
-        // res.cookie("refresh_token", refreshToken, {
-        //     httpOnly: true,
-        //     secure: process.env.NODE_ENV === "production",
-        //     path: "/refresh-token",
-        //     sameSite: "strict",
-        //     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 jours
-        // });
-
         res.cookie("refresh_token", refreshToken, {
             httpOnly: false, // ❌ TEMPORAIREMENT désactiver HttpOnly pour voir/manipuler le cookie dans Postman
             secure: true, // ✅ false en local (si tu n'utilises pas HTTPS)
@@ -101,6 +94,10 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
         // Enregistrer l'utilisateur dans la base de données
         await newUser.save();
 
+        // --- AJOUT ---
+        await Settings.create({ userId: newUser._id });
+        // --- FIN DE L'AJOUT ---
+
         // Répondre avec l'utilisateur créé
         res.status(201).json({
             status: 201,
@@ -110,12 +107,6 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
                 accessToken: "Bearer " + accessToken
             }
         });
-
-
-        // // Envoi d'un email de confirmation
-        // sendEmail(newUser.email, 'Ceci est le corps de votre message.')
-        //     .then(() => console.log('Email envoyé avec succès'))
-        //     .catch(err => console.error('Erreur :', err));
 
     } catch (error) {
         if (error instanceof Error) {
@@ -139,6 +130,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
         }
     }
 }
+
 
 // Connexion d'un utilisateur
 export const loginUser = async (req: Request, res: Response): Promise<void> => {

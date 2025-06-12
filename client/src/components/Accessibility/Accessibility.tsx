@@ -1,4 +1,11 @@
-function Accessibility() {
+import { IAccessibility } from "@/Interface/ISettings";
+
+type AccessibilityProps = {
+  accessibility: IAccessibility;
+  onAccessibilityChange: (changes:  Partial<IAccessibility>) => void;
+};
+
+function Accessibility({ accessibility, onAccessibilityChange }: AccessibilityProps) {
   return (
     <div className="mb-8 rounded-lg bg-white p-6 shadow-lg">
       <h2 className="mb-4 text-xl font-bold">Accessibility</h2>
@@ -8,29 +15,49 @@ function Accessibility() {
         <div className="flex items-center justify-between">
           <span>Text size</span>
           <div className="join">
-            <button className="btn btn-sm text-sm join-item btn-outline">A</button>
-            <button className="btn btn-sm text-base join-item btn-outline">A</button>
-            <button className="btn btn-sm text-xl join-item btn-outline btn-active border-blue-500 text-blue-600">
-              A
-            </button>
+            {["small", "medium", "large"].map((size) => (
+              <button
+                key={size}
+                className={`btn btn-sm join-item btn-outline ${accessibility.textSize === size ? "btn-active border-blue-500 text-blue-600" : ""}`}
+                onClick={() => onAccessibilityChange({ textSize: size as "small" | "medium" | "large" })}
+              >
+                A
+              </button>
+            ))}
           </div>
         </div>
 
         {/* High contrast */}
         <div className="flex items-center justify-between">
           <span>High contrast</span>
-          <input type="checkbox" className="toggle toggle-md" />
+          <input
+            type="checkbox"
+            className="toggle toggle-md"
+            checked={accessibility.highContrast}
+            onChange={(e) => onAccessibilityChange({ highContrast: e.target.checked })}
+          />
         </div>
 
+        {/* Notification sound */}
         <div className="flex items-center justify-between">
           <span>Notification sound</span>
-          <input type="checkbox" className="toggle toggle-md" />
+          <input
+            type="checkbox"
+            className="toggle toggle-md"
+            checked={accessibility.notificationSound}
+            onChange={(e) => onAccessibilityChange({ notificationSound: e.target.checked })}
+          />
         </div>
 
         {/* Dyslexic font */}
         <div className="flex items-center justify-between">
           <span>Dyslexic font</span>
-          <input type="checkbox" className="toggle toggle-md" />
+          <input
+            type="checkbox"
+            className="toggle toggle-md"
+            checked={accessibility.dyslexicFont}
+            onChange={(e) => onAccessibilityChange({ dyslexicFont: e.target.checked })}
+          />
         </div>
       </div>
     </div>

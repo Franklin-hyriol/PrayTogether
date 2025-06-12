@@ -13,6 +13,7 @@ import prayerRoutes from './routes/prayerRoutes';
 import connectDB from './config/database';
 import { ensureUploadsFolder } from './utils/ensureUploadsFolder';
 import badgeRoutes from './routes/badgeRoutes';
+import settingsRoutes from './routes/settingsRoutes';
 
 const app = express();
 const server = http.createServer(app);
@@ -41,6 +42,7 @@ app.use('/uploads', express.static('uploads'));
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/prayer', prayerRoutes);
 app.use('/api/v1/badges', badgeRoutes);
+app.use('/api/v1/settings', settingsRoutes);
 
 // Initialiser le WebSocket
 initSocket(server);

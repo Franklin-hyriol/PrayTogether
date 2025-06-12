@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import "./Header.scss";
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useLogout } from "@/hook/useLogout";
 
@@ -16,29 +16,21 @@ import { FaUserCheck } from "react-icons/fa";
 import { FaRegUserCircle } from "react-icons/fa";
 import { initSocket } from "@/services/socket";
 import { usePathname } from "next/navigation";
+import { useSettingsContext } from "@/context/SettingsContext";
 
 function Header() {
   const { user, accessToken } = useAuth();
-  const [showDropdown, setShowDropdown] = useState(false);
-  const menuRef = useRef<HTMLDivElement | null>(null);
   const { logout, isLoading } = useLogout();
+  const { settings } = useSettingsContext();
 
   const pathname = usePathname();
 
-  console.log(pathname);
-
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (showDropdown && !menuRef.current?.contains(event.target as Node)) {
-        setShowDropdown(false);
-      }
-    };
+    if (settings?.theme) {
+      document.documentElement.setAttribute("data-theme", settings.theme);
+    }
+  }, [settings?.theme]);
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showDropdown]);
 
   useEffect(() => {
     if (accessToken) {
