@@ -63,16 +63,16 @@ function ForgotPassword() {
         <section className="forgot-password h-[100%] flex justify-center items-center">
 
 
-            <div className="w-full max-w-md bg-white rounded-3xl shadow-lg overflow-hidden">
-                <div className="p-10">
+            <div className="w-full max-w-md bg-base-100 rounded-3xl shadow-lg overflow-hidden">
+                <div className="sm:p-10 p-4">
 
 
-                    <div className="flex flex-col items-center mb-8">
+                    <div className="flex flex-col items-center sm:mb-8 mb-4">
                         <div className="bg-gray-100 w-14 h-14 rounded-full flex items-center justify-center">
                             <Image src="/logo/logo.png" alt="logo pray together" width={50} height={50} className="w-auto h-auto" />
                         </div>
-                        <h1 className="text-xl font-semibold text-gray-800 mt-8">Reset your password</h1>
-                        <p className="text-sm text-gray-500 mt-1">Enter your email to receive a password reset link</p>
+                        <h1 className="text-xl font-semibold text-base-content sm:mt-8 mt-4">Reset your password</h1>
+                        <p className="text-sm text-base-content mt-1">Enter your email to receive a password reset link</p>
                     </div>
 
 
@@ -88,12 +88,12 @@ function ForgotPassword() {
                         <div className="space-y-5">
                             <div className="space-y-1">
 
-                                <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+                                <label htmlFor="email" className="block text-sm font-medium text-base-content">Email</label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <MdOutlineEmail />
                                     </div>
-                                    <input type="email" autoComplete="email" {...register("email")} onBlur={() => trigger("email")} placeholder="example@gmail.com" className={`block w-full pl-10 py-3 border rounded-lg text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm ${errors.email?.message ? "border-red-400" : "border-gray-300"}`} maxLength={250} />
+                                    <input type="email" autoComplete="email" {...register("email")} onBlur={() => trigger("email")} placeholder="example@gmail.com" className={`block w-full pl-10 py-3 border rounded-lg text-base-content focus:outline-none focus:ring-primary sm:text-sm ${errors.email?.message ? "border-red-400" : "border-gray-300"}`} maxLength={250} />
                                 </div>
                                 {errors.email?.message && <div className="validator-hint visible text-red-400 block">{errors.email?.message}</div>}
 
@@ -104,8 +104,8 @@ function ForgotPassword() {
                         <button type="submit" className="btn btn-primary w-full" disabled={!isValid || forgotPasswordMutation.isPending}>Reset</button>
                     </form>
 
-                    <div className="text-center mt-6"><span className="text-sm text-gray-500">Remember your password ?</span>
-                        <Link href="/register" className="text-sm font-medium text-indigo-600 hover:text-indigo-500 ml-1">Back to login</Link>
+                    <div className="text-center mt-6"><span className="text-sm text-base-content">Remember your password ?</span>
+                        <Link href="/register" className="text-sm font-medium text-primary hover:underline ml-1">Back to login</Link>
                     </div>
                 </div>
             </div>

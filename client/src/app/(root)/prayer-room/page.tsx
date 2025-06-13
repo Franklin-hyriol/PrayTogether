@@ -122,7 +122,7 @@ function PrayerRoom() {
         />
 
         {/* Get my prayers */}
-        <div className="mx-auto grid max-w-[1200px] grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-6 p-4">
+        <div className="mx-auto grid max-w-[1200px] grid-cols-[repeat(auto-fill,minmax(376px,1fr))] gap-3 p-4 place-items-center">
           {!myPrayersError ? (
             isMyPrayersLoading ? (
               <ComponentsLoader />
@@ -175,6 +175,7 @@ function PrayerRoom() {
 
       {myPrayers?.data && myPrayers.data.length < 2 && (
         <button
+          type="button"
           onClick={() => setMakeRequest(true)}
           className="btn btn-circle border-primary fixed right-8 bottom-16 z-50 h-12 w-12 shadow-sm transition-all duration-300 hover:scale-110 hover:shadow-lg"
         >

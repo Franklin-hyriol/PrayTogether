@@ -16,12 +16,13 @@ function Theme({ theme, onThemeChange }: ThemeProps) {
   }, [theme]);
 
   return (
-    <div className="mb-8 p-6 bg-white rounded-lg shadow-lg">
+    <div className="mb-8 w-full rounded-xl bg-base-300 sm:p-6 p-4 shadow-md">
       <h2 className="text-xl font-bold mb-4">Theme</h2>
 
       <div className="flex space-x-4">
         {/* Light button */}
         <button
+          type="button"
           className={`btn flex items-center space-x-2 ${
             theme === "light" ? "btn-primary" : "btn-outline"
           }`}
@@ -33,6 +34,7 @@ function Theme({ theme, onThemeChange }: ThemeProps) {
 
         {/* Dark button */}
         <button
+        type="button"
           className={`btn flex items-center space-x-2 ${
             theme === "dark" ? "btn-primary" : "btn-outline"
           }`}

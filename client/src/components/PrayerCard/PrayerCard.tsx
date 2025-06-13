@@ -103,7 +103,7 @@ function PrayerCard({ currentUser, prayer, className, online = false, prayeringF
 
     return (
         <>
-            <div className={`prayer-card card w-96 bg-base-100 card-md shadow-sm card-border ${className ? className : ""}`}>
+            <div className={`prayer-card card w-94 bg-base-300 card-md shadow-sm card-border ${className ? className : ""}`}>
                 <div className="card-body">
                     <div className="flex justify-between">
 
@@ -126,7 +126,7 @@ function PrayerCard({ currentUser, prayer, className, online = false, prayeringF
 
                             <div className="flex flex-col">
                                 <h2 className="card-title">{(prayer.authorId as Iauthor).username}</h2>
-                                <span className="text-xs text-gray-500">{formatRelativeTime(prayer.createdAt)}</span>
+                                <span className="text-xs text-base-content">{formatRelativeTime(prayer.createdAt)}</span>
                             </div>
                         </div>
 
@@ -138,6 +138,7 @@ function PrayerCard({ currentUser, prayer, className, online = false, prayeringF
                         {currentUser &&
                             <div className="relative" ref={menuRef}>
                                 <button
+                                    type="button"
                                     className="flex flex-col gap-[3px] p-[5px] px-[10px] bg-transparent border-none rounded hover:bg-black/5 transition cursor-pointer"
                                     onClick={() => setShowMenu(!showMenu)}
                                 >
@@ -147,16 +148,17 @@ function PrayerCard({ currentUser, prayer, className, online = false, prayeringF
                                 </button>
 
                                 <div
-                                    className={`absolute right-0 w-40 bg-white rounded-lg shadow-lg transition-all duration-300 z-10 ${showMenu ? "opacity-100 visible translate-y-1" : "opacity-0 invisible translate-y-2"
+                                    className={`absolute right-0 w-40 bg-base-100 rounded-lg shadow-lg transition-all duration-300 z-10 ${showMenu ? "opacity-100 visible translate-y-1" : "opacity-0 invisible translate-y-2"
                                         }`}
                                 >
-                                    <button className="cursor-pointer flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 text-left hover:bg-gray-100 rounded-t-lg transition"
+                                    <button type="button" className="cursor-pointer flex items-center gap-2 w-full px-4 py-2 text-sm text-base-content text-left hover:bg-base-300 rounded-t-lg transition"
                                         onClick={onEdit}
                                     >
                                         <MdOutlineEdit /> Editer
                                     </button>
                                     <button
-                                        className="cursor-pointer flex items-center gap-2 w-full px-4 py-2 text-sm text-red-500 text-left hover:bg-gray-100 rounded-b-lg transition"
+                                        type="button"
+                                        className="cursor-pointer flex items-center gap-2 w-full px-4 py-2 text-sm text-red-500 text-left hover:bg-base-300 rounded-b-lg transition"
                                         onClick={onDelete}
                                     >
                                         <MdDeleteOutline /> Delete
@@ -190,10 +192,11 @@ function PrayerCard({ currentUser, prayer, className, online = false, prayeringF
                                             <PiHandsPraying className="text-green-500" />
                                         </div>
                                     ) : (
-                                        <button className="btn btn-primary grow-6" onClick={() => PrayforYouMutation.mutate()}>I pray for you</button>
+                                        <button type="button" className="btn btn-primary grow-6" onClick={() => PrayforYouMutation.mutate()}>I pray for you</button>
                                     )}
                                     <div className="relative inline-block">
                                         <button
+                                            type="button"
                                             className={`p-1 text-gray-500 hover:text-red-500 transition-colors duration-200 focus:outline-none cursor-pointer ${likedBy ? "text-red-500" : ""}`}
                                             onClick={handleClick}
                                         >

@@ -113,7 +113,7 @@ function ChangePassword({ className }: ChangePasswordProps) {
       <div className="space-y-1">
         <label
           htmlFor="password"
-          className="block text-sm font-medium text-gray-700"
+          className="block text-sm font-medium text-base-content"
         >
           Password
         </label>
@@ -128,13 +128,13 @@ function ChangePassword({ className }: ChangePasswordProps) {
             autoComplete="new-password"
             type={showPassword ? "text" : "password"}
             placeholder="Password"
-            className={`block w-full rounded-lg border py-3 pl-10 text-gray-900 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none sm:text-sm ${errors.password?.message ? "border-red-400" : "border-gray-300"}`}
+            className={`block w-full rounded-lg border py-3 pl-10 text-base-content focus:outline-none focus:ring-primary sm:text-sm ${errors.password?.message ? "border-red-400" : "border-gray-300"}`}
             maxLength={250}
           />
           <div className="absolute inset-y-0 right-0 flex items-center pr-3">
             <button
               type="button"
-              className="cursor-pointer text-gray-400 hover:text-gray-500 focus:outline-none"
+              className="text-base-content hover:text-base-400 focus:outline-none cursor-pointer"
               onClick={() => setShowPassword(!showPassword)}
             >
               {showPassword ? (
@@ -156,7 +156,7 @@ function ChangePassword({ className }: ChangePasswordProps) {
       <div className="space-y-1">
         <label
           htmlFor="newPassword"
-          className="block text-sm font-medium text-gray-700"
+          className="block text-sm font-medium text-base-content"
         >
           New Password
         </label>
@@ -171,13 +171,13 @@ function ChangePassword({ className }: ChangePasswordProps) {
             autoComplete="new-password"
             type={showNewPassword ? "text" : "password"}
             placeholder="New Password"
-            className={`block w-full rounded-lg border py-3 pl-10 text-gray-900 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none sm:text-sm ${errors.newPassword?.message ? "border-red-400" : "border-gray-300"}`}
+            className={`block w-full rounded-lg border py-3 pl-10 text-base-content focus:outline-none focus:ring-primary sm:text-sm ${errors.newPassword?.message ? "border-red-400" : "border-gray-300"}`}
             maxLength={250}
           />
           <div className="absolute inset-y-0 right-0 flex items-center pr-3">
             <button
               type="button"
-              className="cursor-pointer text-gray-400 hover:text-gray-500 focus:outline-none"
+              className="text-base-content hover:text-base-400 focus:outline-none cursor-pointer"
               onClick={() => setShowNewPassword(!showNewPassword)}
             >
               {showNewPassword ? (
@@ -199,7 +199,7 @@ function ChangePassword({ className }: ChangePasswordProps) {
       <div className="space-y-1">
         <label
           htmlFor="confirmPassword"
-          className="block text-sm font-medium text-gray-700"
+          className="block text-sm font-medium text-base-content"
         >
           Confirm Password
         </label>
@@ -214,13 +214,13 @@ function ChangePassword({ className }: ChangePasswordProps) {
             autoComplete="new-password"
             type={showConfirmPassword ? "text" : "password"}
             placeholder="Confirm Password"
-            className={`block w-full rounded-lg border py-3 pl-10 text-gray-900 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none sm:text-sm ${errors.confirmPassword?.message ? "border-red-400" : "border-gray-300"}`}
+            className={`block w-full rounded-lg border py-3 pl-10 text-base-content focus:outline-none focus:ring-primary sm:text-sm ${errors.confirmPassword?.message ? "border-red-400" : "border-gray-300"}`}
             maxLength={250}
           />
           <div className="absolute inset-y-0 right-0 flex items-center pr-3">
             <button
               type="button"
-              className="cursor-pointer text-gray-400 hover:text-gray-500 focus:outline-none"
+              className="text-base-content hover:text-base-400 focus:outline-none cursor-pointer"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
             >
               {showConfirmPassword ? (

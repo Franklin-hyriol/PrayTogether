@@ -7,18 +7,25 @@
         box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
     }
 
-    &.current-user {
-        // border: 2px solid #3b82f6;
-        background: linear-gradient(to bottom right, #ffffff, #f0f7ff);
-    }
 
     &.praying-for {
         border: 2px solid #22c55e;
         background: linear-gradient(to bottom right, #ffffff, #f0fff7);
     }
 
+
+
     .animate-like-float {
         animation: likeFloat 1s ease-out forwards;
+    }
+}
+
+[data-theme="dark"] {
+    .prayer-card {
+        &.praying-for {
+            border: 2px solid #22c55e;
+            background: linear-gradient(to bottom right, #1a202c, #2d3748);
+        }
     }
 }
 

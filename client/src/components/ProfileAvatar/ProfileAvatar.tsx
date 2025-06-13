@@ -72,8 +72,8 @@ function ProfileAvatar() {
 
     return (
         <>
-            <div className="avatar absolute bottom-[-60px] left-1/2 transform -translate-x-1/2">
-                <div className="ring-primary ring-offset-base-100 w-24 rounded-full ring-2 ring-offset-2">
+            <div className="avatar absolute sm:bottom-[-60px] bottom-[-30px] left-1/2 transform -translate-x-1/2">
+                <div className="ring-primary ring-offset-base-100 sm:w-24 w-16 rounded-full ring-2 ring-offset-2">
 
                     {user?.profilePhoto ? (
                         <Image src={user.profilePhoto} width={120} height={120} alt={user.username} className="profile-img" />
@@ -81,8 +81,8 @@ function ProfileAvatar() {
                         <FaRegUserCircle className="w-full h-full" />
                     )}
 
-                    <label className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-white border-2 border-primary flex items-center justify-center cursor-pointer transition-all duration-300 ease-in-out hover:bg-primary hover:text-white">
-                        <IoCameraOutline />
+                    <label className="absolute bottom-[-5px] right-[-5px] w-8 h-8 rounded-full bg-white border-2 border-primary flex items-center justify-center cursor-pointer transition-all duration-300 ease-in-out text-black hover:bg-primary hover:text-white">
+                        <IoCameraOutline/>
                         <input type="file" className="hidden" accept="image/png, image/jpeg, image/webp" {...register('image')} />
                     </label>
                 </div>

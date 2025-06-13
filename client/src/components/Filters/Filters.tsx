@@ -19,31 +19,36 @@ function Filters({ search, setSearch, filter, setFilter }: FiltersProps) {
 
             <div className="flex gap-[0.75rem] flex-wrap">
                 <button
-                    className={`btn ${isActive("") ? "btn-primary" : "btn-outline border-none bg-gray-200 hover:bg-gray-300"}`}
+                    type="button"
+                    className={`btn ${isActive("") ? "btn-primary" : "btn-soft btn-primary border-none"}`}
                     onClick={() => setFilter("")}
                 >
                     All prayers
                 </button>
                 <button
-                    className={`btn ${isActive("liked") ? "btn-primary" : "btn-outline border-none bg-gray-200 hover:bg-gray-300"}`}
+                    type="button"
+                    className={`btn ${isActive("liked") ? "btn-primary" : "btn-soft btn-primary border-none"}`}
                     onClick={() => setFilter("liked")}
                 >
                     Liked
                 </button>
                 <button
-                    className={`btn ${isActive("prayed") ? "btn-primary" : "btn-outline border-none bg-gray-200 hover:bg-gray-300"}`}
+                    type="button"
+                    className={`btn ${isActive("prayed") ? "btn-primary" : "btn-soft btn-primary border-none"}`}
                     onClick={() => setFilter("prayed")}
                 >
                     I&apos;m praying for
                 </button>
                 <button
-                    className={`btn ${isActive("urgent") ? "btn-primary" : "btn-outline border-none bg-gray-200 hover:bg-gray-300"}`}
+                    type="button"
+                    className={`btn ${isActive("urgent") ? "btn-primary" : "btn-soft btn-primary border-none"}`}
                     onClick={() => setFilter("urgent")}
                 >
                     Urgent
                 </button>
                 <button
-                    className={`btn ${isActive("unseen") ? "btn-primary" : "btn-outline border-none bg-gray-200 hover:bg-gray-300"}`}
+                    type="button"
+                    className={`btn ${isActive("unseen") ? "btn-primary" : "btn-soft btn-primary border-none"}`}
                     onClick={() => setFilter("unseen")}
                 >
                     Unseen

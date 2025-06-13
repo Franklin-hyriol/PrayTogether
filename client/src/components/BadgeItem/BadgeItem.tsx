@@ -12,8 +12,8 @@ const badgeTypeClassMap: Record<string, string> = {
 function BadgeItem({ badge }: { badge: IBadge }) {
   const badgeClass = badgeTypeClassMap[badge.condition.type] || "bg-gray-100 text-gray-700";
   return (
-    <div className={`card bg-base-100 card-sm flex w-full flex-row items-center justify-center pr-3 pl-3 shadow-md transition-transform duration-300 hover:bg-blue-100`}>
-      <div className={`flex h-12 w-12 items-center justify-center rounded-full text-xl ${badgeClass}`}>
+    <div className={`card bg-base-100 card-sm flex w-full flex-row items-center justify-center pr-3 pl-3 shadow-md transition-transform duration-300 hover:bg-base-200`}>
+      <div className={`flex h-12 w-12 flex-none basis-12 items-center justify-center rounded-full text-xl ${badgeClass}`}>
         {badge.icon}
       </div>
       <div className="card-body">

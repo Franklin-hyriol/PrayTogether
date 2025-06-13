@@ -15,6 +15,7 @@ const Pagination = ({ pagination, onPageChange }: PaginationProps) => {
     <div className="max-w-[1200px] mx-auto my-2 px-1 flex justify-center items-center gap-1 mt-6">
       <div className="join gap-1">
         <button
+          type="button"
           className="join-item btn btn-outline"
           disabled={!hasPrevPage}
           onClick={() => onPageChange(currentPage - 1)}
@@ -29,6 +30,7 @@ const Pagination = ({ pagination, onPageChange }: PaginationProps) => {
             </span>
           ) : (
             <button
+              type="button"
               key={page}
               onClick={() => onPageChange(page as number)}
               className={`join-item btn ${
@@ -41,6 +43,7 @@ const Pagination = ({ pagination, onPageChange }: PaginationProps) => {
         )}
 
         <button
+          type="button"
           className="join-item btn btn-outline"
           disabled={!hasNextPage}
           onClick={() => onPageChange(currentPage + 1)}

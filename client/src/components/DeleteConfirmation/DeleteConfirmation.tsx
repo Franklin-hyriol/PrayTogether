@@ -100,16 +100,14 @@ function DeleteConfirmation({ selectedPrayerId, showDeletePopup, setShowDeletePo
                     <div className="card-body text-center">
 
                         <h2 className="card-title">Confirm Deletion</h2>
-                        <p className="mb-2">Êtes-vous sûr de vouloir supprimer cette prière ?  <br /><span className="text-error">Cette action est irréversible.</span></p>
+                        <p className="mb-2">Are you sure you want to delete this prayer? <br /><span className="text-error">This action is irreversible.</span></p>
                         <div className="justify-center gap-4 card-actions">
-                            <button className="btn" onClick={() => setShowDeletePopup(false)}>Cancel</button>
-                            <button className="btn btn-error text-white" onClick={handleDelete}>Delete</button>
+                            <button type="button" className="btn" onClick={() => setShowDeletePopup(false)}>Cancel</button>
+                            <button type="button" className="btn btn-error text-white" onClick={handleDelete}>Delete</button>
                         </div>
                     </div>
                 </div>
             </div>
-
-
         </>
     )
 }

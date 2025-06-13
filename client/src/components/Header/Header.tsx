@@ -39,20 +39,20 @@ function Header() {
   }, [accessToken]);
 
   return (
-    <header className="navbar bg-base-100 sticky top-0 z-50 shadow-sm">
+    <header className="navbar bg-base-300 sticky top-0 z-50 shadow-sm">
       <div className="flex-1">
         <Link
           href="/"
-          className="navbar-brand flex w-fit gap-2 text-2xl font-bold"
+          className="navbar-brand flex items-center w-fit gap-2 sm:text-2xl text-xl font-bold"
         >
           <Image
             src="/logo/logo.png"
             alt="logo pray together"
             width={30}
             height={30}
-            className="h-auto w-auto"
+            className="flex-none h-[32px] basis-[32px]"
           />
-          Pray Together
+          <span>Pray Together</span>
         </Link>
       </div>
 
@@ -74,7 +74,7 @@ function Header() {
                 role="button"
                 className="btn btn-ghost btn-circle avatar"
               >
-                <div className="w-10 rounded-full">
+                <div className="w-10 rounded-full border-1 border-base-content border-opacity-50">
                   {user.profilePhoto ? (
                     <Image
                       src={user.profilePhoto}
@@ -108,6 +108,7 @@ function Header() {
 
                 <li>
                   <button
+                    type="button"
                     onClick={() => logout()}
                     disabled={isLoading}
                     className="logout-btn text-lg"

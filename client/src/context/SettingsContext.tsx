@@ -75,7 +75,9 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
     };
 
     loadSettings();
-  }, [accessToken, fetchData]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accessToken]);
 
   return (
     <SettingsContext.Provider value={{ settings, updateLocalSettings }}>

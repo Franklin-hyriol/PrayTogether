@@ -73,20 +73,20 @@ function Profile() {
     }
 
     return (
-        <section className="max-w-[1200px] mx-auto bg-white rounded-2xl shadow-md overflow-hidden p-4">
-            <div className="relative h-48">
-                <div className="w-full h-full bg-gradient-to-r from-blue-700 to-blue-300"></div>
+        <section className="max-w-[1200px] mx-auto bg-base-100 rounded-2xl shadow-md overflow-hidden p-4">
+            <div className="relative sm:h-48 h-24">
+                <div className="w-full h-full bg-gradient-to-r from-primary to-primary-content"></div>
                 <ProfileAvatar />
             </div>
 
-            <div className="p-8 mt-14 flex flex-col items-center">
+            <div className="sm:p-4 p-0 mt-14 flex flex-col items-center">
 
                 <div className="flex items-center justify-center flex-col relative mb-12">
                     {isEditing ? (
 
                         <input
                             type="text"
-                            className="text-3xl text-center font-bold border-b border-gray-300 focus:outline-none focus:border-blue-500"
+                            className="text-3xl text-center font-bold border-b border-base-content focus:outline-none focus:border-primary"
                             autoFocus
                             autoComplete="family-name"
                             {...register("username")}
@@ -98,25 +98,26 @@ function Profile() {
                         />
                     ) : (
                         <>
-                            <h1 className="font-bold text-3xl">{user?.username}</h1>
+                            <h1 className="font-bold text-3xl text-base-content">{user?.username}</h1>
                             <button
+                                type="button"
                                 onClick={() => setIsEditing(true)}
-                                className="text-gray-500 hover:text-blue-500 absolute right-[-24px] top-0"
+                                className="text-neutral-content hover:text-primary absolute right-[-24px] top-0"
                                 aria-label="Modifier le nom"
                             >
                                 <FaEdit size={18} className="cursor-pointer" />
                             </button>
                             {errors.username?.message && <div className="text-xs visible text-red-400 block">{errors.username?.message}</div>}
 
-                            <span className="block color-base-300 text-sm mb-1">Member since {formatMemberSince(user?.createdAt as string)}</span>
+                            <span className="block text-base-content text-sm mb-1">Member since {formatMemberSince(user?.createdAt as string)}</span>
                             <p className="text-primary font-medium">{user?.email}</p>
                         </>
                     )}
                 </div>
 
-                <div className="form-tabs flex justify-center gap-4 mb-8 pb-4 border-[#e5e7eb] border-b">
-                    <button className={`tab-btn ${tab === 1 ? "active" : ""}`} data-tab="personal-info" onClick={() => setTab(1)}>Personal info</button>
-                    <button className={`tab-btn ${tab === 2 ? "active" : ""}`} data-tab="password" onClick={() => setTab(2)}>Password</button>
+                <div className="form-tabs flex justify-center gap-4 mb-8 pb-4 border-neutral-content border-b">
+                    <button type="button" className={`tab-btn ${tab === 1 ? "active" : ""}`} data-tab="personal-info" onClick={() => setTab(1)}>Personal info</button>
+                    <button type="button" className={`tab-btn ${tab === 2 ? "active" : ""}`} data-tab="password" onClick={() => setTab(2)}>Password</button>
                 </div>
 
                 <div className="w-full">

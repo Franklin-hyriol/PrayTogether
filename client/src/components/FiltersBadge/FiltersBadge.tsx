@@ -9,21 +9,24 @@ function FiltersBadge({ filter, setFilter }: FiltersProps) {
   return (
     <div className="mb-6 flex flex-wrap gap-[0.75rem]">
       <button
-        className={`btn ${isActive("") ? "btn-primary" : "btn-outline border-none bg-gray-200 hover:bg-gray-300"}`}
+        type="button"
+        className={`btn ${isActive("") ? "btn-primary" : "btn-soft btn-primary border-none"}`}
         data-filter="all"
         onClick={() => setFilter("")}
       >
         All badges
       </button>
       <button
-        className={`btn ${isActive("earned") ? "btn-primary" : "btn-outline border-none bg-gray-200 hover:bg-gray-300"}`}
+        type="button"
+        className={`btn ${isActive("earned") ? "btn-primary" : "btn-soft btn-primary border-none"}`}
         data-filter="earned"
         onClick={() => setFilter("earned")}
       >
         Earned badges
       </button>
       <button
-        className={`btn ${isActive("unearned") ? "btn-primary" : "btn-outline border-none bg-gray-200 hover:bg-gray-300"}`}
+        type="button"
+        className={`btn ${isActive("unearned") ? "btn-primary" : "btn-soft btn-primary border-none"}`}
         data-filter="unearned"
         onClick={() => setFilter("unearned")}
       >

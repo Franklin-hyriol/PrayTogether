@@ -7,7 +7,7 @@ type AccessibilityProps = {
 
 function Accessibility({ accessibility, onAccessibilityChange }: AccessibilityProps) {
   return (
-    <div className="mb-8 rounded-lg bg-white p-6 shadow-lg">
+    <div className="mb-8 w-full rounded-xl bg-base-300 sm:p-6 p-4 shadow-md">
       <h2 className="mb-4 text-xl font-bold">Accessibility</h2>
 
       <div className="space-y-6">
@@ -17,6 +17,7 @@ function Accessibility({ accessibility, onAccessibilityChange }: AccessibilityPr
           <div className="join">
             {["small", "medium", "large"].map((size) => (
               <button
+                type="button"
                 key={size}
                 className={`btn btn-sm join-item btn-outline ${accessibility.textSize === size ? "btn-active border-blue-500 text-blue-600" : ""}`}
                 onClick={() => onAccessibilityChange({ textSize: size as "small" | "medium" | "large" })}

@@ -10,7 +10,7 @@ import fs from 'fs';
 import IUser from '../interfaces/UserInterface';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import { ACCESS_TOKEN_EXPIRATION_TIME, BASE_URL, JWT_SECRET, NEXT_PUBLIC_ENDPOINT_BASE_URL, REFRESH_TOKEN_EXPIRATION_TIME, REFRESH_TOKEN_SECRET } from '../config/Env';
+import { ACCESS_TOKEN_EXPIRATION_TIME, ADMIN_EMAIL, BASE_URL, JWT_SECRET, NEXT_PUBLIC_ENDPOINT_BASE_URL, REFRESH_TOKEN_EXPIRATION_TIME, REFRESH_TOKEN_SECRET } from '../config/Env';
 import { toMs } from '../utils/toMs';
 import { StringValue } from 'ms';
 import { serializeUser } from '../helpers/serializeUser';
@@ -61,7 +61,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
             email,
             username,
             password: hashedPassword,
-            role: email.toLowerCase() === 'franklinrazafy@gmail.com' ? 'admin' : 'user'
+            role: email.toLowerCase() === ADMIN_EMAIL ? 'admin' : 'user'
         });
 
 
@@ -296,7 +296,7 @@ export const GoogleAuth = async (req: Request, res: Response): Promise<void> => 
                 email: email,
                 username: username,
                 password: await bcrypt.hash(Math.random().toString(36).slice(-8), 10),
-                role: email.toLowerCase() === 'franklinrazafy@gmail.com' ? 'admin' : 'user',
+                role: email.toLowerCase() === ADMIN_EMAIL ? 'admin' : 'user',
                 provider: 'google',
                 googleId: profile.id,
                 profilePhoto: avatar
@@ -325,7 +325,7 @@ export const GoogleAuth = async (req: Request, res: Response): Promise<void> => 
             sameSite: "none", // ✅ plus permissif pour les tests (strict bloque parfois même en local)
         });
 
-        res.redirect(NEXT_PUBLIC_ENDPOINT_BASE_URL as string);
+        res.redirect(`${NEXT_PUBLIC_ENDPOINT_BASE_URL}/prayer-room` as string);
 
     } catch (error: unknown) {
         if (error instanceof Error) {
