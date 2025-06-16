@@ -9,7 +9,7 @@ function Footer() {
                 <p className="sm:order-2 order-1 underline">
                     <Link href="/about" className="footer-link">Site guide & data policy</Link>
                 </p>
-                <p className="sm:order-3 order-3">Designed & developed with by <a href="#" className="hover:text-base-content underline" target="_blank" rel="noopener noreferrer">Franklin Hyriol</a></p>
+                <p className="sm:order-3 order-3">Designed & developed with by <a href="https://www.linkedin.com/in/franklin-hyriol-razafinandrasana-4b9a71217/" className="hover:text-base-content underline" target="_blank" rel="noopener noreferrer">Franklin Hyriol</a></p>
             </footer>
         </>
     )

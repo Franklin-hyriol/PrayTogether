@@ -26,7 +26,7 @@ function Settings() {
       updateLocalSettings(data.data);
     },
     onError: (err) => {
-      console.error("Erreur lors de la mise à jour des paramètres", err);
+      console.error("Error while updating settings", err);
     },
   });
 

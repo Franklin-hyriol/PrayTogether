@@ -28,6 +28,8 @@ userSchema.pre('deleteOne', { document: true, query: false }, async function (ne
 
         const PrayerRequest = mongoose.model('PrayerRequest');
         const PrayerInteraction = mongoose.model('PrayerInteraction');
+        const Settings = mongoose.model('Settings');
+        const UserBadge = mongoose.model('UserBadge');
 
         // Trouver toutes les prières de l'utilisateur
         const userPrayers = await PrayerRequest.find({ authorId: userId }).select('_id');
@@ -43,6 +45,12 @@ userSchema.pre('deleteOne', { document: true, query: false }, async function (ne
         if (userPrayerIds.length > 0) {
             await PrayerInteraction.deleteMany({ prayerId: { $in: userPrayerIds } });
         }
+
+        // Supprimer les paramètres de l'utilisateur
+        await Settings.deleteOne({ userId });
+
+        // Supprimer les badges de l'utilisateur
+        await UserBadge.deleteMany({ userId });
 
         next();
     } catch (err: unknown) {

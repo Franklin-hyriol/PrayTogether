@@ -7,7 +7,6 @@ import { ISettings } from "@/Interface/ISettings";
 import { getUserSettingsEndpoint } from "@/endpoint/Settings";
 import { Data } from "@/Interface/Data";
 
-
 const defaultSettings = {
   theme: "light",
   accessibility: {
@@ -31,26 +30,32 @@ const SettingsContext = createContext<SettingsContextType>({
 
 export const useSettingsContext = () => useContext(SettingsContext);
 
-export const SettingsProvider = ({ children }: { children: React.ReactNode }) => {
+export const SettingsProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const { fetchData } = useFetch(true);
   const { accessToken } = useAuth();
   const [settings, setSettings] = useState<ISettings | null>(null);
 
   // Récupérer les settings depuis le localStorage
   const getLocalSettings = (): ISettings | null => {
-    const stored = localStorage.getItem('user-settings');
+    const stored = localStorage.getItem("user-settings");
     return stored ? JSON.parse(stored) : null;
   };
 
   // Mettre à jour les settings (localStorage et state local)
   const updateLocalSettings = (newSettings: Partial<ISettings>) => {
-    setSettings((prev) => {
-      if (!prev) return null;
+    if (!settings) return;
 
-      const updated = { ...prev, ...newSettings };
-      localStorage.setItem('user-settings', JSON.stringify(updated));
-      return updated;
-    });
+    const updated = { ...settings, ...newSettings };
+
+    // Met à jour immédiatement le context
+    setSettings(updated);
+
+    // Synchronise avec localStorage
+    localStorage.setItem("user-settings", JSON.stringify(updated));
   };
 
   // Récupérer les settings serveur si connecté
@@ -58,25 +63,33 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
     const loadSettings = async () => {
       if (accessToken) {
         try {
-          const serverSettings = await fetchData<Data<ISettings>>(getUserSettingsEndpoint);
+          const serverSettings = await fetchData<Data<ISettings>>(
+            getUserSettingsEndpoint,
+          );
           setSettings(serverSettings.data);
-          localStorage.setItem('user-settings', JSON.stringify(serverSettings.data));
+          localStorage.setItem(
+            "user-settings",
+            JSON.stringify(serverSettings.data),
+          );
         } catch (error) {
-          console.error('Erreur lors de la récupération des settings:', error);
+          console.error("Error while fetching settings:", error);
         }
       } else {
         const local = getLocalSettings();
         if (local) {
           setSettings(local);
-        }else{
-          localStorage.setItem('user-settings', JSON.stringify(defaultSettings));
+        } else {
+          localStorage.setItem(
+            "user-settings",
+            JSON.stringify(defaultSettings),
+          );
         }
       }
     };
 
     loadSettings();
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accessToken]);
 
   return (

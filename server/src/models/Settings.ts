@@ -2,7 +2,7 @@ import mongoose, { Schema } from 'mongoose';
 import { ISettings } from '../interfaces/SettingsInterface';
 
 const accessibilitySchema = new Schema({
-  textSize: { type: String, required: true, default: 'medium' },
+  textSize: { type: String, required: true, default: 'small' },
   highContrast: { type: Boolean, required: true, default: false },
   notificationSound: { type: Boolean, required: true, default: false },
   dyslexicFont: { type: Boolean, required: true, default: false },
