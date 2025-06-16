@@ -10,7 +10,7 @@ import fs from 'fs';
 import IUser from '../interfaces/UserInterface';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import { ACCESS_TOKEN_EXPIRATION_TIME, BASE_URL, JWT_SECRET, NEXT_PUBLIC_ENDPOINT_BASE_URL, REFRESH_TOKEN_EXPIRATION_TIME, REFRESH_TOKEN_SECRET } from '../config/Env';
+import { ACCESS_TOKEN_EXPIRATION_TIME, ADMIN_EMAIL, BASE_URL, JWT_SECRET, NEXT_PUBLIC_ENDPOINT_BASE_URL, REFRESH_TOKEN_EXPIRATION_TIME, REFRESH_TOKEN_SECRET } from '../config/Env';
 import { toMs } from '../utils/toMs';
 import { StringValue } from 'ms';
 import { serializeUser } from '../helpers/serializeUser';
@@ -61,7 +61,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
             email,
             username,
             password: hashedPassword,
-            role: email.toLowerCase() === 'franklinrazafy@gmail.com' ? 'admin' : 'user'
+            role: email.toLowerCase() === ADMIN_EMAIL ? 'admin' : 'user'
         });
 
 
@@ -296,7 +296,7 @@ export const GoogleAuth = async (req: Request, res: Response): Promise<void> => 
                 email: email,
                 username: username,
                 password: await bcrypt.hash(Math.random().toString(36).slice(-8), 10),
-                role: email.toLowerCase() === 'franklinrazafy@gmail.com' ? 'admin' : 'user',
+                role: email.toLowerCase() === ADMIN_EMAIL ? 'admin' : 'user',
                 provider: 'google',
                 googleId: profile.id,
                 profilePhoto: avatar
@@ -325,7 +325,7 @@ export const GoogleAuth = async (req: Request, res: Response): Promise<void> => 
             sameSite: "none", // ✅ plus permissif pour les tests (strict bloque parfois même en local)
         });
 
-        res.redirect(NEXT_PUBLIC_ENDPOINT_BASE_URL as string);
+        res.redirect(`${NEXT_PUBLIC_ENDPOINT_BASE_URL}/prayer-room` as string);
 
     } catch (error: unknown) {
         if (error instanceof Error) {
@@ -1064,6 +1064,13 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
         // Supprime l'utilisateur et déclenche le hook `pre('deleteOne')`
         await user.deleteOne();
 
+        res.clearCookie('refresh_token', {
+            httpOnly: false, // ❌ TEMPORAIREMENT désactiver HttpOnly pour voir/manipuler le cookie dans Postman
+            secure: true, // ✅ false en local (si tu n'utilises pas HTTPS)
+            path: "/", // ✅ mettre un chemin plus général pour qu'il soit envoyé sur toutes les routes
+            sameSite: "none", // ✅ plus permissif pour les tests (strict bloque parfois même en local)
+        });
+
         res.status(200).json({
             status: 200,
             message: 'User and related data deleted successfully'
@@ -1091,57 +1098,6 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
         }
     }
 };
-
-// // Méthode pour modifier le mot de passe d'un utilisateur
-// export const updateUserPassword = async (req: Request, res: Response): Promise<void> => {
-//     const validation = validationResult(req);
-//     if (!validation.isEmpty()) {
-//         res.status(400).json({ errors: validation.array() });
-//         return;
-//     }
-
-//     const userId = req.params.id; // Récupère l'ID de l'utilisateur à mettre à jour
-//     const { oldPassword, password_hash, password_hash_valid } = req.body; // Récupère les mots de passe du corps de la requête
-
-//     // Vérifie si les nouveaux mots de passe correspondent
-//     if (password_hash !== password_hash_valid) {
-//         res.status(400).json({ message: 'New passwords do not match.' });
-//         return;
-//     }
-
-//     try {
-//         const user = await User.findByPk(userId); // Trouve l'utilisateur par ID
-//         if (!user) {
-//             res.status(404).json({ message: 'User not found.' });
-//             return;
-//         }
-
-//         // Vérifie que l'ancien mot de passe est correct
-//         const isOldPasswordValid = await bcrypt.compare(oldPassword, user.password_hash);
-//         if (!isOldPasswordValid) {
-//             res.status(400).json({ message: 'Old password is incorrect.' });
-//             return;
-//         }
-
-//         // Hachage du nouveau mot de passe avant de le sauvegarder
-//         user.password_hash = await bcrypt.hash(password_hash, 10);
-
-//         await user.save();
-//         res.status(200).json({
-//             message: 'Password updated successfully.',
-//             user: {
-//                 id: user.id,
-//                 username: user.username,
-//                 email: user.email
-//             }
-//         });
-//     } catch (error) {
-//         res.status(500).json({
-//             message: 'Internal server error.',
-//             error: error
-//         });
-//     }
-// }
 
 // // Méthode pour reinitialiser le mot de passe
 export const resetUserPassword = async (req: Request, res: Response): Promise<void> => {

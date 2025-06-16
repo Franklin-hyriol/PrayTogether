@@ -13,3 +13,7 @@ export const updateProfileEndpoint = `${baseUrl}/users/update-profile`;
 export function updateUserEndpoint(id: string) {
     return `${baseUrl}/users/${id}`;
 }
+
+export function deleteUserEndpoint(id: string) {
+    return `${baseUrl}/users/${id}`;
+}

@@ -108,7 +108,7 @@ function PersonalInfo({ className }: PersonalInfoProps) {
   return (
     <div className={"form-section w-full flex-col" + " " + className}>
       {/* Statistics */}
-      <div className="mb-8 rounded-xl bg-white p-6 shadow-md">
+      <div className="mb-8 rounded-xl bg-base-300 sm:p-6 p-4 shadow-md">
         <h2 className="mb-6 text-xl font-medium">Prayer Statistics</h2>
         <div className="flex w-full flex-wrap gap-4">
           <StatCard
@@ -116,42 +116,42 @@ function PersonalInfo({ className }: PersonalInfoProps) {
             value={user?.totalPrayersCreated || 0}
             label="Prayers Created"
             className="given"
-          />{" "}
+          />
           {/* totalPrayersCreated */}
           <StatCard
             icon={<LiaPrayingHandsSolid />}
             value={user?.totalPrayersReceived || 0}
             label="Prayers Received"
             className="received"
-          />{" "}
+          />
           {/* totalPrayersReceived */}
           <StatCard
             icon={<FaHeart />}
             value={user?.totalHeartsReceived || 0}
             label="Hearts Received"
             className="likes"
-          />{" "}
+          />
           {/*totalHeartsReceived */}
           <StatCard
             icon={<FaHands />}
             value={user?.totalPrayersMade || 0}
             label="Prayers Given"
             className="given"
-          />{" "}
+          />
           {/* totalPrayersMade */}
           <StatCard
             icon={<FaHeartCirclePlus />}
             value={user?.totalHeartsGiven || 0}
             label="Hearts Given"
             className="hearts"
-          />{" "}
+          />
           {/* totalHeartsGiven */}
         </div>
       </div>
       {/* Statistics */}
 
       {/* History */}
-      <div className="mb-8 rounded-xl bg-white p-6 shadow-md">
+      <div className="mb-8 rounded-xl bg-base-300 sm:p-6 p-4 shadow-md">
         <h2 className="mb-6 text-xl font-medium">Prayer History</h2>
         <div className="flex w-full flex-col gap-4">
           <div
@@ -164,7 +164,7 @@ function PersonalInfo({ className }: PersonalInfoProps) {
               <ComponentsLoader className="absolute top-1/2 left-1/2" />
             ) : allMyPrayers?.pages.flatMap((page) => page.data).length ===
               0 ? (
-              <p className="flex items-center justify-center gap-2 py-4 text-sm text-gray-500 italic">
+              <p className="flex items-center justify-center gap-2 py-4 text-sm text-neutral-content italic">
                 <span role="img" aria-label="Empty box">
                   📦
                 </span>
@@ -189,7 +189,7 @@ function PersonalInfo({ className }: PersonalInfoProps) {
       {/* History */}
 
       {/* Badges */}
-      <div className="mb-8 rounded-xl bg-white p-6 shadow-md">
+      <div className="mb-8 rounded-xl bg-base-300 sm:p-6 p-4 shadow-md">
         <h2 className="mb-6 text-xl font-medium">Mes Badges</h2>
 
         <FiltersBadge filter={filtersBadges} setFilter={setFiltersBadges} />
@@ -226,7 +226,7 @@ function PersonalInfo({ className }: PersonalInfoProps) {
             Like this app? You can support it by making a donation - every
             little helps!
           </p>
-          <button className="btn btn-primary">
+          <button className="btn btn-primary" type="button">
             <span>💝</span>
             Make a donation
           </button>

@@ -25,7 +25,7 @@ export default function HomeLayout({
     <QueryProvider>
       <AuthLoader>
         <Header />
-        <main className="main relative z-0 p-8" style={{ minHeight: "calc(100vh - 4rem - 3rem)" }}>
+        <main className="main relative z-0 p-2 sm:p-8 bg-base-200" style={{ minHeight: "calc(100vh - 4rem - 3rem)" }}>
           {children}
         </main>
         <Footer />

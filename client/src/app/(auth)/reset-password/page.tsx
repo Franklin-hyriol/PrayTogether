@@ -79,16 +79,16 @@ function ResetPassword() {
         <section className="reset-password h-[100%] flex justify-center items-center">
 
 
-            <div className="w-full max-w-md bg-white rounded-3xl shadow-lg overflow-hidden">
-                <div className="p-10">
+            <div className="w-full max-w-md bg-base-100 rounded-3xl shadow-lg overflow-hidden">
+                <div className="sm:p-10 p-4">
 
 
-                    <div className="flex flex-col items-center mb-8">
+                    <div className="flex flex-col items-center sm:mb-8 mb-4">
                         <div className="bg-gray-100 w-14 h-14 rounded-full flex items-center justify-center">
                             <Image src="/logo/logo.png" alt="logo pray together" width={30} height={30} className="w-auto h-auto" />
                         </div>
-                        <h1 className="text-xl font-semibold text-gray-800 mt-8">Reset Password</h1>
-                        <p className="text-sm text-gray-500 mt-1">Please enter your new password</p>
+                        <h1 className="text-xl font-semibold text-base-content sm:mt-8 mt-4">Reset Password</h1>
+                        <p className="text-sm text-base-content mt-1">Please enter your new password</p>
                     </div>
 
 
@@ -106,13 +106,13 @@ function ResetPassword() {
                             {/*Password */}
                             <div className="space-y-1">
 
-                                <label htmlFor="password" className="block text-sm font-medium text-gray-700">New Password</label>
+                                <label htmlFor="password" className="block text-sm font-medium text-base-content">New Password</label>
 
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <MdLockOutline />
                                     </div>
-                                    <input {...register("password")} onBlur={() => trigger("password")} autoComplete="new-password" type={showPassword ? "text" : "password"} placeholder="New password" className={`block w-full pl-10 py-3 border rounded-lg text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm ${errors.password?.message ? "border-red-400" : "border-gray-300"}`} maxLength={250} />
+                                    <input {...register("password")} onBlur={() => trigger("password")} autoComplete="new-password" type={showPassword ? "text" : "password"} placeholder="New password" className={`block w-full pl-10 py-3 border rounded-lg text-base-content focus:outline-none focus:ring-primary sm:text-sm ${errors.password?.message ? "border-red-400" : "border-gray-300"}`} maxLength={250} />
                                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
                                         <button type="button" className="text-gray-400 hover:text-gray-500 focus:outline-none cursor-pointer" onClick={() => setShowPassword(!showPassword)}>
                                             {showPassword ? <FaRegEye className="text-xl" /> : <FaRegEyeSlash className="text-xl" />}
@@ -128,13 +128,13 @@ function ResetPassword() {
                             {/*Confirm Password */}
                             <div className="space-y-1">
 
-                                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">Confirm new Password</label>
+                                <label htmlFor="confirmPassword" className="block text-sm font-medium text-base-content">Confirm new Password</label>
 
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <MdLockOutline />
                                     </div>
-                                    <input {...register("confirmPassword")} onBlur={() => trigger("confirmPassword")} autoComplete="new-password" type={showConfirmPassword ? "text" : "password"} placeholder="Confirm new Password" className={`block w-full pl-10 py-3 border rounded-lg text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm ${errors.confirmPassword?.message ? "border-red-400" : "border-gray-300"}`} maxLength={250} />
+                                    <input {...register("confirmPassword")} onBlur={() => trigger("confirmPassword")} autoComplete="new-password" type={showConfirmPassword ? "text" : "password"} placeholder="Confirm new Password" className={`block w-full pl-10 py-3 border rounded-lg text-base-content focus:outline-none focus:ring-primary sm:text-sm ${errors.confirmPassword?.message ? "border-red-400" : "border-gray-300"}`} maxLength={250} />
                                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
                                         <button type="button" className="text-gray-400 hover:text-gray-500 focus:outline-none cursor-pointer" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
                                             {showConfirmPassword ? <FaRegEye className="text-xl" /> : <FaRegEyeSlash className="text-xl" />}
@@ -152,13 +152,13 @@ function ResetPassword() {
                     </form>
 
                     <div className="divider">
-                        <div className="text-sm text-gray-500">Or</div>
+                        <div className="text-sm text-base-content">Or</div>
                     </div>
 
 
 
-                    <div className="text-center mt-6"><span className="text-sm text-gray-500">Remembered your password ?</span>
-                        <Link href="/login" className="text-sm font-medium text-indigo-600 hover:text-indigo-500 ml-1">Back to login</Link>
+                    <div className="text-center mt-6"><span className="text-sm text-base-content">Remembered your password ?</span>
+                        <Link href="/login" className="text-sm font-medium text-primary hover:underline ml-1">Back to login</Link>
                     </div>
                 </div>
             </div>

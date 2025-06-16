@@ -21,7 +21,7 @@ export default function AuthLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <main className="h-screen">
+        <main className="h-screen relative z-0 sm:mt-0 p-2 sm:p-8 bg-base-200">
             <QueryProvider>
                 <Suspense fallback={<ComponentsLoader />}>
                     {children}

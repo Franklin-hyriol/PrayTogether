@@ -3,20 +3,18 @@
 import PrayerCard from "@/components/PrayerCard/PrayerCard";
 import Pagination from "@/components/Pagination/Pagination";
 import PrayerPopup from "@/components/PrayerPopup/PrayerPopup";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import useFetch from "@/hook/useFetch";
 import { IPrayer } from "@/Interface/IPrayer";
 import { Data } from "@/Interface/Data";
 import ComponentsLoader from "@/components/ComponentsLoader/ComponentsLoader";
 import { getMyPrayersEndpoint, getAllPrayersEndpoint } from "@/endpoint/Prayer";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import DeleteConfirmation from "@/components/DeleteConfirmation/DeleteConfirmation";
 
 // Icons
 import { MdAdd } from "react-icons/md";
 import PrayerEdit from "@/components/PrayerEdit/PrayerEdit";
-import { getSocket } from "@/services/socket";
-import { toast } from "react-toastify";
 import { useDebounce } from "@/hook/useDebounce";
 import Filters from "@/components/Filters/Filters";
 import PrayingForYou from "@/components/PrayingForYou/PrayingForYou";
@@ -29,6 +27,9 @@ function PrayerRoom() {
   const [showPeopleWhoPrayPopup, setShowPeopleWhoPrayPopup] = useState(false);
   const [prayerToEdit, setPrayerToEdit] = useState<IPrayer | null>(null);
 
+  // Notifications Sounds
+  
+
   // Filters Buttons
   const [filters, setFilters] = useState("");
 
@@ -37,7 +38,6 @@ function PrayerRoom() {
   const debouncedSearch = useDebounce(search, 400); // 400ms d'attente
 
   const { fetchData } = useFetch(true);
-  const queryClient = useQueryClient();
   const [currentPage, setCurrentPage] = useState(1);
 
   // get my prayers
@@ -82,35 +82,6 @@ function PrayerRoom() {
     setShowPeopleWhoPrayPopup(true);
   };
 
-  useEffect(() => {
-    const socket = getSocket();
-
-    if (socket) {
-      socket.on("prayedForNotification", (data) => {
-        if (data) {
-          queryClient.invalidateQueries({ queryKey: ["myPrayers"] });
-          toast.success("Someone prayed for you 🙏");
-        }
-      });
-      ["likeNotification", "likeRemovedNotification"].forEach((event) => {
-        socket.on(event, (data) => {
-          if (data) {
-            queryClient.invalidateQueries({ queryKey: ["myPrayers"] });
-          }
-        });
-      });
-    }
-
-    return () => {
-      // Nettoyer l'écouteur lors de la déconnexion du composant
-      const socket = getSocket();
-      if (socket) {
-        socket.off("prayedForNotification");
-        socket.off("likeNotification");
-      }
-    };
-  }, [queryClient]);
-
   return (
     <>
       <section className="prayer-room">
@@ -122,7 +93,7 @@ function PrayerRoom() {
         />
 
         {/* Get my prayers */}
-        <div className="mx-auto grid max-w-[1200px] grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-6 p-4">
+        <div className="mx-auto grid max-w-[1200px] grid-cols-[repeat(auto-fill,minmax(376px,1fr))] gap-3 p-4 place-items-center">
           {!myPrayersError ? (
             isMyPrayersLoading ? (
               <ComponentsLoader />
@@ -175,6 +146,7 @@ function PrayerRoom() {
 
       {myPrayers?.data && myPrayers.data.length < 2 && (
         <button
+          type="button"
           onClick={() => setMakeRequest(true)}
           className="btn btn-circle border-primary fixed right-8 bottom-16 z-50 h-12 w-12 shadow-sm transition-all duration-300 hover:scale-110 hover:shadow-lg"
         >

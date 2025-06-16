@@ -26,7 +26,7 @@ function Settings() {
       updateLocalSettings(data.data);
     },
     onError: (err) => {
-      console.error("Erreur lors de la mise à jour des paramètres", err);
+      console.error("Error while updating settings", err);
     },
   });
 
@@ -48,22 +48,27 @@ function Settings() {
   };
 
   return (
-    <section className="mx-auto max-w-[1200px] overflow-hidden rounded-2xl bg-white p-4 shadow-md">
+    <section className="bg-base-100 mx-auto max-w-[1200px] overflow-hidden rounded-2xl p-4 shadow-md">
       <h1 className="mb-8 text-center text-2xl font-bold">Settings</h1>
 
-      <Theme theme={settings?.theme as string} onThemeChange={handleThemeChange} />
+      <div className="flex flex-col items-center p-0 sm:p-4">
+        <Theme
+          theme={settings?.theme as string}
+          onThemeChange={handleThemeChange}
+        />
 
-      <Accessibility
-        accessibility={settings?.accessibility as IAccessibility}
-        onAccessibilityChange={handleAccessibilityChange}
-      />
+        <Accessibility
+          accessibility={settings?.accessibility as IAccessibility}
+          onAccessibilityChange={handleAccessibilityChange}
+        />
 
-      <Language
-        language={settings?.language as string}
-        onLanguageChange={handleLanguageChange}
-      />
+        <Language
+          language={settings?.language as string}
+          onLanguageChange={handleLanguageChange}
+        />
 
-      <DeleteCompte />
+        <DeleteCompte />
+      </div>
     </section>
   );
 }

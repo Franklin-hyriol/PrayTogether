@@ -14,14 +14,22 @@ import { IoLogOut } from "react-icons/io5";
 import { IoMdLogIn } from "react-icons/io";
 import { FaUserCheck } from "react-icons/fa";
 import { FaRegUserCircle } from "react-icons/fa";
-import { initSocket } from "@/services/socket";
+import { getSocket, initSocket } from "@/services/socket";
 import { usePathname } from "next/navigation";
 import { useSettingsContext } from "@/context/SettingsContext";
+import { useNotificationSound } from "@/hook/useNotificationSound";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
+
 
 function Header() {
   const { user, accessToken } = useAuth();
   const { logout, isLoading } = useLogout();
   const { settings } = useSettingsContext();
+
+
+  const playNotification = useNotificationSound();
+  const queryClient = useQueryClient();
 
   const pathname = usePathname();
 
@@ -31,6 +39,40 @@ function Header() {
     }
   }, [settings?.theme]);
 
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      const htmlElement = document.documentElement;
+      const toggleClass = (className: string, condition: boolean) => {
+        if (condition) {
+          htmlElement.classList.add(className);
+        } else {
+          htmlElement.classList.remove(className);
+        }
+      };
+
+      document.documentElement.setAttribute(
+        "data-textSize",
+        settings?.accessibility.textSize ?? "medium",
+      );
+      toggleClass(
+        "high-contrast",
+        settings?.accessibility.highContrast ?? false,
+      );
+      toggleClass(
+        "notification-sound",
+        settings?.accessibility.notificationSound ?? false,
+      );
+      toggleClass(
+        "dyslexic-font",
+        settings?.accessibility.dyslexicFont ?? false,
+      );
+    }
+  }, [
+    settings?.accessibility.textSize,
+    settings?.accessibility.highContrast,
+    settings?.accessibility.notificationSound,
+    settings?.accessibility.dyslexicFont,
+  ]);
 
   useEffect(() => {
     if (accessToken) {
@@ -38,21 +80,51 @@ function Header() {
     }
   }, [accessToken]);
 
+  useEffect(() => {
+    const socket = getSocket();
+
+    if (socket) {
+      socket.on("prayedForNotification", (data) => {
+        if (data) {
+          queryClient.invalidateQueries({ queryKey: ["myPrayers"] });
+          toast.success("Someone prayed for you 🙏");
+          playNotification();
+        }
+      });
+      ["likeNotification", "likeRemovedNotification"].forEach((event) => {
+        socket.on(event, (data) => {
+          if (data) {
+            queryClient.invalidateQueries({ queryKey: ["myPrayers"] });
+          }
+        });
+      });
+    }
+
+    return () => {
+      // Nettoyer l'écouteur lors de la déconnexion du composant
+      const socket = getSocket();
+      if (socket) {
+        socket.off("prayedForNotification");
+        socket.off("likeNotification");
+      }
+    };
+  }, [queryClient, playNotification]);
+
   return (
-    <header className="navbar bg-base-100 sticky top-0 z-50 shadow-sm">
+    <header className="navbar bg-base-300 sticky top-0 z-50 shadow-sm">
       <div className="flex-1">
         <Link
           href="/"
-          className="navbar-brand flex w-fit gap-2 text-2xl font-bold"
+          className="navbar-brand flex w-fit items-center gap-2 text-xl font-bold sm:text-2xl"
         >
           <Image
             src="/logo/logo.png"
             alt="logo pray together"
             width={30}
             height={30}
-            className="h-auto w-auto"
+            className="h-[32px] flex-none basis-[32px]"
           />
-          Pray Together
+          <span>Pray Together</span>
         </Link>
       </div>
 
@@ -74,7 +146,7 @@ function Header() {
                 role="button"
                 className="btn btn-ghost btn-circle avatar"
               >
-                <div className="w-10 rounded-full">
+                <div className="border-base-content border-opacity-50 w-10 rounded-full border-1">
                   {user.profilePhoto ? (
                     <Image
                       src={user.profilePhoto}
@@ -108,6 +180,7 @@ function Header() {
 
                 <li>
                   <button
+                    type="button"
                     onClick={() => logout()}
                     disabled={isLoading}
                     className="logout-btn text-lg"

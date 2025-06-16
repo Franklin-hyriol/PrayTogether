@@ -151,12 +151,14 @@ function PrayingForYou({
 
             <div className="flex gap-2 mb-4">
               <button
+                type="button"
                 className={`btn btn-sm ${activeTab === 0 ? "btn-primary" : "btn-outline"}`}
                 onClick={() => setActiveTab(0)}
               >
                 People who prayed
               </button>
               <button
+                type="button"
                 className={`btn btn-sm ${activeTab === 1 ? "btn-primary" : "btn-outline"}`}
                 onClick={() => setActiveTab(1)}
               >

@@ -5,10 +5,10 @@ import Image from 'next/image';
 function HistoryItem({ prayer }: { prayer: IPrayer }) {
   return (
     <div
-      className={`card bg-base-100 card-sm flex w-full flex-row items-center justify-center pr-3 pl-3 shadow-md transition-transform duration-300 hover:bg-blue-100`}
+      className={`card bg-base-100 card-sm flex w-full flex-row items-center justify-center pr-3 pl-3 shadow-md transition-transform duration-300 hover:bg-base-200`}
     >
       <div
-        className={`flex h-12 w-12 flex-none items-center justify-center overflow-hidden rounded-full bg-green-100`}
+        className={`flex h-12 w-12 flex-none items-center justify-center overflow-hidden rounded-full bg-base-content`}
       >
         <Image
           src={prayer.authorId.profilePhoto}
@@ -24,15 +24,15 @@ function HistoryItem({ prayer }: { prayer: IPrayer }) {
 
         <p className="flex-1 text-base break-all">{prayer.text}</p>
 
-        <span className="absolute top-2 right-2 flex items-center gap-2 text-xs text-gray-400">
+        <span className="absolute top-2 right-2 flex items-center gap-2 text-xs text-neutral-content">
           {prayer.isUrgent ? (
             <span className="font-semibold text-red-500">urgent</span>
           ) : null}
 
-          <span>Il y a {formatRelativeTime(prayer.createdAt)}</span>
+          <span>{formatRelativeTime(prayer.createdAt)}</span>
         </span>
 
-        <div className="mt-1 flex items-center gap-2 text-sm text-gray-500">
+        <div className="mt-1 flex items-center gap-2 text-sm text-neutral-content">
           <span className="text-red-500">❤️ {prayer.likesCount}</span>
           <span>🙏 {prayer.prayersCount}</span>
         </div>

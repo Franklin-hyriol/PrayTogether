@@ -29,7 +29,7 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(passport.initialize());
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: ['http://localhost:3000', 'http://10.163.7.89:3000'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
@@ -43,6 +43,11 @@ app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/prayer', prayerRoutes);
 app.use('/api/v1/badges', badgeRoutes);
 app.use('/api/v1/settings', settingsRoutes);
+
+
+app.get('/', (_, res) => {
+    res.send('Server is running');
+});
 
 // Initialiser le WebSocket
 initSocket(server);

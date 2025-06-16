@@ -1,13 +1,52 @@
+"use client";
+
+import { useNotificationSound } from "@/hook/useNotificationSound";
 import { IAccessibility } from "@/Interface/ISettings";
+import { useEffect } from "react";
 
 type AccessibilityProps = {
   accessibility: IAccessibility;
-  onAccessibilityChange: (changes:  Partial<IAccessibility>) => void;
+  onAccessibilityChange: (changes: Partial<IAccessibility>) => void;
 };
 
-function Accessibility({ accessibility, onAccessibilityChange }: AccessibilityProps) {
+function Accessibility({
+  accessibility,
+  onAccessibilityChange,
+}: AccessibilityProps) {
+  const playNotification = useNotificationSound();
+
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      document.documentElement.setAttribute(
+        "data-textSize",
+        accessibility.textSize,
+      );
+    }
+  }, [accessibility.textSize]);
+
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      const htmlElement = document.documentElement;
+      const toggleClass = (className: string, condition: boolean) => {
+        if (condition) {
+          htmlElement.classList.add(className);
+        } else {
+          htmlElement.classList.remove(className);
+        }
+      };
+
+      toggleClass("high-contrast", accessibility.highContrast);
+      toggleClass("notification-sound", accessibility.notificationSound);
+      toggleClass("dyslexic-font", accessibility.dyslexicFont);
+    }
+  }, [
+    accessibility.highContrast,
+    accessibility.notificationSound,
+    accessibility.dyslexicFont,
+  ]);
+
   return (
-    <div className="mb-8 rounded-lg bg-white p-6 shadow-lg">
+    <div className="bg-base-300 mb-8 w-full rounded-xl p-4 shadow-md sm:p-6">
       <h2 className="mb-4 text-xl font-bold">Accessibility</h2>
 
       <div className="space-y-6">
@@ -17,9 +56,14 @@ function Accessibility({ accessibility, onAccessibilityChange }: AccessibilityPr
           <div className="join">
             {["small", "medium", "large"].map((size) => (
               <button
+                type="button"
                 key={size}
                 className={`btn btn-sm join-item btn-outline ${accessibility.textSize === size ? "btn-active border-blue-500 text-blue-600" : ""}`}
-                onClick={() => onAccessibilityChange({ textSize: size as "small" | "medium" | "large" })}
+                onClick={() =>
+                  onAccessibilityChange({
+                    textSize: size as "small" | "medium" | "large",
+                  })
+                }
               >
                 A
               </button>
@@ -34,7 +78,9 @@ function Accessibility({ accessibility, onAccessibilityChange }: AccessibilityPr
             type="checkbox"
             className="toggle toggle-md"
             checked={accessibility.highContrast}
-            onChange={(e) => onAccessibilityChange({ highContrast: e.target.checked })}
+            onChange={(e) =>
+              onAccessibilityChange({ highContrast: e.target.checked })
+            }
           />
         </div>
 
@@ -45,7 +91,10 @@ function Accessibility({ accessibility, onAccessibilityChange }: AccessibilityPr
             type="checkbox"
             className="toggle toggle-md"
             checked={accessibility.notificationSound}
-            onChange={(e) => onAccessibilityChange({ notificationSound: e.target.checked })}
+            onChange={(e) => {
+              onAccessibilityChange({ notificationSound: e.target.checked });
+              playNotification();
+            }}
           />
         </div>
 
@@ -56,7 +105,9 @@ function Accessibility({ accessibility, onAccessibilityChange }: AccessibilityPr
             type="checkbox"
             className="toggle toggle-md"
             checked={accessibility.dyslexicFont}
-            onChange={(e) => onAccessibilityChange({ dyslexicFont: e.target.checked })}
+            onChange={(e) =>
+              onAccessibilityChange({ dyslexicFont: e.target.checked })
+            }
           />
         </div>
       </div>
