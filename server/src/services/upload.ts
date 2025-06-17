@@ -5,7 +5,6 @@ import path from 'path';
 import { Request } from 'express';
 
 
-
 // Configuration du dossier de destination
 const storage = multer.diskStorage({
     destination: (_req, _file, cb) => {

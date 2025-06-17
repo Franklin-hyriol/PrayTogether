@@ -40,10 +40,12 @@ function About() {
                 <li>All prayers are public :</li>
                 <ul className="ml-6 list-inside list-disc">
                   <li>
-                    <strong>24h</strong> in the prayer room (&quot;Prayer Room&quot;).
+                    <strong>24h</strong> in the prayer room (&quot;Prayer
+                    Room&quot;).
                   </li>
                   <li>
-                    <strong>7 days</strong> in your personal history (&quot;Profile&quot;).
+                    <strong>7 days</strong> in your personal history
+                    (&quot;Profile&quot;).
                   </li>
                 </ul>
               </ul>
@@ -53,8 +55,8 @@ function About() {
               <h3 className="text-lg font-semibold">3. Interact with others</h3>
               <ul className="list-inside list-disc space-y-1 text-base">
                 <li>
-                  Click on <strong>&quot;I pray for you&quot;</strong> to show your
-                  spiritual support.
+                  Click on <strong>&quot;I pray for you&quot;</strong> to show
+                  your spiritual support.
                 </li>
                 <li>Click on the red heart &hearts; to like a prayer.</li>
                 <li>
@@ -90,7 +92,8 @@ function About() {
               </h3>
               <ul className="list-inside list-disc space-y-1 text-base">
                 <li>
-                  <strong>&#x1f3a8; Theme</strong> : Light (clear) or Dark (dark)
+                  <strong>&#x1f3a8; Theme</strong> : Light (clear) or Dark
+                  (dark)
                 </li>
                 <li>
                   <strong>&#x2b9f; Accessibility</strong> :
@@ -102,11 +105,12 @@ function About() {
                   <li>Dyslexic font</li>
                 </ul>
                 <li>
-                  <strong>&#x1f1e7;&#x1f1ef; Language</strong> : English (en) or French (fr)
+                  <strong>&#x1f1e7;&#x1f1ef; Language</strong> : English (en) or
+                  French (fr)
                 </li>
                 <li>
-                  <strong>&#x274c; Delete my account</strong> : Delete your account
-                  and all your personal data permanently.
+                  <strong>&#x274c; Delete my account</strong> : Delete your
+                  account and all your personal data permanently.
                   <br />
                   <span className="text-warning font-semibold">
                     &nbsp;Irreversible action
@@ -124,38 +128,54 @@ function About() {
           <h2 className="mb-4 text-xl font-bold">Privacy Policy</h2>
 
           <div className="space-y-4 pl-4 text-base leading-relaxed">
+            <p className="font-semibold">Last updated: June 17, 2025</p>
+
             <p>
-              All data collected on Pray Together is stored securely on our
-              servers. None of your personal information is shared, sold, or used
-              for commercial or advertising purposes.
+              When you log in to Pray Together with your Google account, we only
+              collect the following information:
+            </p>
+
+            <ul className="ml-4 list-inside list-disc">
+              <li>Your name</li>
+              <li>Your email address</li>
+              <li>Your profile picture (if available)</li>
+            </ul>
+
+            <p>
+              This data is used exclusively to create your account, sign you in,
+              and personalize your experience on the app.
             </p>
 
             <p>
-              Access to data is strictly limited to internal use for the sole
-              purpose of ensuring a good user experience.
+              No personal data is shared, sold, or used for commercial or
+              advertising purposes.
+            </p>
+
+            <p>
+              Access to data is strictly limited to internal use to ensure a
+              good user experience.
             </p>
 
             <p>
               You are the sole owner of your data. At any time, you can delete
-              your account via the settings page. This action will permanently
-              delete:
+              your account via the settings page. This will permanently delete:
             </p>
 
             <ul className="ml-4 list-inside list-disc">
               <li>Your user account</li>
               <li>All posted prayers</li>
               <li>Your activity history</li>
-              <li>Badges earned</li>
+              <li>The badges you've earned</li>
               <li>Your preferences</li>
             </ul>
 
             <p className="text-warning font-semibold">
-              &nbsp;Once deleted, this data cannot be recovered.
+              Once deleted, this data cannot be recovered.
             </p>
 
             <p>
               If you have any questions or concerns about the privacy of your
-              data, you can write to me directly at{" "}
+              data, you can contact me directly at:{" "}
               <a
                 href="mailto:franklinrazafy@gmail.com"
                 className="text-primary hover:text-primary-focus underline"
@@ -172,4 +192,3 @@ function About() {
 }
 
 export default About;
-
