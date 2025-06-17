@@ -4,7 +4,10 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import passport from 'passport';
 import http from 'http';
+import helmet from "helmet";
+import mongoSanitize from "express-mongo-sanitize";
 
+import rateLimit from "express-rate-limit";
 
 import { initSocket } from './socket';
 
@@ -24,7 +27,17 @@ ensureUploadsFolder();
 // Connexion à la base de données
 connectDB();
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // max 100 requêtes par IP
+  message: "Too many requests from this IP, please try again after 15 minutes",
+});
+
 // Middlewares
+app.disable("x-powered-by"); // évite de révéler que tu utilises Express
+app.use(limiter);
+app.use(helmet());
+app.use(mongoSanitize());
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(passport.initialize());
@@ -34,6 +47,7 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
 }));
+
 
 // Dossier de stockage des images
 app.use('/uploads', express.static('uploads'));

@@ -3,11 +3,11 @@ import { Request, Response } from 'express';
 import PrayerRequest from "../models/PrayerRequest";
 import IUser from "../interfaces/UserInterface";
 import User from "../models/User";
-import mongoose from "mongoose";
+import mongoose, { FilterQuery } from "mongoose";
 import PrayerInteraction from "../models/prayerInteraction";
 import { emitEventForUser } from "../services/emitEventForUser";
 import removeAccents from 'remove-accents';
-import { EnrichedPrayer } from "../interfaces/PrayerRequestInterface";
+import IPrayerRequest, { EnrichedPrayer } from "../interfaces/PrayerRequestInterface";
 import { checkAndAssignAllBadges } from "../services/checkAndAssignAllBadges";
 import { toMs } from "../utils/toMs";
 import { PRAYER_EXPIRATION_DURATION, PRAYER_VISIBILITY_DURATION } from "../config/Env";
@@ -123,7 +123,10 @@ export const getAllPrayers = async (req: Request, res: Response): Promise<void> 
         const skip = (page - 1) * limit;
 
         const now = new Date();
-        const baseFilter: any = {
+        const baseFilter: FilterQuery<{
+            authorId: string;
+            visibilityUntil: Date;
+        }> = {
             authorId: { $ne: user._id },
             visibilityUntil: { $gt: now } // 👉 seulement les prières encore visibles
         };
@@ -225,7 +228,6 @@ export const getAllPrayers = async (req: Request, res: Response): Promise<void> 
 export const getPeopleWhoPrayed = async (req: Request, res: Response): Promise<void> => {
     try {
         const prayerId = req.params.id;
-        const now = new Date();
         const page = parseInt(req.query.page as string) || 1;
         const limit = 4;
         const skip = (page - 1) * limit;
@@ -388,7 +390,7 @@ export const getMyPrayers = async (req: Request, res: Response): Promise<void> =
         const limit = 10;
         const skip = (page - 1) * limit;
 
-        const filter: any = { authorId: user._id };
+        const filter: FilterQuery<IPrayerRequest> = { authorId: user._id };
         if (onlyActive) {
             filter.visibilityUntil = { $gt: now };
         }

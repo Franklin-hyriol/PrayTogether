@@ -22,7 +22,7 @@ export const CreateUserValidationSchema = {
     },
     password: {
         custom: {
-            options: (value: string, { req }: any) => {
+            options: (value: string) => {
                 if (!value || value.length < 8) {
                     throw new Error('Password must be at least 8 characters long.');
                 }

@@ -493,7 +493,7 @@ export const refreshAccessToken = async (req: Request, res: Response): Promise<v
             }
         });
 
-    } catch (error: unknown) {
+    } catch (error) {
         // Supprimer le cookie s’il est invalide ou expiré
         res.clearCookie('refresh_token', {
             httpOnly: false, // ❌ TEMPORAIRE — ✅ à remettre à `true` en PROD
@@ -938,7 +938,6 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
         username,
         password,
         newPassword,
-        role, // <- pas utilisé ici mais peut-être dans un futur besoin ?
         isBenefactor
     } = req.body;
 
