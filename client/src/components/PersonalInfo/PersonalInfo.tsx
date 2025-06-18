@@ -22,6 +22,7 @@ import ComponentsLoader from "../ComponentsLoader/ComponentsLoader";
 import FiltersBadge from "../FiltersBadge/FiltersBadge";
 import { IPrayer } from "@/Interface/IPrayer";
 import { getMyPrayersEndpoint } from "@/endpoint/Prayer";
+import { toast } from "react-toastify";
 
 type PersonalInfoProps = {
   className?: string;
@@ -104,6 +105,20 @@ function PersonalInfo({ className }: PersonalInfoProps) {
   }, [inViewPrayers, hasNextPageMyPrayers, isFetchingNextPageMyPrayers]);
 
   // History //////////////////////////////////////////////////
+
+
+  const handleDonations = () => {
+    toast.info("Donations are not supported yet. Thank you for your generosity though!", {
+      position: "top-center",
+      autoClose: 5000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: false,
+      progress: undefined,
+      theme: "colored",
+    });
+  };
 
   return (
     <div className={"form-section w-full flex-col" + " " + className}>
@@ -226,7 +241,7 @@ function PersonalInfo({ className }: PersonalInfoProps) {
             Like this app? You can support it by making a donation - every
             little helps!
           </p>
-          <button className="btn btn-primary" type="button">
+          <button className="btn btn-primary" type="button" onClick={handleDonations}>
             <span>💝</span>
             Make a donation
           </button>

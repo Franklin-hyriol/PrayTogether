@@ -20,7 +20,6 @@ import { toast } from "react-toastify";
 export type PrayerCardProps = {
     currentUser?: boolean
     prayer: IPrayer,
-    online?: boolean
     className?: string
     prayeringFor?: boolean
     likedBy?: boolean
@@ -29,7 +28,7 @@ export type PrayerCardProps = {
     onShowPeoplePraying?: () => void
 }
 
-function PrayerCard({ currentUser, prayer, className, online = false, prayeringFor, likedBy, onDelete, onEdit, onShowPeoplePraying }: PrayerCardProps) {
+function PrayerCard({ currentUser, prayer, className, prayeringFor, likedBy, onDelete, onEdit, onShowPeoplePraying }: PrayerCardProps) {
 
     const [showMenu, setShowMenu] = useState(false);
     const menuRef = useRef<HTMLDivElement | null>(null);
@@ -110,13 +109,13 @@ function PrayerCard({ currentUser, prayer, className, online = false, prayeringF
 
                         <div className="flex gap-2">
                             {(prayer.authorId as Iauthor).profilePhoto ? (
-                                <div className={`avatar ${online ? "avatar-online" : "avatar-offline"}`}>
+                                <div className="avatar">
                                     <div className="w-12 rounded-full">
                                         <Image src={(prayer.authorId as Iauthor).profilePhoto} width={48} height={48} alt={(prayer.authorId as Iauthor).username} />
                                     </div>
                                 </div>
                             ) : (
-                                <div className={`avatar avatar-placeholder ${online ? "avatar-online" : "avatar-offline"}`}>
+                                <div className="avatar avatar-placeholder">
                                     <div className="bg-neutral text-neutral-content w-12 rounded-full">
                                         <span className="font-bold text-lg">{(prayer.authorId as Iauthor).username.slice(0, 2).toUpperCase()}</span>
                                     </div>

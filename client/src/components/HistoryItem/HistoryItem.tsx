@@ -29,12 +29,12 @@ function HistoryItem({ prayer }: { prayer: IPrayer }) {
             <span className="font-semibold text-red-500">urgent</span>
           ) : null}
 
-          <span>{formatRelativeTime(prayer.createdAt)}</span>
+          <span className="text-base-content">{formatRelativeTime(prayer.createdAt)}</span>
         </span>
 
-        <div className="mt-1 flex items-center gap-2 text-sm text-neutral-content">
+        <div className="mt-1 flex items-center gap-2 text-sm">
           <span className="text-red-500">❤️ {prayer.likesCount}</span>
-          <span>🙏 {prayer.prayersCount}</span>
+          <span className="text-base-content">🙏 {prayer.prayersCount}</span>
         </div>
       </div>
     </div>

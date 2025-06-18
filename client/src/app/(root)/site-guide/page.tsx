@@ -105,7 +105,7 @@ function About() {
                   <li>Dyslexic font</li>
                 </ul>
                 <li>
-                  <strong>&#x1f1e7;&#x1f1ef; Language</strong> : English (en) or
+                  <strong>Language</strong> : English (en) or
                   French (fr)
                 </li>
                 <li>
@@ -165,7 +165,7 @@ function About() {
               <li>Your user account</li>
               <li>All posted prayers</li>
               <li>Your activity history</li>
-              <li>The badges you've earned</li>
+              <li>The badges you&apos;ve earned</li>
               <li>Your preferences</li>
             </ul>
 
