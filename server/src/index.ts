@@ -46,9 +46,9 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(passport.initialize());
 app.use(cors({
-    origin: [NEXT_PUBLIC_ENDPOINT_BASE_URL as string, BASE_URL as string],
+    origin: [NEXT_PUBLIC_ENDPOINT_BASE_URL as string],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
     credentials: true,
 }));
 

@@ -3,6 +3,9 @@ import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
     const token = request.cookies.get('refresh_token');
+
+    console.log("Token:", token?.value);
+    
     const { pathname } = request.nextUrl;
 
     if (
