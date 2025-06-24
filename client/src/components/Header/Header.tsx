@@ -52,7 +52,7 @@ function Header() {
 
       document.documentElement.setAttribute(
         "data-textSize",
-        settings?.accessibility.textSize ?? "medium",
+        settings?.accessibility.textSize ?? "small",
       );
       toggleClass(
         "high-contrast",

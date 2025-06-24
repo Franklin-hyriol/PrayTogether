@@ -13,3 +13,6 @@ client/package-lock.json
 server/dist/*
 
 .vscode
+
+# Local Netlify folder
+.netlify
