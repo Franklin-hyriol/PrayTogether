@@ -40,8 +40,8 @@ export async function GET(request: NextRequest) {
                 name: "refresh_token",
                 value: "",
                 path: "/",
-                httpOnly: false, // ❌ TEMPORAIRE pour debug — ✅ à remettre à `true` en PROD
-                secure: true,    // ❌ false en local — ✅ à garder `true` en PROD
+                httpOnly: process.env.HTTPONLY === 'true' ? true : false, 
+                secure: process.env.SECURE === 'true' ? true : false,
                 sameSite: "none",
                 expires: new Date(0) // expire immédiatement
             });

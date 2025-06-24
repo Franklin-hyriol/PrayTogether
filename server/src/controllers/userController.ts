@@ -10,7 +10,7 @@ import fs from 'fs';
 import IUser from '../interfaces/UserInterface';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import { ACCESS_TOKEN_EXPIRATION_TIME, ADMIN_EMAIL, BASE_URL, JWT_SECRET, NEXT_PUBLIC_ENDPOINT_BASE_URL, REFRESH_TOKEN_EXPIRATION_TIME, REFRESH_TOKEN_SECRET } from '../config/Env';
+import { ACCESS_TOKEN_EXPIRATION_TIME, ADMIN_EMAIL, BASE_URL, HTTPONLY, JWT_SECRET, NEXT_PUBLIC_ENDPOINT_BASE_URL, REFRESH_TOKEN_EXPIRATION_TIME, REFRESH_TOKEN_SECRET, SECURE } from '../config/Env';
 import { toMs } from '../utils/toMs';
 import { StringValue } from 'ms';
 import { serializeUser } from '../helpers/serializeUser';
@@ -83,10 +83,10 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
 
         // save refresh token in cookie
         res.cookie("refresh_token", refreshToken, {
-            httpOnly: false, // ❌ TEMPORAIREMENT désactiver HttpOnly pour voir/manipuler le cookie dans Postman
-            secure: true, // ✅ false en local (si tu n'utilises pas HTTPS)
-            path: "/", // ✅ mettre un chemin plus général pour qu'il soit envoyé sur toutes les routes
-            sameSite: "none", // ✅ plus permissif pour les tests (strict bloque parfois même en local)
+            httpOnly: HTTPONLY, 
+            secure: SECURE, 
+            path: "/",
+            sameSite: "none",
         });
 
 
@@ -217,8 +217,8 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
         );
 
         res.cookie("refresh_token", refreshToken, {
-            httpOnly: false,
-            secure: true,
+            httpOnly: HTTPONLY,
+            secure: SECURE,
             path: "/",
             sameSite: "none",
             ...(rememberMe
@@ -318,11 +318,12 @@ export const GoogleAuth = async (req: Request, res: Response): Promise<void> => 
             { $set: { refreshToken } }
         );
 
+
         res.cookie("refresh_token", refreshToken, {
-            httpOnly: false, // ❌ TEMPORAIREMENT désactiver HttpOnly pour voir/manipuler le cookie dans Postman
-            secure: true, // ✅ false en local (si tu n'utilises pas HTTPS)
-            path: "/", // ✅ mettre un chemin plus général pour qu'il soit envoyé sur toutes les routes
-            sameSite: "none", // ✅ plus permissif pour les tests (strict bloque parfois même en local)
+            httpOnly: HTTPONLY, 
+            secure: SECURE,
+            path: "/", 
+            sameSite: "none",
         });
 
         res.redirect(`${NEXT_PUBLIC_ENDPOINT_BASE_URL}/prayer-room` as string);
@@ -390,9 +391,9 @@ export const logoutUser = async (req: Request, res: Response): Promise<void> => 
 
         // Supprimer le refresh token du cookie (en utilisant une cookie avec le flag HttpOnly)
         res.clearCookie('refresh_token', {
-            httpOnly: false, // ❌ TEMPORAIREMENT désactiver HttpOnly pour voir/manipuler le cookie dans Postman
-            secure: true, // ✅ false en local (si tu n'utilises pas HTTPS)
-            path: "/", // ✅ mettre un chemin plus général pour qu'il soit envoyé sur toutes les routes
+            httpOnly: HTTPONLY,
+            secure: SECURE,
+            path: "/",
             sameSite: "none", // ✅ plus permissif pour les tests (strict bloque parfois même en local)
         });
 
@@ -441,10 +442,10 @@ export const refreshAccessToken = async (req: Request, res: Response): Promise<v
         if (!user) {
             // Supprimer le cookie s’il n’y a pas d’utilisateur correspondant
             res.clearCookie('refresh_token', {
-                httpOnly: false, // ❌ TEMPORAIRE pour debug (Postman/dev) — ✅ à remettre à `true` en PROD
-                secure: true,    // ❌ mettre `false` en local sans HTTPS — ✅ à garder `true` en PROD
-                path: "/",       // ✅ général pour toutes les routes
-                sameSite: "none" // ✅ plus permissif — en PROD tu peux mettre `"strict"` si pas besoin cross-domain
+                httpOnly: HTTPONLY,
+                secure: SECURE,
+                path: "/",
+                sameSite: "none",
             });
 
             res.status(401).json({
@@ -496,10 +497,10 @@ export const refreshAccessToken = async (req: Request, res: Response): Promise<v
     } catch (error) {
         // Supprimer le cookie s’il est invalide ou expiré
         res.clearCookie('refresh_token', {
-            httpOnly: false, // ❌ TEMPORAIRE — ✅ à remettre à `true` en PROD
-            secure: true,    // ❌ false en local — ✅ à garder `true` en PROD
+            httpOnly: HTTPONLY,
+            secure: SECURE,
             path: "/",
-            sameSite: "none"
+            sameSite: "none",
         });
 
         res.status(403).json({
@@ -1064,10 +1065,10 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
         await user.deleteOne();
 
         res.clearCookie('refresh_token', {
-            httpOnly: false, // ❌ TEMPORAIREMENT désactiver HttpOnly pour voir/manipuler le cookie dans Postman
-            secure: true, // ✅ false en local (si tu n'utilises pas HTTPS)
-            path: "/", // ✅ mettre un chemin plus général pour qu'il soit envoyé sur toutes les routes
-            sameSite: "none", // ✅ plus permissif pour les tests (strict bloque parfois même en local)
+            httpOnly: HTTPONLY,
+            secure: SECURE,
+            path: "/",
+            sameSite: "none",
         });
 
         res.status(200).json({
