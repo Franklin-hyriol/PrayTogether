@@ -10,7 +10,7 @@ import { Data } from "@/Interface/Data";
 const defaultSettings = {
   theme: "light",
   accessibility: {
-    textSize: "medium",
+    textSize: "small",
     highContrast: false,
     notificationSound: false,
     dyslexicFont: false,
