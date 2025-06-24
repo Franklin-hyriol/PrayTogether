@@ -17,9 +17,12 @@ import connectDB from './config/database';
 import { ensureUploadsFolder } from './utils/ensureUploadsFolder';
 import badgeRoutes from './routes/badgeRoutes';
 import settingsRoutes from './routes/settingsRoutes';
-import { BASE_URL, NEXT_PUBLIC_ENDPOINT_BASE_URL } from './config/Env';
+import { BASE_URL, NEXT_PUBLIC_ENDPOINT_BASE_URL, NODE_ENV } from './config/Env';
 
 const app = express();
+if (NODE_ENV === 'production') {
+    app.set('trust proxy', 1);
+}
 const server = http.createServer(app);
 
 // Création du dossier de stockage des images
@@ -29,9 +32,9 @@ ensureUploadsFolder();
 connectDB();
 
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 1000, // max 100 requêtes par IP
-  message: "Too many requests from this IP, please try again after 15 minutes",
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 1000, // max 100 requêtes par IP
+    message: "Too many requests from this IP, please try again after 15 minutes",
 });
 
 // Middlewares
