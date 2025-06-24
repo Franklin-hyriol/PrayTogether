@@ -330,7 +330,6 @@ export const GoogleAuth = async (req: Request, res: Response): Promise<void> => 
             message: "Connexion réussie",
         });
 
-        console.log(res);
         console.log(HTTPONLY, SECURE);
         
         

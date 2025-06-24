@@ -17,5 +17,9 @@ export const PRAYER_VISIBILITY_DURATION = process.env.PRAYER_VISIBILITY_DURATION
 export const PRAYER_EXPIRATION_DURATION = process.env.PRAYER_EXPIRATION_DURATION;
 export const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 
-export const HTTPONLY = process.env.HTTPONLY === 'true' ? true : false;
-export const SECURE = process.env.SECURE === 'true' ? true : false;
+
+console.log(process.env.HTTPONLY, process.env.SECURE);
+
+
+export const HTTPONLY = process.env.HTTPONLY === 'true';
+export const SECURE = process.env.SECURE === 'true';

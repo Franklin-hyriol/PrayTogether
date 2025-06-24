@@ -4,10 +4,6 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(request: NextRequest) {
     const refreshToken = request.cookies.get('refresh_token')?.value;
 
-
-    console.log("refreshToken", refreshToken);
-    
-
     if (!refreshToken) {
         return NextResponse.json({
             status: 401,
@@ -30,10 +26,6 @@ export async function GET(request: NextRequest) {
                 Cookie: `refresh_token=${refreshToken}`,
             },
         });
-
-
-        console.log("res", res);
-        
 
         const data = await res.json()
 
