@@ -13,12 +13,12 @@ export const initSocket = (token: string): Socket => {
         });
 
         socket.on("connect", () => {
-            console.log("socket connected");
+            console.info("socket connected");
 
         });
 
         socket.on("disconnect", () => {
-            console.log("socket disconnected");
+            console.info("socket disconnected");
         });
 
         socket.on("connect_error", (err) => {
