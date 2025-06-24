@@ -318,13 +318,15 @@ export const GoogleAuth = async (req: Request, res: Response): Promise<void> => 
             { $set: { refreshToken } }
         );
 
-
         res.cookie("refresh_token", refreshToken, {
             httpOnly: HTTPONLY, 
             secure: SECURE,
             path: "/", 
             sameSite: "none",
         });
+
+        console.log(`User ${user.email} logged in with Google.`);
+        
 
         res.redirect(`${NEXT_PUBLIC_ENDPOINT_BASE_URL}/prayer-room` as string);
 
