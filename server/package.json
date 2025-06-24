@@ -8,6 +8,7 @@
     "build": "tsc",
     "lint": "eslint . --ext .ts",
     "preview": "node dist/index.js",
+    "start": "node dist/index.js",
     "seed:badge": "ts-node ./src/seed/script/seedBadges.ts"
   },
   "repository": {
