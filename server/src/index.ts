@@ -17,6 +17,7 @@ import connectDB from './config/database';
 import { ensureUploadsFolder } from './utils/ensureUploadsFolder';
 import badgeRoutes from './routes/badgeRoutes';
 import settingsRoutes from './routes/settingsRoutes';
+import { BASE_URL, NEXT_PUBLIC_ENDPOINT_BASE_URL } from './config/Env';
 
 const app = express();
 const server = http.createServer(app);
@@ -42,7 +43,7 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(passport.initialize());
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://10.163.7.89:3000'],
+    origin: [NEXT_PUBLIC_ENDPOINT_BASE_URL as string, BASE_URL as string],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
