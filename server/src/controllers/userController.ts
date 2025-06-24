@@ -83,8 +83,8 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
 
         // save refresh token in cookie
         res.cookie("refresh_token", refreshToken, {
-            httpOnly: HTTPONLY, 
-            secure: SECURE, 
+            httpOnly: HTTPONLY,
+            secure: SECURE,
             path: "/",
             sameSite: "none",
         });
@@ -319,15 +319,21 @@ export const GoogleAuth = async (req: Request, res: Response): Promise<void> => 
         );
 
         res.cookie("refresh_token", refreshToken, {
-            httpOnly: HTTPONLY, 
+            httpOnly: HTTPONLY,
             secure: SECURE,
-            path: "/", 
+            path: "/",
             sameSite: "none",
         });
 
+        res.status(200).json({
+            status: 200,
+            message: "Connexion réussie",
+        });
+
         console.log(res);
-    
-        res.redirect(`${NEXT_PUBLIC_ENDPOINT_BASE_URL}/prayer-room` as string);
+        console.log(HTTPONLY, SECURE);
+        
+        
 
     } catch (error: unknown) {
         if (error instanceof Error) {
