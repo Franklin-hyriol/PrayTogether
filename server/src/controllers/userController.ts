@@ -325,6 +325,8 @@ export const GoogleAuth = async (req: Request, res: Response): Promise<void> => 
             sameSite: "none",
         });
 
+        console.log(res);
+    
         res.redirect(`${NEXT_PUBLIC_ENDPOINT_BASE_URL}/prayer-room` as string);
 
     } catch (error: unknown) {
