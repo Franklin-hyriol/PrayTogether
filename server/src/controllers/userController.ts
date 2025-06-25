@@ -10,7 +10,7 @@ import fs from 'fs';
 import IUser from '../interfaces/UserInterface';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import { ACCESS_TOKEN_EXPIRATION_TIME, ADMIN_EMAIL, BASE_URL, HTTPONLY, JWT_SECRET, NEXT_PUBLIC_ENDPOINT_BASE_URL, REFRESH_TOKEN_EXPIRATION_TIME, REFRESH_TOKEN_SECRET, SECURE } from '../config/Env';
+import { ACCESS_TOKEN_EXPIRATION_TIME, ADMIN_EMAIL, BASE_URL, DOMAINE_URL, HTTPONLY, JWT_SECRET, NEXT_PUBLIC_ENDPOINT_BASE_URL, REFRESH_TOKEN_EXPIRATION_TIME, REFRESH_TOKEN_SECRET, SECURE } from '../config/Env';
 import { toMs } from '../utils/toMs';
 import { StringValue } from 'ms';
 import { serializeUser } from '../helpers/serializeUser';
@@ -83,10 +83,11 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
 
         // save refresh token in cookie
         res.cookie("refresh_token", refreshToken, {
-            httpOnly: HTTPONLY, 
-            secure: SECURE, 
+            httpOnly: HTTPONLY,
+            secure: SECURE,
             path: "/",
             sameSite: "none",
+            domain: DOMAINE_URL,
         });
 
 
@@ -221,6 +222,7 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
             secure: SECURE,
             path: "/",
             sameSite: "none",
+            domain: DOMAINE_URL,
             ...(rememberMe
                 ? { maxAge: toMs(REFRESH_TOKEN_EXPIRATION_TIME as StringValue) }
                 : {}),
@@ -318,12 +320,12 @@ export const GoogleAuth = async (req: Request, res: Response): Promise<void> => 
             { $set: { refreshToken } }
         );
 
-
         res.cookie("refresh_token", refreshToken, {
-            httpOnly: HTTPONLY, 
+            httpOnly: HTTPONLY,
             secure: SECURE,
-            path: "/", 
+            path: "/",
             sameSite: "none",
+            domain: DOMAINE_URL,
         });
 
         res.redirect(`${NEXT_PUBLIC_ENDPOINT_BASE_URL}/prayer-room` as string);
@@ -394,7 +396,8 @@ export const logoutUser = async (req: Request, res: Response): Promise<void> => 
             httpOnly: HTTPONLY,
             secure: SECURE,
             path: "/",
-            sameSite: "none", // ✅ plus permissif pour les tests (strict bloque parfois même en local)
+            sameSite: "none",
+            domain: DOMAINE_URL,
         });
 
         res.status(200).json({
@@ -446,6 +449,7 @@ export const refreshAccessToken = async (req: Request, res: Response): Promise<v
                 secure: SECURE,
                 path: "/",
                 sameSite: "none",
+                domain: DOMAINE_URL,
             });
 
             res.status(401).json({
@@ -501,6 +505,7 @@ export const refreshAccessToken = async (req: Request, res: Response): Promise<v
             secure: SECURE,
             path: "/",
             sameSite: "none",
+            domain: DOMAINE_URL,
         });
 
         res.status(403).json({
@@ -1069,6 +1074,7 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
             secure: SECURE,
             path: "/",
             sameSite: "none",
+            domain: DOMAINE_URL,
         });
 
         res.status(200).json({

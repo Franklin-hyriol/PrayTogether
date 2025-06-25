@@ -21,6 +21,7 @@ export async function GET(request: NextRequest) {
     try {
         const res = await fetch(process.env.API_URL + "/api/v1/users/refresh-token", {
             method: "GET",
+            credentials: "include",
             headers: {
                 Cookie: `refresh_token=${refreshToken}`,
             },
