@@ -110,7 +110,7 @@ function PrayerCard({ currentUser, prayer, className, prayeringFor, likedBy, onD
                         <div className="flex gap-2">
                             {(prayer.authorId as Iauthor).profilePhoto ? (
                                 <div className="avatar">
-                                    <div className="w-12 rounded-full">
+                                    <div className="w-12 h-12 rounded-full">
                                         <Image src={(prayer.authorId as Iauthor).profilePhoto} width={48} height={48} alt={(prayer.authorId as Iauthor).username} />
                                     </div>
                                 </div>
