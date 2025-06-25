@@ -1,6 +1,6 @@
 import { Server as HttpServer } from 'http';
 import { Server as SocketIOServer, Socket } from 'socket.io';
-import { JWT_SECRET } from './config/Env';
+import { JWT_SECRET, NEXT_PUBLIC_ENDPOINT_BASE_URL } from './config/Env';
 import jwt from 'jsonwebtoken';
 
 let io: SocketIOServer;
@@ -14,7 +14,7 @@ interface TokenPayload {
 export const initSocket = (server: HttpServer) => {
     io = new SocketIOServer(server, {
         cors: {
-            origin: 'http://localhost:3000',
+            origin: NEXT_PUBLIC_ENDPOINT_BASE_URL as string,
             methods: ['GET', 'POST', 'PUT', 'DELETE'],
             allowedHeaders: ['Content-Type', 'Authorization'],
             credentials: true,
