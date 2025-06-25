@@ -16,10 +16,7 @@ export const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 export const PRAYER_VISIBILITY_DURATION = process.env.PRAYER_VISIBILITY_DURATION;
 export const PRAYER_EXPIRATION_DURATION = process.env.PRAYER_EXPIRATION_DURATION;
 export const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
-
-
-console.log(process.env.HTTPONLY, process.env.SECURE);
-
+export const DOMAINE_URL = process.env.DOMAINE_URL;
 
 export const HTTPONLY = process.env.HTTPONLY === 'true';
 export const SECURE = process.env.SECURE === 'true';
