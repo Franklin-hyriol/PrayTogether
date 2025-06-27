@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deletePrayerByIdEndpoint } from "@/endpoint/Prayer";
 import { Data } from "@/Interface/Data";
 import { toast } from "react-toastify";
+import ComponentsLoader from "../ComponentsLoader/ComponentsLoader";
 
 
 interface DeleteConfirmationProps {
@@ -103,7 +104,7 @@ function DeleteConfirmation({ selectedPrayerId, showDeletePopup, setShowDeletePo
                         <p className="mb-2">Are you sure you want to delete this prayer? <br /><span className="text-error">This action is irreversible.</span></p>
                         <div className="justify-center gap-4 card-actions">
                             <button type="button" className="btn" onClick={() => setShowDeletePopup(false)}>Cancel</button>
-                            <button type="button" className="btn btn-error text-white" onClick={handleDelete}>Delete</button>
+                            <button type="button" disabled={deletePrayerMutation.isPending} className="btn btn-error text-white" onClick={handleDelete}>{deletePrayerMutation.isPending ? <ComponentsLoader /> : "Delete"}</button>
                         </div>
                     </div>
                 </div>

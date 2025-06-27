@@ -11,10 +11,10 @@ function Filters({ search, setSearch, filter, setFilter }: FiltersProps) {
     const isActive = (value: string) => filter === value;
 
     return (
-        <div className="max-w-[1200px] mx-auto mb-8 px-4">
-            <label className="input mb-4 w-full">
+        <div className="max-w-[1200px] mx-auto mb-8 sm:px-4 px-2">
+            <label className="input mb-4 w-full" htmlFor="search">
                 <FaSearch className="h-[1em] opacity-50" />
-                <input type="search" placeholder="Search" value={search} onChange={e => setSearch(e.target.value)} />
+                <input id="search" type="search" placeholder="Search" value={search} onChange={e => setSearch(e.target.value)} />
             </label>
 
             <div className="flex gap-[0.75rem] flex-wrap">

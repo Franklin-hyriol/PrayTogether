@@ -11,6 +11,7 @@ import { IPrayer } from "@/Interface/IPrayer";
 import { toast } from "react-toastify";
 import { createPrayersEndpoint } from "@/endpoint/Prayer";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import ComponentsLoader from "../ComponentsLoader/ComponentsLoader";
 
 interface PrayerPopupProps {
     makeRequest: boolean
@@ -138,14 +139,14 @@ function PrayerPopup({ makeRequest, setMakeRequest }: PrayerPopupProps) {
                                 <span className="absolute bottom-2 right-0">{watchedText?.length ?? 0} / 240</span>
                             </fieldset>
 
-                            <label className="flex items-center justify-center gap-2 mb-4 self-start cursor-pointer">
-                                <input type="checkbox" {...register("isUrgent")} className="checkbox checkbox-primary checkbox-xs" />
+                            <label htmlFor="isUrgent" className="flex items-center justify-center gap-2 mb-4 self-start cursor-pointer">
+                                <input id="isUrgent" type="checkbox" {...register("isUrgent")} className="checkbox checkbox-primary checkbox-xs" />
                                 <span>Mark as urgent</span>
                             </label>
 
                             <div className="justify-center gap-4 card-actions">
                                 <button type="button" className="btn btn-cancel" onClick={() => setMakeRequest(false)}>Cancel</button>
-                                <button type="submit" className="text-white btn btn-primary" disabled={!isValid || CreatePrayerMutation.isPending}>send</button>
+                                <button type="submit" className="text-white btn btn-primary" disabled={!isValid || CreatePrayerMutation.isPending}>{CreatePrayerMutation.isPending ? <ComponentsLoader /> : "Send"}</button>
                             </div>
 
 

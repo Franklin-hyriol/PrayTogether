@@ -28,7 +28,6 @@ function PrayerRoom() {
   const [prayerToEdit, setPrayerToEdit] = useState<IPrayer | null>(null);
 
   // Notifications Sounds
-  
 
   // Filters Buttons
   const [filters, setFilters] = useState("");
@@ -93,7 +92,7 @@ function PrayerRoom() {
         />
 
         {/* Get my prayers */}
-        <div className="mx-auto grid max-w-[1200px] grid-cols-[repeat(auto-fill,minmax(376px,1fr))] gap-3 p-4 place-items-center">
+        <div className="mx-auto flex max-w-[1200px] flex-col place-items-center gap-3 p-2 sm:p-4 sm:grid sm:grid-cols-[repeat(auto-fill,minmax(376px,1fr))]">
           {!myPrayersError ? (
             isMyPrayersLoading ? (
               <ComponentsLoader />

@@ -17,6 +17,7 @@ import { useMutation } from "@tanstack/react-query";
 import { MdLockOutline } from "react-icons/md";
 import { FaRegEye } from "react-icons/fa";
 import { FaRegEyeSlash } from "react-icons/fa";
+import ComponentsLoader from "@/components/ComponentsLoader/ComponentsLoader";
 
 
 const resetPasswordSchema = z.object({
@@ -112,7 +113,7 @@ function ResetPassword() {
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <MdLockOutline />
                                     </div>
-                                    <input {...register("password")} onBlur={() => trigger("password")} autoComplete="new-password" type={showPassword ? "text" : "password"} placeholder="New password" className={`block w-full pl-10 py-3 border rounded-lg text-base-content focus:outline-none focus:ring-primary sm:text-sm ${errors.password?.message ? "border-red-400" : "border-gray-300"}`} maxLength={250} />
+                                    <input id="password" {...register("password")} onBlur={() => trigger("password")} autoComplete="new-password" type={showPassword ? "text" : "password"} placeholder="New password" className={`block w-full pl-10 py-3 border rounded-lg text-base-content focus:outline-none focus:ring-primary sm:text-sm ${errors.password?.message ? "border-red-400" : "border-gray-300"}`} maxLength={250} />
                                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
                                         <button type="button" className="text-gray-400 hover:text-gray-500 focus:outline-none cursor-pointer" onClick={() => setShowPassword(!showPassword)}>
                                             {showPassword ? <FaRegEye className="text-xl" /> : <FaRegEyeSlash className="text-xl" />}
@@ -134,7 +135,7 @@ function ResetPassword() {
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <MdLockOutline />
                                     </div>
-                                    <input {...register("confirmPassword")} onBlur={() => trigger("confirmPassword")} autoComplete="new-password" type={showConfirmPassword ? "text" : "password"} placeholder="Confirm new Password" className={`block w-full pl-10 py-3 border rounded-lg text-base-content focus:outline-none focus:ring-primary sm:text-sm ${errors.confirmPassword?.message ? "border-red-400" : "border-gray-300"}`} maxLength={250} />
+                                    <input id="confirmPassword" {...register("confirmPassword")} onBlur={() => trigger("confirmPassword")} autoComplete="new-password" type={showConfirmPassword ? "text" : "password"} placeholder="Confirm new Password" className={`block w-full pl-10 py-3 border rounded-lg text-base-content focus:outline-none focus:ring-primary sm:text-sm ${errors.confirmPassword?.message ? "border-red-400" : "border-gray-300"}`} maxLength={250} />
                                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
                                         <button type="button" className="text-gray-400 hover:text-gray-500 focus:outline-none cursor-pointer" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
                                             {showConfirmPassword ? <FaRegEye className="text-xl" /> : <FaRegEyeSlash className="text-xl" />}
@@ -148,7 +149,7 @@ function ResetPassword() {
                         </div>
 
 
-                        <button type="submit" className="btn btn-primary w-full" disabled={!isValid || resetPasswordMutation.isPending}>Reset Password</button>
+                        <button type="submit" className="btn btn-primary w-full" disabled={!isValid || resetPasswordMutation.isPending}>{resetPasswordMutation.isPending ? <ComponentsLoader /> : "Reset Password"}</button>
                     </form>
 
                     <div className="divider">
