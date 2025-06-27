@@ -81,9 +81,9 @@ function ProfileAvatar() {
                         <FaRegUserCircle className="w-full h-full" />
                     )}
 
-                    <label className="absolute bottom-[-5px] right-[-5px] w-8 h-8 rounded-full bg-white border-2 border-primary flex items-center justify-center cursor-pointer transition-all duration-300 ease-in-out text-black hover:bg-primary hover:text-white">
+                    <label htmlFor="image" className="absolute bottom-[-5px] right-[-5px] w-8 h-8 rounded-full bg-white border-2 border-primary flex items-center justify-center cursor-pointer transition-all duration-300 ease-in-out text-black hover:bg-primary hover:text-white">
                         <IoCameraOutline/>
-                        <input type="file" className="hidden" accept="image/png, image/jpeg, image/webp" {...register('image')} />
+                        <input id="image" type="file" className="hidden" accept="image/png, image/jpeg, image/webp" {...register('image')} />
                     </label>
                 </div>
             </div>

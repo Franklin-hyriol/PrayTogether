@@ -123,6 +123,7 @@ function ChangePassword({ className }: ChangePasswordProps) {
             <MdLockOutline />
           </div>
           <input
+            id="password"
             {...register("password")}
             onBlur={() => trigger("password")}
             autoComplete="new-password"
@@ -166,6 +167,7 @@ function ChangePassword({ className }: ChangePasswordProps) {
             <MdLockOutline />
           </div>
           <input
+            id="newPassword"
             {...register("newPassword")}
             onBlur={() => trigger("newPassword")}
             autoComplete="new-password"
@@ -209,6 +211,7 @@ function ChangePassword({ className }: ChangePasswordProps) {
             <MdLockOutline />
           </div>
           <input
+            id="confirmPassword"
             {...register("confirmPassword")}
             onBlur={() => trigger("confirmPassword")}
             autoComplete="new-password"

@@ -15,6 +15,7 @@ import { Data } from "@/Interface/Data";
 import usePost from "@/hook/usePost";
 import { likePrayerEndpoint, prayForPrayerEndpoint } from "@/endpoint/Prayer";
 import { toast } from "react-toastify";
+import ComponentsLoader from "../ComponentsLoader/ComponentsLoader";
 
 
 export type PrayerCardProps = {
@@ -102,7 +103,7 @@ function PrayerCard({ currentUser, prayer, className, prayeringFor, likedBy, onD
 
     return (
         <>
-            <div className={`prayer-card card w-94 bg-base-300 card-md shadow-sm card-border ${className ? className : ""}`}>
+            <div className={`prayer-card card w-full sm:w-94 bg-base-300 card-md shadow-sm card-border ${className ? className : ""}`}>
                 <div className="card-body">
                     <div className="flex justify-between">
 
@@ -191,15 +192,17 @@ function PrayerCard({ currentUser, prayer, className, prayeringFor, likedBy, onD
                                             <PiHandsPraying className="text-green-500" />
                                         </div>
                                     ) : (
-                                        <button type="button" className="btn btn-primary grow-6" onClick={() => PrayforYouMutation.mutate()}>I pray for you</button>
+                                        <button type="button" disabled={PrayforYouMutation.isPending} className="btn btn-primary grow-6" onClick={() => PrayforYouMutation.mutate()}>{PrayforYouMutation.isPending ? <ComponentsLoader /> : "I pray for you"}</button>
                                     )}
                                     <div className="relative inline-block">
                                         <button
                                             type="button"
                                             className={`p-1 text-gray-500 hover:text-red-500 transition-colors duration-200 focus:outline-none cursor-pointer ${likedBy ? "text-red-500" : ""}`}
                                             onClick={handleClick}
+                                            disabled={LikePrayerMutation.isPending}
                                         >
-                                            <IoIosHeart className="text-3xl" />
+
+                                            {LikePrayerMutation.isPending ? <ComponentsLoader /> : <IoIosHeart className="text-3xl" />}
                                         </button>
 
                                         {animationText && (

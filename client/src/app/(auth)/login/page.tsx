@@ -19,6 +19,7 @@ import { MdOutlineEmail } from "react-icons/md";
 import { MdLockOutline } from "react-icons/md";
 import { FaRegEye } from "react-icons/fa";
 import { FaRegEyeSlash } from "react-icons/fa";
+import ComponentsLoader from "@/components/ComponentsLoader/ComponentsLoader";
 
 const loginSchema = z.object({
     email: z.string().trim().email({ message: "Please enter a valid email address" }).nonempty({ message: "Email cannot be empty" }),
@@ -120,7 +121,7 @@ function Login() {
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <MdOutlineEmail />
                                     </div>
-                                    <input type="email" autoComplete="email" {...register("email")} onBlur={() => trigger("email")} placeholder="example@gmail.com" className={`block text-base-content w-full pl-10 py-3 border rounded-lg focus:outline-none focus:ring-primary sm:text-sm ${errors.email?.message ? "border-red-400" : "border-gray-300"}`} maxLength={250} />
+                                    <input id="email" type="email" autoComplete="email" {...register("email")} onBlur={() => trigger("email")} placeholder="example@gmail.com" className={`block text-base-content w-full pl-10 py-3 border rounded-lg focus:outline-none focus:ring-primary sm:text-sm ${errors.email?.message ? "border-red-400" : "border-gray-300"}`} maxLength={250} />
                                 </div>
                                 {errors.email?.message && <div className="validator-hint visible text-error block">{errors.email?.message}</div>}
 
@@ -141,7 +142,7 @@ function Login() {
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <MdLockOutline />
                                     </div>
-                                    <input {...register("password")} onBlur={() => trigger("password")} autoComplete="current-password" type={showPassword ? "text" : "password"} placeholder="Password" className={`block w-full pl-10 py-3 border rounded-lg text-base-content focus:outline-none focus:ring-primary sm:text-sm ${errors.password?.message ? "border-red-400" : "border-gray-300"}`} maxLength={250} />
+                                    <input id="password" {...register("password")} onBlur={() => trigger("password")} autoComplete="current-password" type={showPassword ? "text" : "password"} placeholder="Password" className={`block w-full pl-10 py-3 border rounded-lg text-base-content focus:outline-none focus:ring-primary sm:text-sm ${errors.password?.message ? "border-red-400" : "border-gray-300"}`} maxLength={250} />
                                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
                                         <button type="button" className="text-base-content hover:text-base-400 focus:outline-none cursor-pointer" onClick={() => setShowPassword(!showPassword)}>
                                             {showPassword ? <FaRegEye className="text-xl" /> : <FaRegEyeSlash className="text-xl" />}
@@ -155,11 +156,11 @@ function Login() {
                         </div>
 
                         <div className="flex items-center my-4">
-                            <input type="checkbox" className="checkbox checkbox-primary checkbox-sm"  {...register("rememberMe")} />
-                            <label htmlFor="remember-me" className="ml-2 block text-sm text-base-content cursor-pointer">Remember me</label>
+                            <input id="rememberMe" type="checkbox" className="checkbox checkbox-primary checkbox-sm"  {...register("rememberMe")} />
+                            <label htmlFor="rememberMe" className="ml-2 block text-sm text-base-content cursor-pointer">Remember me</label>
                         </div>
 
-                        <button type="submit" className="btn btn-primary w-full" disabled={!isValid || loginMutation.isPending}>Login</button>
+                        <button type="submit" className="btn btn-primary w-full" disabled={!isValid || loginMutation.isPending}>{loginMutation.isPending ? <ComponentsLoader /> : "Login"}</button>
                     </form>
 
                     <div className="divider">
