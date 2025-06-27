@@ -13,6 +13,7 @@ import { useMutation } from "@tanstack/react-query";
 
 // Icons
 import { MdOutlineEmail } from "react-icons/md";
+import ComponentsLoader from "@/components/ComponentsLoader/ComponentsLoader";
 
 
 const forgotPasswordSchema = z.object({
@@ -93,7 +94,7 @@ function ForgotPassword() {
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <MdOutlineEmail />
                                     </div>
-                                    <input type="email" autoComplete="email" {...register("email")} onBlur={() => trigger("email")} placeholder="example@gmail.com" className={`block w-full pl-10 py-3 border rounded-lg text-base-content focus:outline-none focus:ring-primary sm:text-sm ${errors.email?.message ? "border-red-400" : "border-gray-300"}`} maxLength={250} />
+                                    <input id="email" type="email" autoComplete="email" {...register("email")} onBlur={() => trigger("email")} placeholder="example@gmail.com" className={`block w-full pl-10 py-3 border rounded-lg text-base-content focus:outline-none focus:ring-primary sm:text-sm ${errors.email?.message ? "border-red-400" : "border-gray-300"}`} maxLength={250} />
                                 </div>
                                 {errors.email?.message && <div className="validator-hint visible text-red-400 block">{errors.email?.message}</div>}
 
@@ -101,7 +102,7 @@ function ForgotPassword() {
 
                         </div>
 
-                        <button type="submit" className="btn btn-primary w-full" disabled={!isValid || forgotPasswordMutation.isPending}>Reset</button>
+                        <button type="submit" className="btn btn-primary w-full" disabled={!isValid || forgotPasswordMutation.isPending}>{forgotPasswordMutation.isPending ? <ComponentsLoader /> : "Reset"}</button>
                     </form>
 
                     <div className="text-center mt-6"><span className="text-sm text-base-content">Remember your password ?</span>

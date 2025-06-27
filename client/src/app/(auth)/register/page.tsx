@@ -21,6 +21,7 @@ import { MdLockOutline } from "react-icons/md";
 import { FaRegEye } from "react-icons/fa";
 import { FaRegEyeSlash } from "react-icons/fa";
 import { FaRegUser } from "react-icons/fa";
+import ComponentsLoader from "@/components/ComponentsLoader/ComponentsLoader";
 
 
 const signupSchema = z.object({
@@ -130,7 +131,7 @@ function Register() {
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <FaRegUser />
                                     </div>
-                                    <input type="text" autoComplete="family-name" {...register("username")} onBlur={() => trigger("username")} placeholder="Enter your username" className={`block w-full pl-10 py-3 border rounded-lg text-base-content focus:outline-none focus:ring-primary sm:text-sm ${errors.username?.message ? "border-red-400" : "border-gray-300"}`} maxLength={250} />
+                                    <input id="username" type="text" autoComplete="family-name" {...register("username")} onBlur={() => trigger("username")} placeholder="Enter your username" className={`block w-full pl-10 py-3 border rounded-lg text-base-content focus:outline-none focus:ring-primary sm:text-sm ${errors.username?.message ? "border-red-400" : "border-gray-300"}`} maxLength={250} />
                                 </div>
                                 {errors.username?.message && <div className="validator-hint visible text-red-400 block">{errors.username?.message}</div>}
 
@@ -144,7 +145,7 @@ function Register() {
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <MdOutlineEmail />
                                     </div>
-                                    <input type="email" autoComplete="email" {...register("email")} onBlur={() => trigger("email")} placeholder="example@gmail.com" className={`block w-full pl-10 py-3 border rounded-lg text-base-content focus:outline-none focus:ring-primary sm:text-sm ${errors.email?.message ? "border-red-400" : "border-gray-300"}`} maxLength={250} />
+                                    <input id="email" type="email" autoComplete="email" {...register("email")} onBlur={() => trigger("email")} placeholder="example@gmail.com" className={`block w-full pl-10 py-3 border rounded-lg text-base-content focus:outline-none focus:ring-primary sm:text-sm ${errors.email?.message ? "border-red-400" : "border-gray-300"}`} maxLength={250} />
                                 </div>
                                 {errors.email?.message && <div className="validator-hint visible text-red-400 block">{errors.email?.message}</div>}
 
@@ -159,7 +160,7 @@ function Register() {
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <MdLockOutline />
                                     </div>
-                                    <input {...register("password")} onBlur={() => trigger("password")} autoComplete="new-password" type={showPassword ? "text" : "password"} placeholder="Password" className={`block w-full pl-10 py-3 border rounded-lg text-base-content focus:outline-none focus:ring-primary sm:text-sm ${errors.password?.message ? "border-red-400" : "border-gray-300"}`} maxLength={250} />
+                                    <input id="password" {...register("password")} onBlur={() => trigger("password")} autoComplete="new-password" type={showPassword ? "text" : "password"} placeholder="Password" className={`block w-full pl-10 py-3 border rounded-lg text-base-content focus:outline-none focus:ring-primary sm:text-sm ${errors.password?.message ? "border-red-400" : "border-gray-300"}`} maxLength={250} />
                                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
                                         <button type="button" className="text-base-content hover:text-base-400 focus:outline-none cursor-pointer" onClick={() => setShowPassword(!showPassword)}>
                                             {showPassword ? <FaRegEye className="text-xl" /> : <FaRegEyeSlash className="text-xl" />}
@@ -181,7 +182,7 @@ function Register() {
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <MdLockOutline />
                                     </div>
-                                    <input {...register("confirmPassword")} onBlur={() => trigger("confirmPassword")} autoComplete="new-password" type={showConfirmPassword ? "text" : "password"} placeholder="Confirm Password" className={`block w-full pl-10 py-3 border rounded-lg text-base-content focus:outline-none focus:ring-primary sm:text-sm ${errors.confirmPassword?.message ? "border-red-400" : "border-gray-300"}`} maxLength={250} />
+                                    <input id="confirmPassword" {...register("confirmPassword")} onBlur={() => trigger("confirmPassword")} autoComplete="new-password" type={showConfirmPassword ? "text" : "password"} placeholder="Confirm Password" className={`block w-full pl-10 py-3 border rounded-lg text-base-content focus:outline-none focus:ring-primary sm:text-sm ${errors.confirmPassword?.message ? "border-red-400" : "border-gray-300"}`} maxLength={250} />
                                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
                                         <button type="button" className="text-base-content hover:text-base-400 focus:outline-none cursor-pointer" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
                                             {showConfirmPassword ? <FaRegEye className="text-xl" /> : <FaRegEyeSlash className="text-xl" />}
@@ -195,7 +196,7 @@ function Register() {
                         </div>
 
 
-                        <button type="submit" className="btn btn-primary w-full" disabled={!isValid || signUpMutation.isPending}>Sign Up</button>
+                        <button type="submit" className="btn btn-primary w-full" disabled={!isValid || signUpMutation.isPending}>{signUpMutation.isPending ? <ComponentsLoader /> : "Sign Up"}</button>
                     </form>
 
                     <div className="divider">

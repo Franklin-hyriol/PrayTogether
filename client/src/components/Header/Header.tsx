@@ -21,12 +21,10 @@ import { useNotificationSound } from "@/hook/useNotificationSound";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
-
 function Header() {
   const { user, accessToken } = useAuth();
   const { logout, isLoading } = useLogout();
   const { settings } = useSettingsContext();
-
 
   const playNotification = useNotificationSound();
   const queryClient = useQueryClient();
@@ -124,13 +122,13 @@ function Header() {
             height={30}
             className="h-[32px] flex-none basis-[32px]"
           />
-          <span>Pray Together</span>
+          <span className="hidden sm:block">Pray Together</span>
         </Link>
       </div>
 
       <div className="flex gap-4">
         {user ? (
-          <div className="flex gap-4">
+          <div className="flex gap-4 items-center justify-end">
             {pathname !== "/" && pathname !== "/prayer-room" && (
               <Link
                 className="btn btn-primary p-2 text-base font-normal"
@@ -139,6 +137,11 @@ function Header() {
                 Back to Prayer Room
               </Link>
             )}
+
+            <div className="text-base-content text-base font-semibold">
+              {user?.username}
+            </div>
+
 
             <nav className="dropdown dropdown-end">
               <div
