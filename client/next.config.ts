@@ -14,6 +14,15 @@ const nextConfig: NextConfig = {
         port: "5000",
         pathname: "/uploads/**",
       },
+      {
+        protocol: "https",
+        hostname: "praytogether.up.railway.app",
+        pathname: "/**",
+      },{
+        protocol: "https",
+        hostname: "pray.up.railway.app",
+        pathname: "/**",
+      }
     ],
   },
 };
