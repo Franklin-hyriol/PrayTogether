@@ -1,11 +1,10 @@
-// app/api/refresh-access/route.ts
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
     const refreshToken = request.cookies.get('refresh_token')?.value;
 
     if (!refreshToken) {
-        return NextResponse.json({
+        const res = NextResponse.json({
             status: 401,
             message: "Refresh token not found",
             error: [{
@@ -16,10 +15,22 @@ export async function GET(request: NextRequest) {
                 location: "cookies"
             }]
         }, { status: 401 });
+
+        // Supprime même si pas présent (par précaution)
+        res.cookies.set("refresh_token", "", {
+            httpOnly: true,
+            secure: true,
+            path: "/",
+            sameSite: "none",
+            domain: process.env.DOMAINE_URL, 
+            expires: new Date(0),
+        });
+
+        return res;
     }
 
     try {
-        const res = await fetch(process.env.API_URL + "/api/v1/users/refresh-token", {
+        const apiRes = await fetch(process.env.API_URL + "/api/v1/users/refresh-token", {
             method: "GET",
             credentials: "include",
             headers: {
@@ -27,18 +38,25 @@ export async function GET(request: NextRequest) {
             },
         });
 
-        const data = await res.json()
+        const data = await apiRes.json();
 
-        if (res.status !== 200) {
-            const response = NextResponse.json({
-                status: res.status,
+        if (apiRes.status !== 200) {
+            const res = NextResponse.json({
+                status: apiRes.status,
                 message: data.message || "Failed to refresh access token",
                 error: data.error || [],
-            }, { status: res.status });
+            }, { status: apiRes.status });
 
-            response.cookies.delete("refresh_token");
+            res.cookies.set("refresh_token", "", {
+                httpOnly: true,
+                secure: true,
+                path: "/",
+                sameSite: "none",
+                domain: process.env.DOMAINE_URL,
+                expires: new Date(0), 
+            });
 
-            return response;
+            return res;
         }
 
         return NextResponse.json({
