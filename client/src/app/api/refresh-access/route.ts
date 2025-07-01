@@ -29,23 +29,14 @@ export async function GET(request: NextRequest) {
 
         const data = await res.json()
 
-        if (!res.ok) {
+        if (res.status !== 200) {
             const response = NextResponse.json({
                 status: res.status,
                 message: data.message || "Failed to refresh access token",
                 error: data.error || [],
             }, { status: res.status });
 
-            // ✅ Supprimer le cookie
-            response.cookies.set({
-                name: "refresh_token",
-                value: "",
-                path: "/",
-                httpOnly: process.env.HTTPONLY === 'true' ? true : false, 
-                secure: process.env.SECURE === 'true' ? true : false,
-                sameSite: "none",
-                expires: new Date(0) // expire immédiatement
-            });
+            response.cookies.delete("refresh_token");
 
             return response;
         }
