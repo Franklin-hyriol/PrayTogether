@@ -103,7 +103,7 @@ function PrayerCard({ currentUser, prayer, className, prayeringFor, likedBy, onD
 
     return (
         <>
-            <div className={`prayer-card card w-full sm:w-94 bg-base-300 card-md shadow-sm card-border ${className ? className : ""}`}>
+            <div className={`prayer-card card w-full h-full sm:w-94 bg-base-300 card-md shadow-sm card-border ${className ? className : ""}`}>
                 <div className="card-body">
                     <div className="flex justify-between">
 
