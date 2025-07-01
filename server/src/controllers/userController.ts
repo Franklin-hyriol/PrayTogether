@@ -468,6 +468,14 @@ export const refreshAccessToken = async (req: Request, res: Response): Promise<v
 
         if (user.refreshToken !== token) {
             // Si le token ne correspond pas à celui en base, on le supprime du navigateu
+            res.clearCookie('refresh_token', {
+                httpOnly: HTTPONLY,
+                secure: SECURE,
+                path: "/",
+                sameSite: "none",
+                domain: DOMAINE_URL,
+            });
+
             res.status(401).json({
                 status: 401,
                 message: "This session is no longer valid. Please log in again.",
