@@ -6,11 +6,11 @@ export async function GET(request: NextRequest) {
     if (!refreshToken) {
         const res = NextResponse.json({
             status: 401,
-            message: "Refresh token not found",
+            message: "Refresh token not found on cookies",
             error: [{
                 type: "cookie",
                 value: null,
-                msg: "Refresh token not found",
+                msg: "Refresh token not found on cookies",
                 path: "refresh_token",
                 location: "cookies"
             }]
