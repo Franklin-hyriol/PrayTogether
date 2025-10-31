@@ -1,6 +1,6 @@
 import IUser from "../interfaces/UserInterface";
 
-export function serializeUser(user: IUser) {
+export function serializeUser(user: any) {
     return {
         id: user._id,
         username: user.username,
