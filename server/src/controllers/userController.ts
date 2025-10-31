@@ -37,7 +37,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
 
     try {
         // Vérifie si l'email est déjà utilisé
-        const existingUser = await User.findOne({ email: email });
+        const existingUser = await User.findOne({ email: email }).lean();
         if (existingUser) {
             res.status(409).json({
                 status: 409,
@@ -148,7 +148,7 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     const { email, password, rememberMe } = req.body;
 
     try {
-        const userExists = await User.findOne({ email: email });
+        const userExists = await User.findOne({ email: email }).lean();
         if (!userExists) {
             res.status(404).json({
                 status: 404,
@@ -373,7 +373,7 @@ export const logoutUser = async (req: Request, res: Response): Promise<void> => 
 
     try {
         // Trouver l'utilisateur dans la base de données
-        const existingUser = await User.findById(user.id);
+        const existingUser = await User.findById(user.id).lean();
         if (!existingUser) {
             res.status(404).json({
                 status: 404,
@@ -440,7 +440,7 @@ export const refreshAccessToken = async (req: Request, res: Response): Promise<v
     try {
         const decoded = jwt.verify(token, REFRESH_TOKEN_SECRET as string) as { id: string };
 
-        const user = await User.findById(decoded.id);
+        const user = await User.findById(decoded.id).lean();
 
         if (!user) {
             // Supprimer le cookie s’il n’y a pas d’utilisateur correspondant
@@ -551,8 +551,7 @@ export const getConnectedUser = async (req: Request, res: Response): Promise<voi
             return;
         }
 
-        const foundUser = await User.findById(user._id)
-            .lean();
+        const foundUser = await User.findById(user._id).lean();
 
 
         if (!foundUser) {
@@ -793,7 +792,7 @@ export const getResetPasswordToken = async (req: Request, res: Response): Promis
 
     try {
         // Recherche l'utilisateur par e-mail
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email }).lean();
 
         if (!user) {
             res.status(404).json({
@@ -956,7 +955,7 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
     } = req.body;
 
     try {
-        const user = await User.findById(userId);
+        const user = await User.findById(userId).lean();
         if (!user) {
             res.status(404).json({
                 status: 404,
@@ -1057,7 +1056,7 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
     const userId = req.params.id;
 
     try {
-        const user = await User.findById(userId);
+        const user = await User.findById(userId).lean();
         if (!user) {
             res.status(404).json({
                 status: 404,
@@ -1129,7 +1128,7 @@ export const resetUserPassword = async (req: Request, res: Response): Promise<vo
 
     try {
         // Recherche l'utilisateur par le token de réinitialisation
-        const user = await User.findOne({ where: { password_reset_token: token } });
+        const user = await User.findOne({ where: { password_reset_token: token } }).lean();
 
         if (!user) {
             res.status(404).json({
