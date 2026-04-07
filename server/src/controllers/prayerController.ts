@@ -611,7 +611,7 @@ export const prayForPrayer = async (req: Request, res: Response): Promise<void> 
         // Vérifie si l'utilisateur a déjà prié pour cette prière
         const existingInteraction = await PrayerInteraction.findOne({
             prayerId: new mongoose.Types.ObjectId(prayerId),
-            userId: new mongoose.Types.ObjectId(user._id as string),
+            userId: new mongoose.Types.ObjectId(user._id),
             type: "prayed"
         });
 
@@ -627,7 +627,7 @@ export const prayForPrayer = async (req: Request, res: Response): Promise<void> 
         // Crée une nouvelle interaction "prayed"
         await PrayerInteraction.create({
             prayerId: new mongoose.Types.ObjectId(prayerId),
-            userId: new mongoose.Types.ObjectId(user._id as string),
+            userId: new mongoose.Types.ObjectId(user._id),
             type: "prayed"
         });
 
@@ -686,7 +686,7 @@ export const likeThisPrayer = async (req: Request, res: Response): Promise<void>
             return;
         }
 
-        const userId = new mongoose.Types.ObjectId(user._id as string);
+        const userId = new mongoose.Types.ObjectId(user._id);
 
         const existingInteraction = await PrayerInteraction.findOne({
             prayerId: new mongoose.Types.ObjectId(prayerId),
