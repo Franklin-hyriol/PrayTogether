@@ -26,7 +26,7 @@ async function checkOwnerOrAdmin(req: Request, res: Response, next: NextFunction
         }
 
         // Vérifie si l'utilisateur connecté est l'auteur de la prière ou un administrateur
-        if (user.role === 'admin' || (user._id as string).toString() === prayer.authorId.toString()) {
+        if (user.role === 'admin' || (user._id).toString() === prayer.authorId.toString()) {
             return next();
         }
 

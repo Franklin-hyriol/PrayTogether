@@ -14,7 +14,7 @@ export const checkAndAssignAllBadges = async (user: IUser): Promise<void> => {
         const { type, value } = badge.condition;
 
         // Ne pas ré-attribuer un badge déjà obtenu
-        if (ownedBadgeIds.has((badge._id as string).toString())) continue;
+        if (ownedBadgeIds.has((badge._id).toString())) continue;
 
         const userValue = (user as any)[type];
         if (userValue === undefined) continue;
